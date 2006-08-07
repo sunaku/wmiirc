@@ -18,7 +18,7 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =end
 
-$:.unshift File.join(File.dirname(__FILE__), 'ruby-ixp/lib')
+$:.unshift File.join(File.dirname(__FILE__), 'ruby-ixp', 'lib')
 require 'ixp'
 
 require 'find'
@@ -130,12 +130,11 @@ class Wmii
 	# Attach the most recently detached client
 	def attachClient
 		if areaList = read("/#{DETACHED_TAG}")
-			area = areaList.split.grep(/^\d+$/).last
-
-			if clientList = read("/#{DETACHED_TAG}/#{area}")
-				client = clientList.split.grep(/^\d+$/).last
-
-				write "/#{DETACHED_TAG}/#{area}/#{client}/tags", read('/view/name')
+			areaList.split.grep(/^\d+$/).reverse.each do |area|
+				if client = read("/#{DETACHED_TAG}/#{area}").split.grep(/^\d+$/).last
+					write "/#{DETACHED_TAG}/#{area}/#{client}/tags", read('/view/name')
+					return
+				end
 			end
 		end
 	end
@@ -160,9 +159,7 @@ class Wmii
 
 			end % tags.length
 
-		newTag = tags[newIndex]
-
-		showView newTag
+		showView tags[newIndex]
 	end
 
 	# Renames the given view and sends its clients along for the ride.
@@ -187,7 +184,7 @@ class Wmii
 					write '/view/2/sel/ctl', 'swap up' if i.zero?
 				end
 
-				write '/view/1/mode', 'max'
+				# write '/view/1/mode', 'max'
 
 			# squeeze unzoomed clients into secondary column
 				if secondary = read('/view/2')
@@ -204,7 +201,7 @@ class Wmii
 		end
 	end
 
-	# Applies wmii-2 style grid layout to the current view while maintaining the order of clients in the current view. If the maximum number of clients per column, the distribution of clients among the columns is calculated according to wmii-2 style. if  is specified, it Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any teritiary, quaternary, etc. columns are squeezed into the *bottom* of the secondary column.
+	# Applies wmii-2 style grid layout to the current view while maintaining the order of clients in the current view. If the maximum number of clients per column, the distribution of clients among the columns is calculated according to wmii-2 style. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any teritiary, quaternary, etc. columns are squeezed into the *bottom* of the secondary column.
 	def applyGridLayout aMaxClientsPerColumn = nil
 		# determine client distribution
 			unless aMaxClientsPerColumn
@@ -213,6 +210,9 @@ class Wmii
 				read('/view').split.grep(/^[^0]\d*$/).each do |column|
 					numClients += read("/view/#{column}").split.grep(/^\d+$/).length
 				end
+
+				return if numClients.zero?
+
 
 				numColumns = Math.sqrt(numClients)
 				aMaxClientsPerColumn = (numClients / numColumns).ceil

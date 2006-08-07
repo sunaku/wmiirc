@@ -18,6 +18,8 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =end
 
+ENV['LC_ALL'] = 'te_IN.UTF-8'
+
 $: << File.dirname(__FILE__)
 require 'wmii'
 
@@ -157,7 +159,7 @@ SHORTCUTS = {
 	end,
 
 	"#{SEND}d" => lambda do WM.detachClient end,
-	"#{SEND}Shift-d" => lambda do WM.attachClient end,
+	"#{SEND}a" => lambda do WM.attachClient end,
 
 	# toggle maximizing the current client to full screen
 	"#{SEND}m" => lambda do
