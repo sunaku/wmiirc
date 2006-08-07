@@ -1,5 +1,22 @@
 #!/usr/bin/ruby -w
 # wmii-3 configuration, written in Ruby.
+=begin
+	Copyright 2006 Suraj N. Kurapati
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+=end
 
 $: << File.dirname(__FILE__)
 require 'wmii'
@@ -81,6 +98,9 @@ SHORTCUTS = {
 	"#{LAYOUT}m" => lambda do WM.write '/view/sel/mode', 'max' end,
 	"#{LAYOUT}z" => lambda do WM.write '/view/0/sel/geom', '0 0 east south' end,
 
+	"#{LAYOUT}t" => lambda do WM.applyTilingLayout end,
+	"#{LAYOUT}g" => lambda do WM.applyGridLayout end,
+
 
 	"#{MENU}i" => lambda do system(WM.showMenu(ACTION_MENU) << '&') end,
 	"#{MENU}e" => lambda do system(WM.showMenu(PROGRAM_MENU) << '&') end,
@@ -109,7 +129,6 @@ SHORTCUTS = {
 	"#{PROGRAM}x" => lambda do system 'terminal &' end,
 	"#{PROGRAM}k" => lambda do system 'epiphany &' end,
 	"#{PROGRAM}j" => lambda do system 'nautilus --no-desktop &' end,
-	# "#{PROGRAM}q" => lambda do system 'beagle-search &' end,
 
 
 	"#{SEND}#{LEFT}" => lambda do WM.write '/view/sel/sel/ctl', 'sendto prev' end,
@@ -118,6 +137,7 @@ SHORTCUTS = {
 	"#{SEND}Delete" => lambda do WM.write '/view/sel/sel/ctl', 'kill' end,
 
 	# change the tag of the current client
+	# +tag -tag idea from Jonas Pfenniger <http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby>
 	"#{SEND}t" => lambda do
 		choices = WM.read('/tags').split.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
 		tags = WM.read('/view/sel/sel/tags').split('+')
@@ -170,6 +190,7 @@ SHORTCUTS = {
 
 		SHORTCUTS["#{SELECT}#{i}"] = lambda do WM.showView(WM.read('/tags').split[k] || i) end
 		SHORTCUTS["#{SEND}#{i}"] = lambda do WM.write '/view/sel/sel/tags', (WM.read('/tags').split[k] || i) end
+		SHORTCUTS["#{LAYOUT}#{i}"] = lambda do WM.applyGridLayout i end
 	end
 
 WM.write '/def/grabmod', MODKEY
@@ -178,24 +199,24 @@ WM.write '/def/keys', SHORTCUTS.keys.join("\n")
 
 # EVENT LOOP
 begin
-IO.popen('wmiir read /event') do |io|
-	while event = io.readline.chomp
-		type, arg = event.split
+	IO.popen('wmiir read /event') do |io|
+		while event = io.readline.chomp
+			type, arg = event.split
 
-		p event, type, arg if $DEBUG
+			p event, type, arg if $DEBUG
 
-		case type
-			when 'Start'
-				exit if arg == 'wmiirc'
+			case type
+				when 'Start'
+					exit if arg == 'wmiirc'
 
-			when 'BarClick'
-				WM.showView arg
+				when 'BarClick'
+					WM.showView arg
 
-			when 'Key'
-				SHORTCUTS[arg].call
+				when 'Key'
+					SHORTCUTS[arg].call
+			end
 		end
 	end
-end
 rescue EOFError
 	exit # wmiiwm has quit
 end
