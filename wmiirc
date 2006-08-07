@@ -1,263 +1,176 @@
-#!/bin/sh
-# configure wmii
+#!/usr/bin/ruby -w
+# wmii-3 configuration, written in Ruby.
 
-xwrite() {
-	file="$1"; shift
-	echo -n "$@" | wmiir write "$file"
-}
-
-proglist() {
-	ls -lL "$@" 2>/dev/null | awk 'NF>2 && $1 ~ /^[^d].*x/ {print $NF}' | sort -u
-}
-
-# Cycles through all available workspaces (the tags shown as buttons on wmiibar).
-# @param	.	'next' or 'prev'
-cycleWs() {
-	# gather a list of available workspaces
-	local list=( $( wmiir read /tags | sort ) ) # sort because tags shown on wmiibar are sorted
-	local listLen=${#list[@]}
-	local listIndexMax=$(( listLen - 1 ))
+$: << File.dirname(__FILE__)
+require 'wmii'
 
 
-	# determine current workspace
-	local ws=$(wmiir read /view/name)
-
-	local wsIndex=0 i
-	for i in $( seq 0 $listIndexMax ); do
-		if test "${list[$i]}" = "$ws"; then
-			wsIndex=$i
-			break
-		fi
-	done
+# WM STARTUP
+# give wmiiwm a chance to start and terminate other wmiirc
+sleep 1 until Wmii.write('/event', "Start wmiirc\n")
 
 
-	# determine new workspace
-	local wsIndexNext=$(( (wsIndex + 1) % listLen ))
+# UI CONFIGURATION
+ENV['WMII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
+ENV['WMII_SELCOLORS']='#ffffff #285577 #4c7899'
+ENV['WMII_NORMCOLORS']='#222222 #eeeeee #666666'
 
-	local wsIndexPrev=$(( wsIndex - 1 ))
-	(( wsIndexPrev < 0 )) && wsIndexPrev=$listIndexMax
-
-
-	# cycle to new workspace
-	local wsIndexNew
-
-	case "$1" in
-		next)
-			wsIndexNew=$wsIndexNext ;;
-		prev)
-			wsIndexNew=$wsIndexPrev ;;
-		*)
-			wsIndexNew=$wsIndex ;;
-	esac
-
-	xwrite /ctl view "${list[$wsIndexNew]}"
-}
-
-
-MODKEY=Mod1
-UP=t
-DOWN=n
-LEFT=h
-RIGHT=s
-
-#WMII_FONT='-xos4-terminus-medium-r-normal--16-*-*-*-*-*-*-*'
-WMII_FONT='-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
-WMII_SELCOLORS='#ffffff #285577 #4c7899'
-WMII_NORMCOLORS='#222222 #eeeeee #666666'
-# dark background
-#WMII_NORMCOLORS='#e0e0e0 #0a0a0a #202020'
-
-export WMII_FONT WMII_NORMCOLORS WMII_SELCOLORS
-
-# give wmiiwm a chance to start
-while :
-do
-	echo Start wmiirc | wmiir write /event >/dev/null 2>&1 && break
-	sleep 1
-done
 
 # WM CONFIGURATION
-xwrite /def/border 2
-xwrite /def/font $WMII_FONT
-xwrite /def/selcolors $WMII_SELCOLORS
-xwrite /def/normcolors $WMII_NORMCOLORS
-xwrite /def/colmode default
-xwrite /def/colwidth 0
+Wmii.write '/def/border', 2
+Wmii.write '/def/font', ENV['WMII_FONT']
+Wmii.write '/def/selcolors', ENV['WMII_SELCOLORS']
+Wmii.write '/def/normcolors', ENV['WMII_NORMCOLORS']
+Wmii.write '/def/colmode', 'default'
+Wmii.write '/def/colwidth', 0
+
 
 # TAGGING RULES
-wmiir write /def/rules <<EOF
+Wmii.write '/def/rules', <<EOF
 /QEMU.*/ -> ~
-/jEdit.*/ -> ~
+/jEdit.*/ -> code
+/Buddy List.*/ -> mail
 /.*thunderbird.*/ -> mail
-/XMMS.*/ -> ~
-/Gimp.*/ -> ~
+/Gimp.*/ -> gimp
+/Dia.*/ -> dia
 /MPlayer.*/ -> ~
-/DOSBox.*/ -> ~
+/xconsole.*/ -> ~
+/alsamixer.*/ -> ~
 /.*/ -> !
 /.*/ -> 1
 EOF
-#/Firefox.*/ -> web
 
-# MISC
-xsetroot -solid '#333333'
-status &
-PROGS_FILE=/tmp/.wmiimenu.$USER.progs
-proglist `echo "$PATH" | tr : ' '` >$PROGS_FILE &
 
-# SHORTCUTS
-SELECT=$MODKEY-Control-
-SEND=${SELECT}m,
-SWAP=${SELECT}w,
-LAYOUT=${SELECT}z,
-MENU=${SELECT}
-PROG=${SELECT}
+# MISC CONFIGURATION
+system 'xsetroot -solid "#333333"'
+system 'status &'
 
-xwrite /def/grabmod $MODKEY
-wmiir write /def/keys <<EOF
-${SELECT}${LEFT}
-${SELECT}${RIGHT}
-${SELECT}${DOWN}
-${SELECT}${UP}
-${SELECT}space
-${LAYOUT}w
-${LAYOUT}z
-${LAYOUT}v
-${LAYOUT}m
-${MENU}i
-${MENU}e
-${MENU}u
-${SELECT}0
-${SELECT}1
-${SELECT}2
-${SELECT}3
-${SELECT}4
-${SELECT}5
-${SELECT}6
-${SELECT}7
-${SELECT}8
-${SELECT}9
-${PROG}x
-${SEND}${LEFT}
-${SEND}${RIGHT}
-${SEND}space
-${SEND}Delete
-${SEND}t
-${SEND}0
-${SEND}1
-${SEND}2
-${SEND}3
-${SEND}4
-${SEND}5
-${SEND}6
-${SEND}7
-${SEND}8
-${SEND}9
-${SWAP}${LEFT}
-${SWAP}${RIGHT}
-${SWAP}${DOWN}
-${SWAP}${UP}
+PROGRAM_MENU = Wmii.findPrograms(*ENV['PATH'].split(':')).join("\n")
+ACTION_MENU = Wmii.findPrograms('/home/sun/dry/apps/wmii/etc/wmii-3', '~/.wmii-3').join("\n")
 
-${SELECT}comma
-${SELECT}period
-${MENU}a
-${PROG}k
-${PROG}j
-${SELECT}Return
-EOF
+
+# KEY CONFIGURATION
+MODKEY='Mod1'
+UP='t'
+DOWN='n'
+LEFT='h'
+RIGHT='s'
+
+SELECT="#{MODKEY}-Control-"
+SEND="#{SELECT}m,"
+SWAP="#{SELECT}w,"
+LAYOUT="#{SELECT}z,"
+MENU="#{SELECT}"
+PROGRAM="#{SELECT}"
+
+SHORTCUTS = {
+	"#{SELECT}#{LEFT}" => proc {Wmii.write '/view/ctl', 'select prev'},
+	"#{SELECT}#{RIGHT}" => proc {Wmii.write '/view/ctl', 'select next'},
+	"#{SELECT}#{DOWN}" => proc {Wmii.write '/view/sel/ctl', 'select next'},
+	"#{SELECT}#{UP}" => proc {Wmii.write '/view/sel/ctl', 'select prev'},
+	"#{SELECT}space" => proc {Wmii.write '/view/ctl', 'select toggle'},
+
+	"#{SELECT}comma" => proc {Wmii.cycleView :left},
+	"#{SELECT}period" => proc {Wmii.cycleView :right},
+
+
+	"#{LAYOUT}w" => proc {Wmii.write '/view/sel/mode', 'default'},
+	"#{LAYOUT}v" => proc {Wmii.write '/view/sel/mode', 'stack'},
+	"#{LAYOUT}m" => proc {Wmii.write '/view/sel/mode', 'max'},
+	"#{LAYOUT}z" => proc {Wmii.write '/view/0/sel/geom', '0 0 east south'},
+
+
+	"#{MENU}i" => proc {system(Wmii.showMenu(ACTION_MENU) << '&')},
+	"#{MENU}e" => proc {system(Wmii.showMenu(PROGRAM_MENU) << '&')},
+	"#{MENU}v" => proc {Wmii.showView `wmiir read /tags | wmiimenu`},
+
+	# focus any client by choosing from a menu
+	"#{MENU}a" => proc do
+		# prepare a list of menu choices
+		choices = Wmii.readList('/client').inject([]) do |acc, id|
+			tags = `wmiir read /client/#{id}/tags`
+			name = `wmiir read /client/#{id}/name`.downcase
+
+			acc << format("%d. [%s] %s", id, tags, name)
+		end
+
+
+		# show the menu and focus the chosen client
+		target = Wmii.showMenu(choices.join("\n"))
+
+		unless target.empty?
+			Wmii.showClient target.scan(/\d+/).first
+		end
+	end,
+
+
+	"#{PROGRAM}x" => proc {system 'terminal &'},
+	"#{PROGRAM}k" => proc {system 'firefox &'},
+	"#{PROGRAM}j" => proc {system 'beagle-search &'},
+	"#{PROGRAM}q" => proc {system 'nautilus --no-desktop &'},
+
+
+	"#{SEND}#{LEFT}" => proc {Wmii.write '/view/sel/sel/ctl', 'sendto prev'},
+	"#{SEND}#{RIGHT}" => proc {Wmii.write '/view/sel/sel/ctl', 'sendto next'},
+	"#{SEND}space" => proc {Wmii.write '/view/sel/sel/ctl', 'sendto toggle'},
+	"#{SEND}Delete" => proc {Wmii.write '/view/sel/sel/ctl', 'kill'},
+	"#{SEND}t" => proc {Wmii.write '/view/sel/sel/tags', `wmiir read /tags | wmiimenu`},
+
+	# toggle maximizing the current client to full screen
+	"#{SEND}m" => proc do
+		SHORTCUTS["#{SEND}space"].call
+		SHORTCUTS["#{LAYOUT}z"].call
+	end,
+
+	# rename the current view
+	# NOTE: columns & layouts are not preserved
+	"#{SEND}r" => proc do
+		old = `wmiir read /view/name`
+		new = Wmii.showMenu(`wmiir read /tags`)
+
+		unless new.empty?
+			Wmii.renameView old, new
+			Wmii.showView new
+		end
+	end,
+
+
+	"#{SWAP}#{LEFT}" => proc {Wmii.write '/view/sel/sel/ctl', 'swap prev'},
+	"#{SWAP}#{RIGHT}" => proc {Wmii.write '/view/sel/sel/ctl', 'swap next'},
+	"#{SWAP}#{DOWN}" => proc {Wmii.write '/view/sel/sel/ctl', 'swap down'},
+	"#{SWAP}#{UP}" => proc {Wmii.write '/view/sel/sel/ctl', 'swap up'},
+}
+
+	# keyboard access to views (shown as labels on the WM bar)
+	10.times do |i|
+		# associate '1' with the leftmost label, instead of '0'
+		k = (i - 1) % 10
+
+
+		SHORTCUTS["#{SELECT}#{i}"] = proc {Wmii.showView(`wmiir read /tags`.split[k] || i)}
+		SHORTCUTS["#{SEND}#{i}"] = proc {Wmii.write '/view/sel/sel/tags', (`wmiir read /tags`.split[k] || i)}
+	end
+
+Wmii.write '/def/grabmod', MODKEY
+Wmii.write '/def/keys', SHORTCUTS.keys.join("\n")
+
 
 # EVENT LOOP
-wmiir read /event 2>/dev/null |
-while read event
-do
-	set -- $event
-	type="$1"; shift
-	case "$type" in
-	Start)
-		if test wmiirc = "$1"
-		then
-			exit
-		fi;;
-	BarClick)
-		xwrite /ctl view "$1";;
-	Key)
-		case "$1" in
-		${SELECT}${LEFT})
-			xwrite /view/ctl select prev;;
-		${SELECT}${RIGHT})
-			xwrite /view/ctl select next;;
-		${SELECT}${DOWN})
-			xwrite /view/sel/ctl select next;;
-		${SELECT}${UP})
-			xwrite /view/sel/ctl select prev;;
-		${SELECT}space)
-			xwrite /view/ctl select toggle;;
-		${LAYOUT}w)
-			xwrite /view/sel/mode default;;
-		${LAYOUT}v)
-			xwrite /view/sel/mode stack;;
-		${LAYOUT}m)
-			xwrite /view/sel/mode max;;
-		${LAYOUT}z)
-			xwrite /view/0/sel/geom 0 0 east south;;
-		${MENU}i)
-			PATH=$HOME/.wmii-3:/home/sun/dry/apps/wmii/etc/wmii-3:$PATH `proglist /home/sun/dry/apps/wmii/etc/wmii-3 $HOME/.wmii-3 | wmiimenu` &;;
-		${MENU}e)
-			`wmiimenu <$PROGS_FILE` &;;
-		${MENU}u)
-			xwrite /ctl view "`wmiir read /tags | wmiimenu`" &;;
-		${SELECT}[0-9])
-			xwrite /ctl view `echo $1 | sed 's/.*-//'`;;
-		${PROG}x)
-			terminal &;;
-		${SEND}${LEFT})
-			xwrite /view/sel/sel/ctl sendto prev;;
-		${SEND}${RIGHT})
-			xwrite /view/sel/sel/ctl sendto next;;
-		${SEND}space)
-			xwrite /view/sel/sel/ctl sendto toggle;;
-		${SEND}Delete)
-			xwrite /view/sel/sel/ctl kill;;
-		${SEND}t)
-			tags=$(wmiir read /tags)
-			tags_csv=`echo $tags | tr ' ' ','`
-			tags_joined=`eval "echo {$tags_csv}+{$tags_csv}"`
-			xwrite /view/sel/sel/tags "`echo $tags $tags_joined | fmt -1 | wmiimenu`" &;;
-		${SEND}[0-9])
-			xwrite /view/sel/sel/tags `echo $1 | sed 's/.*[-,]//'`;;
-		${SWAP}${LEFT})
-			xwrite /view/sel/sel/ctl swap prev;;
-		${SWAP}${RIGHT})
-			xwrite /view/sel/sel/ctl swap next;;
-		${SWAP}${DOWN})
-			xwrite /view/sel/sel/ctl swap down;;
-		${SWAP}${UP})
-			xwrite /view/sel/sel/ctl swap up;;
+IO.popen('wmiir read /event') do |io|
+	while event = io.readline.chomp
+		type, arg = event.split
 
-		${SELECT}comma)
-			cycleWs prev;;
-		${SELECT}period)
-			cycleWs next;;
-		${MENU}a)
-			# go to a client by choosing it from a menu
-			(
-				choice=$(
-					{
-						for i in $( wmiir read /client | awk '{print $10}' | sort -n )
-						do
-							echo "$i [$( wmiir read /client/$i/tags )] $( wmiir read /client/$i/name )"
-						done
-					} | wmiimenu | sed 's/^\([0-9]*\).*$/\1/'
-				)
+		p event, type, arg if $DEBUG
 
-				xwrite /ctl view "$( wmiir read /client/$choice/tags )"
-			) &;;
-		${PROG}k)
-			firefox &;;
-		${PROG}j)
-			nautilus --no-desktop &;;
-		${SELECT}Return)
-			# toggle maximizing the client to full screen
-			(echo Key ${SEND}space; echo Key ${LAYOUT}z) | wmiir write /event;;
-		esac;;
-	esac
-done &
+		case type
+			when 'Start'
+				exit if arg == 'wmiirc'
+
+			when 'BarClick'
+				Wmii.showView arg
+
+			when 'Key'
+				SHORTCUTS[arg].call
+		end
+	end
+end
