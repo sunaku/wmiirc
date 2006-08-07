@@ -1,34 +1,83 @@
 # Ruby interface to WMII.
 
+$:.unshift File.join(File.dirname(__FILE__), 'ruby-ixp/lib')
+require 'ixp'
+
 require 'find'
+require 'singleton'
 
-module Wmii
-	# Writes the given content to the given WM path, and returns +true+ if the operation was successful.
-	def Wmii.write aPath, aContent
+class Wmii
+	include Singleton
+
+	def initialize
 		begin
-			IO.popen("wmiir write #{aPath}", 'w') do |io|
-				puts "wmiir: writing '#{aContent}' into '#{aPath}'" if $DEBUG
-				io.write aContent
-			end
-		rescue Errno::EPIPE
-			return false
+			@cl = IXP::Client.new
+		rescue Errno::ECONNREFUSED
+			retry
 		end
-
-		$? == 0
 	end
 
-	# Reads the filenames from a long listing of the given WM path.
-	def Wmii.readList aPath
-		`wmiir read #{aPath}`.scan(/\S+$/)
+	def create(file)
+		@cl.create(file)
+	rescue IXP::IXPException => e
+		puts "#{e.backtrace.first}: #{e}"
+	end
+
+	def remove(file)
+		@cl.remove(file)
+	rescue IXP::IXPException => e
+		puts "#{e.backtrace.first}: #{e}"
+	end
+
+	# Writes the given content to the given WM path, and returns +true+ if the operation was successful.
+	# def write aPath, aContent
+	#		begin
+	#			IO.popen("wmiir write #{aPath}", 'w') do |io|
+	#				puts "wmiir: writing '#{aContent}' into '#{aPath}'" if $DEBUG
+	#				io.write aContent
+	#			end
+	#		rescue Errno::EPIPE
+	#			return false
+	#		end
+
+	#		$? == 0
+	# end
+
+	def write(file, data)
+		@cl.open(file) { |f| f.write(data.to_s) }
+	rescue IXP::IXPException => e
+		puts "#{e.backtrace.first}: #{e}"
+	end
+
+	# def read aPath
+	#		`wmiir read #{aPath}`
+	# end
+
+	def read(file)
+		@cl.open(file) do |f|
+			if f.respond_to? :next	# read directory listing
+				str = ''
+
+				while i = f.next
+					str << i.name << "\n"
+				end
+
+				str
+			else
+				f.read_all
+			end
+		end
+	rescue IXP::IXPException => e
+		puts "#{e.backtrace.first}: #{e}"
 	end
 
 	# Shows the view with the given name.
-	def Wmii.showView aName
-		Wmii.write '/ctl', "view #{aName}"
+	def showView aName
+		write '/ctl', "view #{aName}"
 	end
 
 	# Shows a WM menu with the given content and returns its output.
-	def Wmii.showMenu aContent
+	def showMenu aContent
 		output = nil
 
 		IO.popen('wmiimenu', 'r+') do |menu|
@@ -42,14 +91,14 @@ module Wmii
 	end
 
 	# Shows the client which has the given ID.
-	def Wmii.showClient aClientId
-		`wmiir read /tags`.split.each do |view|
-			Wmii.readList("/#{view}").grep(/^\d+$/).each do |column|
-				Wmii.readList("/#{view}/#{column}").grep(/^\d+$/).each do |client|
-					if `wmiir read /#{view}/#{column}/#{client}/index` == aClientId
-						Wmii.showView view
-						Wmii.write '/view/ctl', "select #{column}"
-						Wmii.write "/view/sel/ctl", "select #{client}"
+	def showClient aClientId
+		read('/tags').split.each do |view|
+			read("/#{view}").split.grep(/^\d+$/).each do |column|
+				read("/#{view}/#{column}").split.grep(/^\d+$/).each do |client|
+					if read("/#{view}/#{column}/#{client}/index") == aClientId
+						showView view
+						write '/view/ctl', "select #{column}"
+						write "/view/sel/ctl", "select #{client}"
 						return
 					end
 				end
@@ -57,11 +106,31 @@ module Wmii
 		end
 	end
 
-	# Changes the current view to an adjacent one (:left or :right).
-	def Wmii.cycleView aTarget
-		tags = `wmiir read /tags`.split
+	DETACHED_TAG = 'status'
 
-		curTag = `wmiir read /view/name`
+	# Detach the currently selected client
+	def detachClient
+		write '/view/sel/sel/tags', DETACHED_TAG
+	end
+
+	# Attach the most recently detached client
+	def attachClient
+		if areaList = read("/#{DETACHED_TAG}")
+			area = areaList.split.grep(/^\d+$/).last
+
+			if clientList = read("/#{DETACHED_TAG}/#{area}")
+				client = clientList.split.grep(/^\d+$/).last
+
+				write "/#{DETACHED_TAG}/#{area}/#{client}/tags", read('/view/name')
+			end
+		end
+	end
+
+	# Changes the current view to an adjacent one (:left or :right).
+	def cycleView aTarget
+		tags = read('/tags').split
+
+		curTag = read('/view/name')
 		curIndex = tags.index(curTag)
 
 		newIndex =
@@ -79,20 +148,20 @@ module Wmii
 
 		newTag = tags[newIndex]
 
-		Wmii.showView newTag
+		showView newTag
 	end
 
 	# Renames the given view and sends its clients along for the ride.
-	def Wmii.renameView aOld, aNew
-		Wmii.readList('/client').each do |id|
-			tags = `wmiir read /client/#{id}/tags`
+	def renameView aOld, aNew
+		read('/client').split.each do |id|
+			tags = read("/client/#{id}/tags")
 
-			Wmii.write "/client/#{id}/tags", tags.gsub(aOld, aNew).squeeze('+')
+			write "/client/#{id}/tags", tags.gsub(aOld, aNew).squeeze('+')
 		end
 	end
 
 	# Returns a list of program names available in the given paths.
-	def Wmii.findPrograms *aPaths
+	def findPrograms *aPaths
 		list = []
 
 		Find.find(*aPaths) do |f|

@@ -5,9 +5,11 @@ $: << File.dirname(__FILE__)
 require 'wmii'
 
 
+WM = Wmii.instance
+
 # WM STARTUP
-# give wmiiwm a chance to start and terminate other wmiirc
-sleep 1 until Wmii.write('/event', "Start wmiirc\n")
+# terminate other running wmiirc
+sleep 1 until WM.write('/event', "Start wmiirc\n")
 
 
 # UI CONFIGURATION
@@ -17,22 +19,22 @@ ENV['WMII_NORMCOLORS']='#222222 #eeeeee #666666'
 
 
 # WM CONFIGURATION
-Wmii.write '/def/border', 2
-Wmii.write '/def/font', ENV['WMII_FONT']
-Wmii.write '/def/selcolors', ENV['WMII_SELCOLORS']
-Wmii.write '/def/normcolors', ENV['WMII_NORMCOLORS']
-Wmii.write '/def/colmode', 'default'
-Wmii.write '/def/colwidth', 0
+WM.write '/def/border', 2
+WM.write '/def/font', ENV['WMII_FONT']
+WM.write '/def/selcolors', ENV['WMII_SELCOLORS']
+WM.write '/def/normcolors', ENV['WMII_NORMCOLORS']
+WM.write '/def/colmode', 'default'
+WM.write '/def/colwidth', 0
 
 
 # TAGGING RULES
-Wmii.write '/def/rules', <<EOF
+WM.write '/def/rules', <<EOF
 /QEMU.*/ -> ~
 /jEdit.*/ -> code
-/Buddy List.*/ -> mail
+/Buddy List.*/ -> chat
+/XChat.*/ -> chat
 /.*thunderbird.*/ -> mail
 /Gimp.*/ -> gimp
-/Dia.*/ -> dia
 /MPlayer.*/ -> ~
 /xconsole.*/ -> ~
 /alsamixer.*/ -> ~
@@ -42,11 +44,11 @@ EOF
 
 
 # MISC CONFIGURATION
-system 'xsetroot -solid "#333333"'
+# system 'xsetroot -solid "#333333"'
 system 'status &'
 
-PROGRAM_MENU = Wmii.findPrograms(*ENV['PATH'].split(':')).join("\n")
-ACTION_MENU = Wmii.findPrograms('/home/sun/dry/apps/wmii/etc/wmii-3', '~/.wmii-3').join("\n")
+PROGRAM_MENU = WM.findPrograms(*ENV['PATH'].split(':')).join("\n")
+ACTION_MENU = WM.findPrograms('/home/sun/dry/apps/wmii/etc/wmii-3', '~/.wmii-3').join("\n")
 
 
 # KEY CONFIGURATION
@@ -64,98 +66,118 @@ MENU="#{SELECT}"
 PROGRAM="#{SELECT}"
 
 SHORTCUTS = {
-	"#{SELECT}#{LEFT}" => proc {Wmii.write '/view/ctl', 'select prev'},
-	"#{SELECT}#{RIGHT}" => proc {Wmii.write '/view/ctl', 'select next'},
-	"#{SELECT}#{DOWN}" => proc {Wmii.write '/view/sel/ctl', 'select next'},
-	"#{SELECT}#{UP}" => proc {Wmii.write '/view/sel/ctl', 'select prev'},
-	"#{SELECT}space" => proc {Wmii.write '/view/ctl', 'select toggle'},
+	"#{SELECT}#{LEFT}" => lambda do WM.write '/view/ctl', 'select prev' end,
+	"#{SELECT}#{RIGHT}" => lambda do WM.write '/view/ctl', 'select next' end,
+	"#{SELECT}#{DOWN}" => lambda do WM.write '/view/sel/ctl', 'select next' end,
+	"#{SELECT}#{UP}" => lambda do WM.write '/view/sel/ctl', 'select prev' end,
+	"#{SELECT}space" => lambda do WM.write '/view/ctl', 'select toggle' end,
 
-	"#{SELECT}comma" => proc {Wmii.cycleView :left},
-	"#{SELECT}period" => proc {Wmii.cycleView :right},
-
-
-	"#{LAYOUT}w" => proc {Wmii.write '/view/sel/mode', 'default'},
-	"#{LAYOUT}v" => proc {Wmii.write '/view/sel/mode', 'stack'},
-	"#{LAYOUT}m" => proc {Wmii.write '/view/sel/mode', 'max'},
-	"#{LAYOUT}z" => proc {Wmii.write '/view/0/sel/geom', '0 0 east south'},
+	"#{SELECT}comma" => lambda do WM.cycleView :left end,
+	"#{SELECT}period" => lambda do WM.cycleView :right end,
 
 
-	"#{MENU}i" => proc {system(Wmii.showMenu(ACTION_MENU) << '&')},
-	"#{MENU}e" => proc {system(Wmii.showMenu(PROGRAM_MENU) << '&')},
-	"#{MENU}v" => proc {Wmii.showView `wmiir read /tags | wmiimenu`},
+	"#{LAYOUT}w" => lambda do WM.write '/view/sel/mode', 'default' end,
+	"#{LAYOUT}v" => lambda do WM.write '/view/sel/mode', 'stack' end,
+	"#{LAYOUT}m" => lambda do WM.write '/view/sel/mode', 'max' end,
+	"#{LAYOUT}z" => lambda do WM.write '/view/0/sel/geom', '0 0 east south' end,
+
+
+	"#{MENU}i" => lambda do system(WM.showMenu(ACTION_MENU) << '&') end,
+	"#{MENU}e" => lambda do system(WM.showMenu(PROGRAM_MENU) << '&') end,
+	"#{MENU}v" => lambda do WM.showView(WM.showMenu(WM.read('/tags'))) end,
 
 	# focus any client by choosing from a menu
-	"#{MENU}a" => proc do
+	"#{MENU}a" => lambda do
 		# prepare a list of menu choices
-		choices = Wmii.readList('/client').inject([]) do |acc, id|
-			tags = `wmiir read /client/#{id}/tags`
-			name = `wmiir read /client/#{id}/name`.downcase
+		choices = WM.read('/client').split.inject([]) do |acc, id|
+			tags = WM.read("/client/#{id}/tags")
+			name = WM.read("/client/#{id}/name").downcase
 
 			acc << format("%d. [%s] %s", id, tags, name)
 		end
 
 
 		# show the menu and focus the chosen client
-		target = Wmii.showMenu(choices.join("\n"))
+		target = WM.showMenu(choices.join("\n"))
 
 		unless target.empty?
-			Wmii.showClient target.scan(/\d+/).first
+			WM.showClient target.scan(/\d+/).first
 		end
 	end,
 
 
-	"#{PROGRAM}x" => proc {system 'terminal &'},
-	"#{PROGRAM}k" => proc {system 'firefox &'},
-	"#{PROGRAM}j" => proc {system 'beagle-search &'},
-	"#{PROGRAM}q" => proc {system 'nautilus --no-desktop &'},
+	"#{PROGRAM}x" => lambda do system 'terminal &' end,
+	"#{PROGRAM}k" => lambda do system 'epiphany &' end,
+	"#{PROGRAM}j" => lambda do system 'nautilus --no-desktop &' end,
+	# "#{PROGRAM}q" => lambda do system 'beagle-search &' end,
 
 
-	"#{SEND}#{LEFT}" => proc {Wmii.write '/view/sel/sel/ctl', 'sendto prev'},
-	"#{SEND}#{RIGHT}" => proc {Wmii.write '/view/sel/sel/ctl', 'sendto next'},
-	"#{SEND}space" => proc {Wmii.write '/view/sel/sel/ctl', 'sendto toggle'},
-	"#{SEND}Delete" => proc {Wmii.write '/view/sel/sel/ctl', 'kill'},
-	"#{SEND}t" => proc {Wmii.write '/view/sel/sel/tags', `wmiir read /tags | wmiimenu`},
+	"#{SEND}#{LEFT}" => lambda do WM.write '/view/sel/sel/ctl', 'sendto prev' end,
+	"#{SEND}#{RIGHT}" => lambda do WM.write '/view/sel/sel/ctl', 'sendto next' end,
+	"#{SEND}space" => lambda do WM.write '/view/sel/sel/ctl', 'sendto toggle' end,
+	"#{SEND}Delete" => lambda do WM.write '/view/sel/sel/ctl', 'kill' end,
+
+	# change the tag of the current client
+	"#{SEND}t" => lambda do
+		choices = WM.read('/tags').split.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
+		tags = WM.read('/view/sel/sel/tags').split('+')
+
+		case target = WM.showMenu(choices.join("\n"))
+			when /^\+/
+				tags << $'
+
+			when /^\-/
+				tags.delete $'
+
+			else
+				tags = [target]
+		end
+
+		WM.write '/view/sel/sel/tags', tags.join('+')
+	end,
+
+	"#{SEND}d" => lambda do WM.detachClient end,
+	"#{SEND}Shift-d" => lambda do WM.attachClient end,
 
 	# toggle maximizing the current client to full screen
-	"#{SEND}m" => proc do
+	"#{SEND}m" => lambda do
 		SHORTCUTS["#{SEND}space"].call
 		SHORTCUTS["#{LAYOUT}z"].call
 	end,
 
 	# rename the current view
 	# NOTE: columns & layouts are not preserved
-	"#{SEND}r" => proc do
-		old = `wmiir read /view/name`
-		new = Wmii.showMenu(`wmiir read /tags`)
+	"#{SEND}r" => lambda do
+		old = WM.read('/view/name')
+		new = WM.showMenu(WM.read('/tags'))
 
 		unless new.empty?
-			Wmii.renameView old, new
-			Wmii.showView new
+			WM.renameView old, new
+			WM.showView new
 		end
 	end,
 
 
-	"#{SWAP}#{LEFT}" => proc {Wmii.write '/view/sel/sel/ctl', 'swap prev'},
-	"#{SWAP}#{RIGHT}" => proc {Wmii.write '/view/sel/sel/ctl', 'swap next'},
-	"#{SWAP}#{DOWN}" => proc {Wmii.write '/view/sel/sel/ctl', 'swap down'},
-	"#{SWAP}#{UP}" => proc {Wmii.write '/view/sel/sel/ctl', 'swap up'},
+	"#{SWAP}#{LEFT}" => lambda do WM.write '/view/sel/sel/ctl', 'swap prev' end,
+	"#{SWAP}#{RIGHT}" => lambda do WM.write '/view/sel/sel/ctl', 'swap next' end,
+	"#{SWAP}#{DOWN}" => lambda do WM.write '/view/sel/sel/ctl', 'swap down' end,
+	"#{SWAP}#{UP}" => lambda do WM.write '/view/sel/sel/ctl', 'swap up' end,
 }
 
 	# keyboard access to views (shown as labels on the WM bar)
 	10.times do |i|
-		# associate '1' with the leftmost label, instead of '0'
-		k = (i - 1) % 10
+		k = (i - 1) % 10	# associate '1' with the leftmost label, instead of '0'
 
-
-		SHORTCUTS["#{SELECT}#{i}"] = proc {Wmii.showView(`wmiir read /tags`.split[k] || i)}
-		SHORTCUTS["#{SEND}#{i}"] = proc {Wmii.write '/view/sel/sel/tags', (`wmiir read /tags`.split[k] || i)}
+		SHORTCUTS["#{SELECT}#{i}"] = lambda do WM.showView(WM.read('/tags').split[k] || i) end
+		SHORTCUTS["#{SEND}#{i}"] = lambda do WM.write '/view/sel/sel/tags', (WM.read('/tags').split[k] || i) end
 	end
 
-Wmii.write '/def/grabmod', MODKEY
-Wmii.write '/def/keys', SHORTCUTS.keys.join("\n")
+WM.write '/def/grabmod', MODKEY
+WM.write '/def/keys', SHORTCUTS.keys.join("\n")
 
 
 # EVENT LOOP
+begin
 IO.popen('wmiir read /event') do |io|
 	while event = io.readline.chomp
 		type, arg = event.split
@@ -167,10 +189,13 @@ IO.popen('wmiir read /event') do |io|
 				exit if arg == 'wmiirc'
 
 			when 'BarClick'
-				Wmii.showView arg
+				WM.showView arg
 
 			when 'Key'
 				SHORTCUTS[arg].call
 		end
 	end
+end
+rescue EOFError
+	exit # wmiiwm has quit
 end

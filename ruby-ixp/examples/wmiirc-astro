@@ -1,0 +1,321 @@
+#!/usr/bin/env ruby
+=begin
+Ruby-IXP, Copyright 2006 Stephan Maka
+
+This file is part of Ruby-IXP.
+
+Ruby-IXP is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+Ruby-IXP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Ruby-IXP; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA)
+=end
+
+$:.unshift File::dirname(__FILE__) + '/../lib'
+require 'wmii'
+
+COLORS_BLUE = '#ffffff #285577 #4c7899'
+COLORS_RED = '#ffffff #993308 #b9582c'
+COLORS_GREEN = '#ffffff #287755 #4c9978'
+COLORS_BLACK = '#a0a0b0 #200000 #7f7f7f'
+COLORS_GREY = '#7fff7f #7f7f7f #a0a0b0'
+
+Thread.abort_on_exception = true
+wmii = WMII::new
+# Startdelay
+wmii.write('/event', "Start wmiirc\n")
+wmii.border = 2
+wmii.normcolors = '#ffffff #285577 #4c7899'
+wmii.selcolors = '#ffffff #993308 #b9582c'
+#wmii.env_font = wmii.font = '-*-arial-*-r-*-*-12-*-*-*-*-*-*-*'
+#wmii.env_font = wmii.font = '-*-cure-*-r-*-*-*-*-*-*-*-*-*-*'
+wmii.env_font = wmii.font = '-*-gelly-*-r-*-*-*-*-*-*-*-*-*-*'
+wmii.env_normcolors = '#a0a0b0 #200000 #7f7f7f'
+wmii.env_selcolors = '#7fff7f #7f7f7f #a0a0b0'
+wmii.write('/def/colmode', 'default')
+wmii.write('/def/colwidth', '0')
+# Mouse-Moving/Resizing
+wmii.write('/def/grabmod', 'Mod1')
+
+# Rules
+wmii.write '/def/rules', <<__RULES__
+/XMMS.*/ -> ~
+/Gimp.*/ -> ~
+/MPlayer.*/ -> ~
+/Gajim.*/ -> ~
+/.*/ -> !
+/.*/ -> 1
+__RULES__
+
+# Layout
+wmii.on_key('Control-Left') { wmii.write('/view/ctl', 'select prev') }
+wmii.on_key('Control-Right') { wmii.write('/view/ctl', 'select next') }
+wmii.on_key('Control-Up') { wmii.write('/view/sel/ctl', 'select prev') }
+wmii.on_key('Control-Down') { wmii.write('/view/sel/ctl', 'select next') }
+wmii.on_key('Control-Shift-Left') { wmii.write('/view/sel/sel/ctl', 'sendto prev') }
+wmii.on_key('Control-Shift-Right') { wmii.write('/view/sel/sel/ctl', 'sendto next') }
+wmii.on_key('Control-Shift-Up') { wmii.write('/view/sel/sel/ctl', 'swap up') }
+wmii.on_key('Control-Shift-Down') { wmii.write('/view/sel/sel/ctl', 'swap down') }
+
+wmii.on_key('Control-Shift-d') { wmii.write('/view/sel/mode', 'default') }
+wmii.on_key('Control-Shift-s') { wmii.write('/view/sel/mode', 'stack') }
+#wmii.on_key('Control-Shift-m') { wmii.write('/view/sel/mode', 'max') }
+wmii.on_key('Control-Shift-k') { wmii.write('/view/sel/sel/ctl', 'kill') }
+
+# Tags
+10.times { |i|
+  wmii.on_key("Mod1-F#{i + 1}") { wmii.go_view(i + 1) }
+  wmii.on_key("Control-F#{i + 1}") { wmii.write('/view/sel/sel/tags', "#{i + 1}") }
+  wmii.on_barclick("#{i + 1}") { wmii.go_view(i + 1) }
+}
+=begin
+wmii.on_key("XF86Back") {
+  current_view = wmii.read('/view/name')
+  views = wmii.read('/view').scan(/ (\d+)\n/m).flatten.select{|v|v!='0'}
+  prev_view = (views.index(current_view).to_i - 1) % views.size
+  p views
+  p prev_view
+  wmii.go_view views[prev_view]
+}
+wmii.on_key("XF86Forward") {
+  current_view = wmii.read('/view/name')
+  views = wmii.read('/view').scan(/ (\d+)\n/m).flatten
+  next_view = (views.index(current_view).to_i + 1) % views.size
+  wmii.go_view views[next_view]
+}
+=end
+
+# Floating windows
+wmii.on_key('Control-space') { wmii.write('/view/ctl', 'select toggle') }
+wmii.on_key('Control-Shift-space') { wmii.write('/view/sel/sel/ctl', 'sendto toggle') }
+
+# Progmenus
+wmii.on_key('Control-m') {
+  prog = wmii.menu(%w(firefox liferea gajim gimp beep aumix psi tkabber dillo 1024x768 suspend air.sin restart))
+  if prog
+    system case prog
+      when 'firefox' then 'firefox -P default &'
+      when 'beep' then 'beep-media-player &'
+      when '1024x768' then 'xrandr -s 1024x768'
+      when 'suspend' then 'xtrlock & sleep 2 && sudo /root/suspend.sh'
+      when 'air.sin' then 'urxvt -e sh -c "sudo /root/air_sin.sh; zsh" &'
+      when 'restart' then
+        Thread.list.each { |t| t.kill unless t == Thread.current }
+        "ruby #{__FILE__}"
+      else "#{prog} &"
+    end
+  end
+}
+wmii.on_key('Control-Shift-m') {
+  progs = []
+  ENV['PATH'].split(':').each { |path|
+    begin
+      progs += Dir.entries(path).select{|f|f[0..0]!='.'}
+    rescue Errno::ENOENT
+    end
+  }
+  prog = wmii.menu(progs.sort{|a,b|a.downcase<=>b.downcase})
+  system("#{prog} &") if prog
+}
+
+# Shortcuts
+wmii.on_key('Mod1-Return') { system("urxvt &") }
+wmii.on_key('Control-Shift-g') { system("gajim-remote show_next_unread &") }
+
+# Gajim menu
+wmii.on_key('Control-Shift-j') {
+  contacts = {}
+  IO::popen('gajim-remote list_contacts') {|io|
+    jid = nil
+    name = nil
+    while line = io.gets
+      line.strip!
+
+      if line =~ /^jid +: (.+)/
+        jid = $1
+      elsif line =~ /^name +: (.+)/
+        name = $1
+      elsif line =~ /^show +:/
+        contacts[jid] = name
+      end
+    end
+  }
+
+  contact = wmii.menu(contacts.collect{|j,n| (n ? n : j).downcase }.sort)
+  if contact
+    jid = nil
+    contacts.each { |j,n|
+      if (n ? n : j).downcase == contact
+        jid = j
+      end
+    }
+    system("gajim-remote open_chat \"#{jid}\"") if jid
+  end
+}
+
+# Bars
+
+bar_interfaces = wmii.new_bar('65interfaces')
+bar_interfaces.colors = COLORS_BLUE
+interfaces_up_old = {}
+interfaces_down_old = {}
+bar_interfaces.periodic(1) {
+  interfaces_up = {}
+  interfaces_down = {}
+  interfaces = []
+
+  `ifconfig -a`.split(/\n/).each do |line|
+    line.chomp!
+    if line =~ /^([a-z]+\d+): flags=\d+<(.+)> mtu \d+/
+      name = $1
+      up = $2.split(',').index('UP')
+      interfaces << name if up and name != 'lo0'
+    end
+  end
+
+  interfaces.each { |name|
+    `netstat -bnd -I #{name}`.scan(/<Link#\d+> +[0-9a-f:]+ +\d+ +\d+ +(\d+) +\d+ +\d+ +(\d+)/) { |ibytes,obytes|
+      interfaces_down[name] = ibytes.to_i
+      interfaces_up[name] = obytes.to_i
+    }
+  }
+
+  formatter = lambda { |l|
+    units = [''] + %w(K M G)
+    u = 0
+    while l > 10240 and u < units.size
+      l /= 1024
+      u += 1
+    end
+    "#{l}#{units[u]}B"
+  }
+
+  down_total = 0
+  up_total = 0
+  s = interfaces.collect { |name|
+    down = interfaces_down[name] - (interfaces_down_old[name] || 0)
+    down_total += down
+    up = interfaces_up[name] - (interfaces_up_old[name] || 0)
+    up_total += up
+    "#{name} (#{formatter.call down} + #{formatter.call up})"
+  }.join(', ')
+
+  if down_total > up_total
+    bar_interfaces.colors = COLORS_GREEN
+  elsif up_total > down_total
+    bar_interfaces.colors = COLORS_RED
+  else
+    bar_interfaces.colors = COLORS_BLUE
+  end
+
+  interfaces_down_old = interfaces_down
+  interfaces_up_old = interfaces_up
+
+  s
+}
+
+
+cpustates_old = []
+bar_stats = wmii.new_bar('70stats')
+bar_stats.periodic(2) {
+  cpustates_label = []
+  if `sysctl kern.cp_time` =~ /kern\.cp_time: (.+)\n$/
+    cpustates = $1.split(' ').collect {|v|v.to_i}
+    delta = []
+    cpustates.each_with_index{|v,i| delta[i] = v - (cpustates_old[i]||0)}
+    cpustates_old = cpustates
+    delta_tot = 0
+    delta.each{|v| delta_tot += v }
+    delta_tot = 1 if delta_tot == 1 # Avoid / 0
+    delta.each_with_index { |v,i|
+      cpustates_label << case i
+        when 0 then 'user'
+        when 1 then 'nice'
+        when 2 then 'sys'
+        when 3 then 'intr'
+        when 4 then 'idle'
+      end + ":#{(v * 100 / delta_tot).to_s.rjust(3)}%"
+    }
+
+    if delta[2] * 100 / delta_tot > 60
+      bar_stats.colors = COLORS_BLACK
+    elsif delta[0] * 100 / delta_tot > 60
+      bar_stats.colors = COLORS_RED
+    elsif delta[1] * 100 / delta_tot > 60
+      bar_stats.colors = COLORS_GREEN
+    else
+      bar_stats.colors = COLORS_BLUE
+    end
+  end
+
+  cpustates_label.join(' ')
+}
+
+bar_load = wmii.new_bar('80load')
+bar_load.colors = COLORS_BLUE
+bar_load.periodic(5) {
+  if `uptime` =~ /load averages: (.+)\n$/
+    $1
+  else
+    'Bogus output from "uptime"'
+  end
+}
+
+if `sysctl dev.cpu.0.freq` != '' and `sysctl hw.acpi.thermal.tz0.temperature` != ''
+  bar_cpu = wmii.new_bar('90cpu')
+  bar_cpu.periodic(1) {
+    freq = '?'
+    freq = $1 if `sysctl dev.cpu.0.freq` =~ /: (\d+)/
+    temp = '?'
+    temp = $1.to_f if `sysctl hw.acpi.thermal.tz0.temperature` =~ /: (\d+\.\d+)C$/
+
+    if temp >= 75
+      bar_cpu.colors = COLORS_RED
+    elsif temp >= 50
+      bar_cpu.colors = COLORS_GREEN
+    else
+      bar_cpu.colors = COLORS_BLUE
+    end
+
+    "#{freq} MHz (#{temp}C)"
+  }
+end
+
+if `sysctl hw.acpi.battery` != ''
+  bar_bat = wmii.new_bar('95bat')
+  bar_bat.periodic(2) {
+    battery = {}
+    `sysctl hw.acpi.battery`.scan(/^hw\.acpi\.battery\.(.+?): (.+)$/) {|k,v|
+      battery[k] = v
+    }
+
+    bar_bat.colors = case battery['life'].to_i
+      when 90..100 then COLORS_BLUE
+      when 20..89 then COLORS_GREEN
+      else COLORS_RED
+    end
+
+    # state:
+    # 2: charging?
+    if battery['state'] == '0'
+      "#{battery['life']}%"
+    else
+      "#{battery['life']}% (#{battery['time']}m)"
+    end
+  }
+end
+
+bar_time = wmii.new_bar('99time')
+bar_time.colors = COLORS_BLUE
+bar_time.periodic { Time.now.strftime('%H:%M') }
+wmii.on_barclick('99time') { system('xtrlock') }
+
+wmii.event_loop
