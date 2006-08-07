@@ -1,0 +1,263 @@
+#!/bin/sh
+# configure wmii
+
+xwrite() {
+	file="$1"; shift
+	echo -n "$@" | wmiir write "$file"
+}
+
+proglist() {
+	ls -lL "$@" 2>/dev/null | awk 'NF>2 && $1 ~ /^[^d].*x/ {print $NF}' | sort -u
+}
+
+# Cycles through all available workspaces (the tags shown as buttons on wmiibar).
+# @param	.	'next' or 'prev'
+cycleWs() {
+	# gather a list of available workspaces
+	local list=( $( wmiir read /tags | sort ) ) # sort because tags shown on wmiibar are sorted
+	local listLen=${#list[@]}
+	local listIndexMax=$(( listLen - 1 ))
+
+
+	# determine current workspace
+	local ws=$(wmiir read /view/name)
+
+	local wsIndex=0 i
+	for i in $( seq 0 $listIndexMax ); do
+		if test "${list[$i]}" = "$ws"; then
+			wsIndex=$i
+			break
+		fi
+	done
+
+
+	# determine new workspace
+	local wsIndexNext=$(( (wsIndex + 1) % listLen ))
+
+	local wsIndexPrev=$(( wsIndex - 1 ))
+	(( wsIndexPrev < 0 )) && wsIndexPrev=$listIndexMax
+
+
+	# cycle to new workspace
+	local wsIndexNew
+
+	case "$1" in
+		next)
+			wsIndexNew=$wsIndexNext ;;
+		prev)
+			wsIndexNew=$wsIndexPrev ;;
+		*)
+			wsIndexNew=$wsIndex ;;
+	esac
+
+	xwrite /ctl view "${list[$wsIndexNew]}"
+}
+
+
+MODKEY=Mod1
+UP=t
+DOWN=n
+LEFT=h
+RIGHT=s
+
+#WMII_FONT='-xos4-terminus-medium-r-normal--16-*-*-*-*-*-*-*'
+WMII_FONT='-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
+WMII_SELCOLORS='#ffffff #285577 #4c7899'
+WMII_NORMCOLORS='#222222 #eeeeee #666666'
+# dark background
+#WMII_NORMCOLORS='#e0e0e0 #0a0a0a #202020'
+
+export WMII_FONT WMII_NORMCOLORS WMII_SELCOLORS
+
+# give wmiiwm a chance to start
+while :
+do
+	echo Start wmiirc | wmiir write /event >/dev/null 2>&1 && break
+	sleep 1
+done
+
+# WM CONFIGURATION
+xwrite /def/border 2
+xwrite /def/font $WMII_FONT
+xwrite /def/selcolors $WMII_SELCOLORS
+xwrite /def/normcolors $WMII_NORMCOLORS
+xwrite /def/colmode default
+xwrite /def/colwidth 0
+
+# TAGGING RULES
+wmiir write /def/rules <<EOF
+/QEMU.*/ -> ~
+/jEdit.*/ -> ~
+/.*thunderbird.*/ -> mail
+/XMMS.*/ -> ~
+/Gimp.*/ -> ~
+/MPlayer.*/ -> ~
+/DOSBox.*/ -> ~
+/.*/ -> !
+/.*/ -> 1
+EOF
+#/Firefox.*/ -> web
+
+# MISC
+xsetroot -solid '#333333'
+status &
+PROGS_FILE=/tmp/.wmiimenu.$USER.progs
+proglist `echo "$PATH" | tr : ' '` >$PROGS_FILE &
+
+# SHORTCUTS
+SELECT=$MODKEY-Control-
+SEND=${SELECT}m,
+SWAP=${SELECT}w,
+LAYOUT=${SELECT}z,
+MENU=${SELECT}
+PROG=${SELECT}
+
+xwrite /def/grabmod $MODKEY
+wmiir write /def/keys <<EOF
+${SELECT}${LEFT}
+${SELECT}${RIGHT}
+${SELECT}${DOWN}
+${SELECT}${UP}
+${SELECT}space
+${LAYOUT}w
+${LAYOUT}z
+${LAYOUT}v
+${LAYOUT}m
+${MENU}i
+${MENU}e
+${MENU}u
+${SELECT}0
+${SELECT}1
+${SELECT}2
+${SELECT}3
+${SELECT}4
+${SELECT}5
+${SELECT}6
+${SELECT}7
+${SELECT}8
+${SELECT}9
+${PROG}x
+${SEND}${LEFT}
+${SEND}${RIGHT}
+${SEND}space
+${SEND}Delete
+${SEND}t
+${SEND}0
+${SEND}1
+${SEND}2
+${SEND}3
+${SEND}4
+${SEND}5
+${SEND}6
+${SEND}7
+${SEND}8
+${SEND}9
+${SWAP}${LEFT}
+${SWAP}${RIGHT}
+${SWAP}${DOWN}
+${SWAP}${UP}
+
+${SELECT}comma
+${SELECT}period
+${MENU}a
+${PROG}k
+${PROG}j
+${SELECT}Return
+EOF
+
+# EVENT LOOP
+wmiir read /event 2>/dev/null |
+while read event
+do
+	set -- $event
+	type="$1"; shift
+	case "$type" in
+	Start)
+		if test wmiirc = "$1"
+		then
+			exit
+		fi;;
+	BarClick)
+		xwrite /ctl view "$1";;
+	Key)
+		case "$1" in
+		${SELECT}${LEFT})
+			xwrite /view/ctl select prev;;
+		${SELECT}${RIGHT})
+			xwrite /view/ctl select next;;
+		${SELECT}${DOWN})
+			xwrite /view/sel/ctl select next;;
+		${SELECT}${UP})
+			xwrite /view/sel/ctl select prev;;
+		${SELECT}space)
+			xwrite /view/ctl select toggle;;
+		${LAYOUT}w)
+			xwrite /view/sel/mode default;;
+		${LAYOUT}v)
+			xwrite /view/sel/mode stack;;
+		${LAYOUT}m)
+			xwrite /view/sel/mode max;;
+		${LAYOUT}z)
+			xwrite /view/0/sel/geom 0 0 east south;;
+		${MENU}i)
+			PATH=$HOME/.wmii-3:/home/sun/dry/apps/wmii/etc/wmii-3:$PATH `proglist /home/sun/dry/apps/wmii/etc/wmii-3 $HOME/.wmii-3 | wmiimenu` &;;
+		${MENU}e)
+			`wmiimenu <$PROGS_FILE` &;;
+		${MENU}u)
+			xwrite /ctl view "`wmiir read /tags | wmiimenu`" &;;
+		${SELECT}[0-9])
+			xwrite /ctl view `echo $1 | sed 's/.*-//'`;;
+		${PROG}x)
+			terminal &;;
+		${SEND}${LEFT})
+			xwrite /view/sel/sel/ctl sendto prev;;
+		${SEND}${RIGHT})
+			xwrite /view/sel/sel/ctl sendto next;;
+		${SEND}space)
+			xwrite /view/sel/sel/ctl sendto toggle;;
+		${SEND}Delete)
+			xwrite /view/sel/sel/ctl kill;;
+		${SEND}t)
+			tags=$(wmiir read /tags)
+			tags_csv=`echo $tags | tr ' ' ','`
+			tags_joined=`eval "echo {$tags_csv}+{$tags_csv}"`
+			xwrite /view/sel/sel/tags "`echo $tags $tags_joined | fmt -1 | wmiimenu`" &;;
+		${SEND}[0-9])
+			xwrite /view/sel/sel/tags `echo $1 | sed 's/.*[-,]//'`;;
+		${SWAP}${LEFT})
+			xwrite /view/sel/sel/ctl swap prev;;
+		${SWAP}${RIGHT})
+			xwrite /view/sel/sel/ctl swap next;;
+		${SWAP}${DOWN})
+			xwrite /view/sel/sel/ctl swap down;;
+		${SWAP}${UP})
+			xwrite /view/sel/sel/ctl swap up;;
+
+		${SELECT}comma)
+			cycleWs prev;;
+		${SELECT}period)
+			cycleWs next;;
+		${MENU}a)
+			# go to a client by choosing it from a menu
+			(
+				choice=$(
+					{
+						for i in $( wmiir read /client | awk '{print $10}' | sort -n )
+						do
+							echo "$i [$( wmiir read /client/$i/tags )] $( wmiir read /client/$i/name )"
+						done
+					} | wmiimenu | sed 's/^\([0-9]*\).*$/\1/'
+				)
+
+				xwrite /ctl view "$( wmiir read /client/$choice/tags )"
+			) &;;
+		${PROG}k)
+			firefox &;;
+		${PROG}j)
+			nautilus --no-desktop &;;
+		${SELECT}Return)
+			# toggle maximizing the client to full screen
+			(echo Key ${SEND}space; echo Key ${LAYOUT}z) | wmiir write /event;;
+		esac;;
+	esac
+done &
