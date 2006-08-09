@@ -224,6 +224,9 @@ begin
 
 				when 'Key'
 					SHORTCUTS[arg].call
+
+				when 'CreateClient'
+					WM.applyTilingLayout if WM.read("/client/#{arg}/tags").split('+').include? WM.read('/view/name')
 			end
 		end
 	end
