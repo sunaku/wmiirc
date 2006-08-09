@@ -201,6 +201,24 @@ SHORTCUTS = {
 		SHORTCUTS["#{SELECT}#{i}"] = lambda do WM.showView(WM.read('/tags').split[k] || i) end
 		SHORTCUTS["#{SEND}#{i}"] = lambda do WM.write '/view/sel/sel/tags', (WM.read('/tags').split[k] || i) end
 		SHORTCUTS["#{LAYOUT}#{i}"] = lambda do WM.applyGridLayout i end
+
+
+		# shortcuts for adding and removing tags of a client
+		SHORTCUTS["#{SEND}equal,#{i}"] =
+		SHORTCUTS["#{SEND}Shift-equal,#{i}"] = lambda do
+			tags = WM.read('/view/sel/sel/tags').split('+')
+			tags.push WM.read('/tags').split[k] || i
+
+			WM.write '/view/sel/sel/tags', tags.uniq.join('+')
+		end
+
+		SHORTCUTS["#{SEND}minus,#{i}"] = lambda do
+			tags = WM.read('/view/sel/sel/tags').split('+')
+
+			if tags.delete WM.read('/tags').split[k] || i
+				WM.write '/view/sel/sel/tags', tags.join('+')
+			end
+		end
 	end
 
 WM.write '/def/grabmod', MODKEY
@@ -224,9 +242,6 @@ begin
 
 				when 'Key'
 					SHORTCUTS[arg].call
-
-				when 'CreateClient'
-					WM.applyTilingLayout if WM.read("/client/#{arg}/tags").split('+').include? WM.read('/view/name')
 			end
 		end
 	end
