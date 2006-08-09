@@ -104,8 +104,16 @@ SHORTCUTS = {
 	"#{LAYOUT}g" => lambda do WM.applyGridLayout end,
 
 
-	"#{MENU}i" => lambda do system(WM.showMenu(ACTION_MENU) << '&') end,
-	"#{MENU}e" => lambda do system(WM.showMenu(PROGRAM_MENU) << '&') end,
+	"#{MENU}i" => lambda do
+		action = WM.showMenu(ACTION_MENU)
+		system(action << '&') unless action.empty?
+	end,
+
+	"#{MENU}e" => lambda do
+		program = WM.showMenu(PROGRAM_MENU)
+		system(program << '&') unless program.empty?
+	end,
+
 	"#{MENU}v" => lambda do WM.showView(WM.showMenu(WM.read('/tags'))) end,
 
 	# focus any client by choosing from a menu
