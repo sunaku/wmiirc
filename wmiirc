@@ -188,10 +188,10 @@ SHORTCUTS = {
   "#{MENU}a" => lambda do
     # prepare a list of menu choices
     choices = WM.read('/client').split.inject([]) do |acc, id|
-     tags = WM.read("/client/#{id}/tags")
-     name = WM.read("/client/#{id}/name").downcase
+      tags = WM.read("/client/#{id}/tags")
+      name = WM.read("/client/#{id}/name").downcase
 
-     acc << format("%d. [%s] %s", id, tags, name)
+      acc << format("%d. [%s] %s", id, tags, name)
     end
 
 
@@ -199,7 +199,7 @@ SHORTCUTS = {
     target = WM.show_menu(choices.join("\n"))
 
     unless target.empty?
-     WM.focus_client target.scan(/\d+/).first
+      WM.focus_client target.scan(/\d+/).first
     end
   end,
 
@@ -211,25 +211,25 @@ SHORTCUTS = {
 
   "#{SEND}#{LEFT}" => lambda do
     WM.selected_clients.each do |c|
-     c.ctl = 'sendto prev'
+      c.ctl = 'sendto prev'
     end
   end,
 
   "#{SEND}#{RIGHT}" => lambda do
     WM.selected_clients.each do |c|
-     c.ctl = 'sendto next'
+      c.ctl = 'sendto next'
     end
   end,
 
   "#{SEND}space" => lambda do
     WM.selected_clients.each do |c|
-     c.ctl = 'sendto toggle'
+      c.ctl = 'sendto toggle'
     end
   end,
 
   "#{SEND}Delete" => lambda do
     WM.selected_clients.each do |c|
-     c.ctl = 'kill'
+      c.ctl = 'kill'
     end
   end,
 
@@ -240,31 +240,31 @@ SHORTCUTS = {
     target = WM.show_menu(choices.join("\n"))
 
     WM.selected_clients.each do |c|
-     c.with_tags do
-       case target
-        when /^\+/
-          push $'
+      c.with_tags do
+        case target
+          when /^\+/
+            push $'
 
-        when /^\-/
-          delete $'
+          when /^\-/
+            delete $'
 
-        else
-          clear
-          push target
-       end
-     end
+          else
+            clear
+            push target
+        end
+      end
     end
   end,
 
   "#{SEND}d" => lambda do
     # WM.with_selection do
-     WM.detach_current_client
+      WM.detach_current_client
     # end
   end,
 
   "#{SEND}Shift-d" => lambda do
     # WM.with_selection do
-     WM.attach_last_client
+      WM.attach_last_client
     # end
   end,
 
@@ -286,50 +286,50 @@ SHORTCUTS = {
     k = (i - 1) % 10	# associate '1' with the leftmost label, instead of '0'
 
     SHORTCUTS["#{FOCUS}#{i}"] = lambda do
-     WM.focus_view(WM.read('/tags').split[k] || i)
+      WM.focus_view(WM.read('/tags').split[k] || i)
     end
 
     SHORTCUTS["#{SEND}#{i}"] = lambda do
-     WM.write '/view/sel/sel/tags', (WM.read('/tags').split[k] || i)
+      WM.write '/view/sel/sel/tags', (WM.read('/tags').split[k] || i)
     end
 
     SHORTCUTS["#{LAYOUT}#{i}"] = lambda do
-     WM.apply_grid_layout i
+      WM.apply_grid_layout i
     end
 
 
     # shortcuts for adding and removing tags of a client
     SHORTCUTS["#{SEND}equal,#{i}"] =
     SHORTCUTS["#{SEND}Shift-equal,#{i}"] = lambda do
-     WM.selected_clients.each do |c|
-       c.with_tags do
-        push(WM.tags[k] || i)
-       end
-     end
+      WM.selected_clients.each do |c|
+        c.with_tags do
+          push(WM.tags[k] || i)
+        end
+      end
     end
 
     SHORTCUTS["#{SEND}minus,#{i}"] = lambda do
-     WM.selected_clients.each do |c|
-       c.with_tags do
-        delete(WM.tags[k] || i)
-       end
-     end
+      WM.selected_clients.each do |c|
+        c.with_tags do
+          delete(WM.tags[k] || i)
+        end
+      end
     end
 
     SHORTCUTS["#{SEND}Shift-minus"] = lambda do
-     WM.selected_clients.each do |c|
-       c.with_tags do
-        delete WM.current_view.name
-       end
-     end
+      WM.selected_clients.each do |c|
+        c.with_tags do
+          delete WM.current_view.name
+        end
+      end
     end
   end
 
   ('a'..'z').each do |char|
     SHORTCUTS["#{MENU}v,#{char}"] = lambda do
-     if view = WM.tags.select {|t| t =~ /^#{char}/i}.first
-       WM.focus_view view
-     end
+      if view = WM.tags.select {|t| t =~ /^#{char}/i}.first
+        WM.focus_view view
+      end
     end
   end
 
@@ -347,8 +347,8 @@ WM.config.keys = SHORTCUTS.keys.join("\n")
     status.colors = ENV['WMII_NORMCOLORS']
 
     loop do
-     status.data = Time.now.to_s << " " << `uptime`.scan(/\d+\.\d+/).join(' ')
-     sleep 5
+      status.data = Time.now.to_s << " " << `uptime`.scan(/\d+\.\d+/).join(' ')
+      sleep 5
     end
   end
 
@@ -359,25 +359,25 @@ WM.config.keys = SHORTCUTS.keys.join("\n")
 begin
   IO.popen('wmiir read /event') do |io|
     while event = io.readline.chomp
-     type, arg = event.split($;, 2)
+      type, arg = event.split($;, 2)
 
-     p event, type, arg if $DEBUG
+      p event, type, arg if $DEBUG
 
-     case type
-       when 'Start'
-        exit if arg == 'wmiirc'
+      case type
+        when 'Start'
+          exit if arg == 'wmiirc'
 
-       when 'BarClick'
-        view, button = arg.split
-        WM.focus_view view
+        when 'BarClick'
+          view, button = arg.split
+          WM.focus_view view
 
-       when 'ClientClick'
-        client, button = arg.split
-        Wmii::Client.new("/client/#{client}").invert_selection!
+        when 'ClientClick'
+          client, button = arg.split
+          Wmii::Client.new("/client/#{client}").invert_selection!
 
-       when 'Key'
-        SHORTCUTS[arg].call
-     end
+        when 'Key'
+          SHORTCUTS[arg].call
+      end
     end
   end
 rescue EOFError

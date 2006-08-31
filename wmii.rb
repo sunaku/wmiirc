@@ -92,6 +92,7 @@ class IxpFile
     end
   end
 
+  # Provides easy access to files contained within this file.
   def method_missing aMeth, *aArgs
     if aMeth.to_s =~ /=$/
       write "#{@path}/#{$`}", *aArgs
@@ -101,6 +102,7 @@ class IxpFile
 
     else
       super
+
     end
   end
 end
@@ -120,26 +122,32 @@ class Wmii < IxpFile
   # WM state access
   #
 
+  # Returns the currently focused client.
   def current_client
     Client.new("/view/sel/sel")
   end
 
+  # Returns the currently focused area.
   def current_area
     Area.new("/view/sel")
   end
 
+  # Returns the currently focused view.
   def current_view
     View.new("/view")
   end
 
+  # Returns the current set of tags.
   def tags
     read('/tags').split
   end
 
+  # Returns the current set of views.
   def views
-    tags.map {|v| View.new self, "/#{v}"}
+    tags.map {|v| View.new "/#{v}"}
   end
 
+  # Returns the current set of clients.
   def clients
     Area.new("/client").clients
   end
@@ -306,6 +314,7 @@ class Wmii < IxpFile
     list
   end
 
+  # Un-selects all selected clients.
   def select_none
     View.new("/#{SELECTION_TAG}").unselect!
   end
@@ -322,7 +331,7 @@ class Wmii < IxpFile
 
   # Attach the most recently detached client
   def attach_last_client
-    if c = View.new("/#{DETACHED_TAG}").areas.first.clients.first
+    if c = View.new("/#{DETACHED_TAG}").areas.last.clients.last
       c.tags = read('/view/name')
     end
   end
@@ -361,45 +370,52 @@ class Wmii < IxpFile
 
 
   ##
-  # subclasses
+  # Subclasses for more abstraction
   #
 
+  # Encapsulates a graphical region and its file system properties.
   class Container < IxpFile
+    # Returns a list of indices of items in this region.
     def indices
       if list = read(@path)
-        # go in reverse order to accomodate destructive procedures
-        list.split.grep(/^\d+$/).reverse
+        list.split.grep(/^\d+$/)
       else
         []
       end
     end
 
+    # Returns a list of items in this region.
     def subordinates
       if @subordinateClass
-        indices.map {|i| @subordinateClass.new "#{@path}/#{i}"}
+        # go in reverse order to accomodate destructive procedures
+        indices.reverse.map {|i| @subordinateClass.new "#{@path}/#{i}"}
       else
         []
       end
     end
 
+    # Adds all clients in this region to the selection.
     def select!
       subordinates.each do |s|
         s.select!
       end
     end
 
+    # Removes all clients in this region from the selection.
     def unselect!
       subordinates.each do |s|
         s.unselect!
       end
     end
 
+    # Inverts the selection of clients in this region.
     def invert_selection!
       subordinates.each do |s|
         s.invert_selection!
       end
     end
 
+    # Puts focus on this region.
     def focus!
       ['select', 'view'].each do |cmd|
         return if write "#{@path}/../ctl", "#{cmd} #{File.basename @path}"
@@ -407,24 +423,28 @@ class Wmii < IxpFile
     end
   end
 
+  # Represents a running, graphical program.
   class Client < Container
     TAG_DELIMITER = "+"
 
+    # Returns the tags associated with this client.
     def tags
       read("#{@path}/tags").split(TAG_DELIMITER)
     end
 
+    # Modifies the tags associated with this client.
     def tags= *aTags
       write "#{@path}/tags", aTags.flatten.uniq.join(TAG_DELIMITER)
     end
 
-    # Do stuff (the given block) with this client's tags.
+    # Invokes the given block within the context of this client's list of tags.
     def with_tags &aBlock
       t = self.tags
       t.instance_eval(&aBlock)
       self.tags = t
     end
 
+    # Returns true if this client is included in the selection.
     def selected?
       tags.include? SELECTION_TAG
     end
