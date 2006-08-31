@@ -23,7 +23,6 @@
 $: << File.dirname(__FILE__)
 require 'wmii'
 
-
 WM = Wmii.instance
 
 # WM STARTUP
@@ -211,17 +210,20 @@ SHORTCUTS = {
     # shortcuts for adding and removing tags of a client
     SHORTCUTS["#{SEND}equal,#{i}"] =
     SHORTCUTS["#{SEND}Shift-equal,#{i}"] = lambda do
-      tags = WM.read('/view/sel/sel/tags').split('+')
-      tags.push WM.read('/tags').split[k] || i
-
-      WM.write '/view/sel/sel/tags', tags.uniq.join('+')
+      WM.current_client.with_tags do
+        push(WM.tags[k] || i)
+      end
     end
 
     SHORTCUTS["#{SEND}minus,#{i}"] = lambda do
-      tags = WM.read('/view/sel/sel/tags').split('+')
+      WM.current_client.with_tags do
+        delete(WM.tags[k] || i)
+      end
+    end
 
-      if tags.delete WM.read('/tags').split[k] || i
-        WM.write '/view/sel/sel/tags', tags.join('+')
+    SHORTCUTS["#{SEND}Shift-minus"] = lambda do
+      WM.current_client.with_tags do
+        delete WM.current_view.name
       end
     end
   end

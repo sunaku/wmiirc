@@ -371,10 +371,10 @@ class Wmii
       @wm.write "#{@path}/tags", aTags.flatten.uniq.join(TAG_DELIMITER)
     end
 
-    # Invokes the given block with this client's tags and reapplies them to this client.
-    def with_tags # :yields: tags
+    # Do stuff (the given block) with this client's tags.
+    def with_tags &aBlock
       t = self.tags
-      yield t
+      t.instance_eval(&aBlock)
       self.tags = t
     end
 
@@ -383,14 +383,14 @@ class Wmii
     end
 
     def select!
-      with_tags do |t|
-        t.unshift SELECTION_TAG
+      with_tags do
+        unshift SELECTION_TAG
       end
     end
 
     def unselect!
-      with_tags do |t|
-        t.delete SELECTION_TAG
+      with_tags do
+        delete SELECTION_TAG
       end
     end
 
