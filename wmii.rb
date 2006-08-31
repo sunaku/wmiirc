@@ -24,47 +24,46 @@ require 'ixp'
 require 'find'
 require 'singleton'
 
-class Wmii
-  include Singleton
 
-  SELECTION_TAG = 'SEL'
-  DETACHED_TAG = 'status'
+# Encapsulates access to a file in the IXP file system
+class IxpFile
+  attr_reader :path
 
+  def initialize aPath
+    @path = aPath
 
-  ##
-  # IXP file system
-  #
-
-  def initialize
-    begin
-      @cl = IXP::Client.new
-    rescue Errno::ECONNREFUSED
-      retry
+    unless defined? @@ixp
+      begin
+        @@ixp = IXP::Client.new
+      rescue Errno::ECONNREFUSED
+        retry
+      end
     end
   end
 
-  # Creates the given WM path.
+  # Creates a file at the given path and returns it.
   def create aPath
     begin
-      @cl.create aPath
+      @@ixp.create aPath
+      IxpFile.new aPath
     rescue IXP::IXPException => e
       puts "#{e.backtrace.first}: #{e}"
     end
   end
 
-  # Deletes the given WM path.
+  # Deletes the given path.
   def remove aPath
     begin
-      @cl.remove aPath
+      @@ixp.remove aPath
     rescue IXP::IXPException => e
       puts "#{e.backtrace.first}: #{e}"
     end
   end
 
-  # Writes the given content to the given WM path.
+  # Writes the given content to the given path.
   def write aPath, aContent
     begin
-      @cl.open(aPath) do |f|
+      @@ixp.open(aPath) do |f|
         f.write aContent.to_s
       end
     rescue IXP::IXPException => e
@@ -72,10 +71,10 @@ class Wmii
     end
   end
 
-  # Reads from the given WM path and returns the content. If the path is a directory, then the names of all files in that directory are returned.
+  # Reads from the given path and returns the content. If the path is a directory, then the names of all files in that directory are returned.
   def read aPath
     begin
-      @cl.open(aPath) do |f|
+      @@ixp.open(aPath) do |f|
         if f.respond_to? :next # read file-names from directory
           names = ''
 
@@ -93,6 +92,29 @@ class Wmii
     end
   end
 
+  def method_missing aMeth, *aArgs
+    if aMeth.to_s =~ /=$/
+      write "#{@path}/#{$`}", *aArgs
+
+    elsif content = read("#{@path}/#{aMeth}")
+      content
+
+    else
+      super
+    end
+  end
+end
+
+class Wmii < IxpFile
+  SELECTION_TAG = 'SEL'
+  DETACHED_TAG = 'status'
+
+  attr_reader :config
+
+  def initialize
+    super "/"
+    @config = IxpFile.new('/def')
+  end
 
   ##
   # WM state access
@@ -339,35 +361,12 @@ class Wmii
 
 
   ##
-  # Subclasses
+  # subclasses
   #
-
-  # Encapsulates access to a file in the IXP file system
-  class IxpFile
-    attr_reader :wm, :path
-
-    def initialize aPath
-      @wm = Wmii.instance
-      @path = aPath
-      @subordinateClass = nil
-    end
-
-    def method_missing aMeth, *aArgs
-      if aMeth.to_s =~ /=$/
-        @wm.write "#{@path}/#{$`}", *aArgs
-      else
-        if content = @wm.read("#{@path}/#{aMeth}")
-          content
-        else
-          super
-        end
-      end
-    end
-  end
 
   class Container < IxpFile
     def indices
-      if list = @wm.read(@path)
+      if list = read(@path)
         # go in reverse order to accomodate destructive procedures
         list.split.grep(/^\d+$/).reverse
       else
@@ -403,7 +402,7 @@ class Wmii
 
     def focus!
       ['select', 'view'].each do |cmd|
-        return if @wm.write "#{@path}/../ctl", "#{cmd} #{File.basename @path}"
+        return if write "#{@path}/../ctl", "#{cmd} #{File.basename @path}"
       end
     end
   end
@@ -412,11 +411,11 @@ class Wmii
     TAG_DELIMITER = "+"
 
     def tags
-      @wm.read("#{@path}/tags").split(TAG_DELIMITER)
+      read("#{@path}/tags").split(TAG_DELIMITER)
     end
 
     def tags= *aTags
-      @wm.write "#{@path}/tags", aTags.flatten.uniq.join(TAG_DELIMITER)
+      write "#{@path}/tags", aTags.flatten.uniq.join(TAG_DELIMITER)
     end
 
     # Do stuff (the given block) with this client's tags.
