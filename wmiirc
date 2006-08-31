@@ -95,35 +95,40 @@ PROGRAM="#{FOCUS}"
 GROUP="#{FOCUS}g,"
 
 SHORTCUTS = {
-  "#{FOCUS}#{LEFT}" => lambda do
-    WM.write '/view/ctl', 'select prev'
-  end,
-
-  "#{FOCUS}#{RIGHT}" => lambda do
-    WM.write '/view/ctl', 'select next'
-  end,
-
-  "#{FOCUS}#{DOWN}" => lambda do
-    WM.write '/view/sel/ctl', 'select next'
-  end,
-
-  "#{FOCUS}#{UP}" => lambda do
-    WM.write '/view/sel/ctl', 'select prev'
-  end,
-
-  "#{FOCUS}space" => lambda do
-    WM.write '/view/ctl', 'select toggle'
-  end,
-
-
+  # focus previous view
   "#{FOCUS}comma" => lambda do
     WM.cycle_view :left
   end,
 
+  # focus next view
   "#{FOCUS}period" => lambda do
     WM.cycle_view :right
   end,
 
+  # focus previous area
+  "#{FOCUS}#{LEFT}" => lambda do
+    WM.write '/view/ctl', 'select prev'
+  end,
+
+  # focus next area
+  "#{FOCUS}#{RIGHT}" => lambda do
+    WM.write '/view/ctl', 'select next'
+  end,
+
+  # focus floating area
+  "#{FOCUS}space" => lambda do
+    WM.write '/view/ctl', 'select toggle'
+  end,
+
+  # focus previous client
+  "#{FOCUS}#{UP}" => lambda do
+    WM.write '/view/sel/ctl', 'select prev'
+  end,
+
+  # focus next client
+  "#{FOCUS}#{DOWN}" => lambda do
+    WM.write '/view/sel/ctl', 'select next'
+  end,
 
 
   "#{LAYOUT}w" => lambda do
@@ -169,7 +174,6 @@ SHORTCUTS = {
   end,
 
 
-
   "#{MENU}i" => lambda do
     action = WM.show_menu(ACTION_MENU)
     system(action << '&') unless action.empty?
@@ -186,16 +190,10 @@ SHORTCUTS = {
 
   # focus any client by choosing from a menu
   "#{MENU}a" => lambda do
-    # prepare a list of menu choices
-    choices = WM.read('/client').split.inject([]) do |acc, id|
-      tags = WM.read("/client/#{id}/tags")
-      name = WM.read("/client/#{id}/name").downcase
-
-      acc << format("%d. [%s] %s", id, tags, name)
+    choices = WM.clients.map do |c|
+      format "%d. [%s] %s", c.index, c.tags, c.name.downcase
     end
 
-
-    # show the menu and focus the chosen client
     target = WM.show_menu(choices.join("\n"))
 
     unless target.empty?
@@ -256,6 +254,32 @@ SHORTCUTS = {
     end
   end,
 
+  # send to temporary view or switch back again
+  "#{SEND}Shift-t" => lambda do
+    curView = WM.current_view.name
+
+    if curView =~ /~\d+$/
+      WM.selected_clients.each do |c|
+        c.with_tags do
+          delete curView
+        end
+      end
+
+      WM.focus_view $`
+    else
+      tmpView = "#{curView}~#{Time.now.to_i}"
+
+      WM.selected_clients.each do |c|
+        c.with_tags do
+          push tmpView
+        end
+      end
+
+      WM.focus_view tmpView
+      WM.apply_grid_layout
+    end
+  end,
+
   "#{SEND}d" => lambda do
     # WM.with_selection do
       WM.detach_current_client
@@ -286,11 +310,13 @@ SHORTCUTS = {
     k = (i - 1) % 10	# associate '1' with the leftmost label, instead of '0'
 
     SHORTCUTS["#{FOCUS}#{i}"] = lambda do
-      WM.focus_view(WM.read('/tags').split[k] || i)
+      WM.focus_view(WM.tags[k] || i)
     end
 
     SHORTCUTS["#{SEND}#{i}"] = lambda do
-      WM.write '/view/sel/sel/tags', (WM.read('/tags').split[k] || i)
+      WM.selected_clients.each do |c|
+        c.tags = (WM.tags[k] || i)
+      end
     end
 
     SHORTCUTS["#{LAYOUT}#{i}"] = lambda do
@@ -347,8 +373,12 @@ WM.config.keys = SHORTCUTS.keys.join("\n")
     status.colors = ENV['WMII_NORMCOLORS']
 
     loop do
-      status.data = Time.now.to_s << " " << `uptime`.scan(/\d+\.\d+/).join(' ')
-      sleep 5
+      uptime = `uptime`.scan(/\d+\.\d+/).join(' ')
+
+      5.times do
+        status.data = "#{Time.now.to_s} | #{uptime}"
+        sleep 2
+      end
     end
   end
 
