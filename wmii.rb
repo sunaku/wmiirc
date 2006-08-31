@@ -159,7 +159,7 @@ class Wmii < IxpFile
 
   # Focuses the view with the given name.
   def focus_view aName
-    View.new("/#{aName}").focus!
+    View.new("/#{aName}").focus
   end
 
   # Focuses the client which has the given ID.
@@ -168,9 +168,9 @@ class Wmii < IxpFile
       v.areas.each do |a|
         a.clients.each do |c|
           if c.index == aClientId
-            v.focus!
-            a.focus!
-            c.focus!
+            v.focus
+            a.focus
+            c.focus
             return
           end
         end
@@ -416,7 +416,7 @@ class Wmii < IxpFile
     end
 
     # Puts focus on this region.
-    def focus!
+    def focus
       ['select', 'view'].each do |cmd|
         return if write "#{@path}/../ctl", "#{cmd} #{File.basename @path}"
       end
