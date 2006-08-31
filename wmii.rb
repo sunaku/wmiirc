@@ -37,8 +37,6 @@ class Wmii
 
   SELECTION_TAG = 'SEL'
 
-  # TODO: make selection a mixin
-
   def current_client
     Client.new(self, "/view/sel/sel")
   end
@@ -51,11 +49,16 @@ class Wmii
     View.new(self, "/view")
   end
 
+  def views
+    read('/tags').split.map {|v| View.new self, "/#{v}"}
+  end
+
   def select_none
     View.new(self, "/#{SELECTION_TAG}").unselect!
   end
 
   def with_selection  # :yields: client
+      #todo
   end
 
   # Creates the given WM path.
@@ -78,6 +81,7 @@ class Wmii
 
   # Writes the given content to the given WM path.
   def write aPath, aContent
+    p "writing: #{aPath}", aContent if $DEBUG
     begin
       @cl.open(aPath) do |f|
         f.write aContent.to_s
@@ -129,13 +133,13 @@ class Wmii
 
   # Shows the client which has the given ID.
   def showClient aClientId
-    read('/tags').split.each do |view|
-      read("/#{view}").split.grep(/^\d+$/).each do |area|
-        read("/#{view}/#{area}").split.grep(/^\d+$/).each do |client|
-          if read("/#{view}/#{area}/#{client}/index") == aClientId
-            showView view
-            write '/view/ctl', "select #{area}"
-            write "/view/sel/ctl", "select #{client}"
+    views.each do |v|
+      v.areas.each do |a|
+        a.clients.each do |c|
+          if c.index == aClientId
+            v.focus!
+            a.focus!
+            c.focus!
             return
           end
         end
@@ -298,30 +302,66 @@ class Wmii
   end
 
 
-  class IXPFile
+  class IxpFile
     attr_reader :wm, :path
 
     def initialize aWmii, aPath
       @wm = aWmii
       @path = aPath
+      @subordinate = nil
     end
 
+    def method_missing aMeth
+      @wm.read("#{@path}/#{aMeth}")
+    end
+  end
+
+
+  class Container < IxpFile
     def indices
       if list = @wm.read(@path)
-        list.split.grep(/^\d+$/)
+        # go in reverse order to accomodate destructive procedures
+        list.split.grep(/^\d+$/).reverse
       else
         []
       end
     end
 
-    def each_index &aBlock
-      # go in reverse order to accomodate destructive procedures
-      indices.reverse.each(&aBlock)
+    def subordinates
+      if @subordinate
+        indices.map {|i| @subordinate.new @wm, "#{@path}/#{i}"}
+      else
+        []
+      end
+    end
+
+    def select!
+      subordinates.each do |s|
+        s.select!
+      end
+    end
+
+    def unselect!
+      subordinates.each do |s|
+        s.unselect!
+      end
+    end
+
+    def invert_selection!
+      subordinates.each do |s|
+        s.invert_selection!
+      end
+    end
+
+    def focus!
+      ['select', 'view'].each do |cmd|
+        return if @wm.write "#{@path}/../ctl", "#{cmd} #{File.basename @path}"
+      end
     end
   end
 
 
-  class Client < IXPFile
+  class Client < Container
     TAG_DELIMITER = "+"
 
     def tags
@@ -365,54 +405,22 @@ class Wmii
   end
 
 
-  class Area < IXPFile
-    alias clients indices
-
-    # Invokes the given block once for each client in this area. The area is focused before the block is invoked if aFocus is asserted.
-    def each_client aFocus = false # :yields: Client
-      each_index do |i|
-        @wm.write "#{@path}/ctl", "select #{i}" if aFocus
-        yield Client.new(@wm, "#{@path}/#{i}")
-      end
+  class Area < Container
+    def initialize *args
+      super
+      @subordinate = Client
     end
+
+    alias clients subordinates
   end
 
 
-  class View < IXPFile
-    alias areas indices
-
-    # Invokes the given block once for each client in this area. The area is focused before the block is invoked if aFocus is asserted.
-    def each_area aFocus = false # :yields: Area
-      each_index do |i|
-        @wm.write "#{@path}/ctl", "select #{i}" if aFocus
-        yield Area.new(@wm, "#{@path}/#{i}")
-      end
+  class View < Container
+    def initialize *args
+      super
+      @subordinate = Area
     end
 
-    def each_client
-      each_area do |a|
-        a.each_client do |c|
-          yield c
-        end
-      end
-    end
-
-    def select!
-      each_client do |c|
-        c.select!
-      end
-    end
-
-    def unselect!
-      each_client do |c|
-        c.unselect!
-      end
-    end
-
-    def invert_selection!
-      each_client do |c|
-        c.invert_selection!
-      end
-    end
+    alias areas subordinates
   end
 end
