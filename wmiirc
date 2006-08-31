@@ -145,10 +145,29 @@ SHORTCUTS = {
   "#{PROGRAM}j" => lambda do system 'nautilus --no-desktop &' end,
 
 
-  "#{SEND}#{LEFT}" => lambda do WM.write '/view/sel/sel/ctl', 'sendto prev' end,
-  "#{SEND}#{RIGHT}" => lambda do WM.write '/view/sel/sel/ctl', 'sendto next' end,
-  "#{SEND}space" => lambda do WM.write '/view/sel/sel/ctl', 'sendto toggle' end,
-  "#{SEND}Delete" => lambda do WM.write '/view/sel/sel/ctl', 'kill' end,
+  "#{SEND}#{LEFT}" => lambda do
+    WM.with_selection do
+      WM.write '/view/sel/sel/ctl', 'sendto prev'
+    end
+  end,
+
+  "#{SEND}#{RIGHT}" => lambda do
+    WM.with_selection do
+      WM.write '/view/sel/sel/ctl', 'sendto next'
+    end
+  end,
+
+  "#{SEND}space" => lambda do
+    WM.with_selection do
+      WM.write '/view/sel/sel/ctl', 'sendto toggle'
+    end
+  end,
+
+  "#{SEND}Delete" => lambda do
+    WM.with_selection do
+      WM.write '/view/sel/sel/ctl', 'kill'
+    end
+  end,
 
   # change the tag of the current client
   # +tag -tag idea from Jonas Pfenniger <http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby>

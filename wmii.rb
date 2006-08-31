@@ -57,12 +57,32 @@ class Wmii
     tags.map {|v| View.new self, "/#{v}"}
   end
 
+  def clients
+    Area.new(self, "/client").clients
+  end
+
   def select_none
     View.new(self, "/#{SELECTION_TAG}").unselect!
   end
 
-  def with_selection  # :yields: client
-      #todo
+  # Invokes the given block upon all selected clients in the current view. If there are no selected clients, then the block is invoked upon the currently focused client.
+  def with_selection # :yields: client
+    # determine selected clients in current view
+      clientList = current_view.areas.map do |a|
+        a.clients.select do |c|
+          c.tags.include? SELECTION_TAG
+        end
+      end
+      clientList.flatten!
+
+    if clientList.empty?
+      clientList << current_client
+    end
+
+    clientList.each do |c|
+      c.focus!
+      yield c
+    end
   end
 
   # Creates the given WM path.
@@ -85,7 +105,6 @@ class Wmii
 
   # Writes the given content to the given WM path.
   def write aPath, aContent
-    p "writing: #{aPath}", aContent if $DEBUG
     begin
       @cl.open(aPath) do |f|
         f.write aContent.to_s
@@ -118,7 +137,7 @@ class Wmii
 
   # Shows the view with the given name.
   def showView aName
-    write '/ctl', "view #{aName}"
+    View.new(self, "/#{aName}").focus!
   end
 
   # Shows a WM menu with the given content and returns its output.
@@ -167,9 +186,8 @@ class Wmii
 
   # Changes the current view to an adjacent one (:left or :right).
   def cycleView aTarget
-    tags = read('/tags').split
-
-    curTag = read('/view/name')
+    tags = self.tags
+    curTag = current_view.name
     curIndex = tags.index(curTag)
 
     newIndex =
