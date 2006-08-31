@@ -37,32 +37,22 @@ class Wmii
 
   SELECTION_TAG = 'SEL'
 
-  def select_current_client aToggle = false
-    Client.new(self, "/view/sel/sel").with_tags do |tags|
-      if aToggle && tags.include?(SELECTION_TAG)
-        tags.delete SELECTION_TAG
-      else
-        tags << SELECTION_TAG
-      end
-    end
+  # TODO: make selection a mixin
+
+  def current_client
+    Client.new(self, "/view/sel/sel")
   end
 
-  def select_current_view
-    Area.new(self, "/view/sel").each_client do
-      select_current_client
-    end
+  def current_area
+    Area.new(self, "/view/sel")
+  end
+
+  def current_view
+    View.new(self, "/view")
   end
 
   def select_none
-    if areaList = read("/#{SELECTION_TAG}")
-      areaList.split.grep(/^\d+$/).each do |area|
-        read("/#{SELECTION_TAG}/#{area}").split.grep(/^\d+$/).reverse.each do |client|
-          Client.new(self, "/#{SELECTION_TAG}/#{area}/#{client}").with_tags do |tags|
-            tags.delete SELECTION_TAG
-          end
-        end
-      end
-    end
+    View.new(self, "/#{SELECTION_TAG}").unselect!
   end
 
   def with_selection  # :yields: client
@@ -315,7 +305,21 @@ class Wmii
       @wm = aWmii
       @path = aPath
     end
+
+    def indices
+      if list = @wm.read(@path)
+        list.split.grep(/^\d+$/)
+      else
+        []
+      end
+    end
+
+    def each_index &aBlock
+      # go in reverse order to accomodate destructive procedures
+      indices.reverse.each(&aBlock)
+    end
   end
+
 
   class Client < IXPFile
     TAG_DELIMITER = "+"
@@ -328,33 +332,87 @@ class Wmii
       @wm.write "#{@path}/tags", aTags.uniq.join(TAG_DELIMITER)
     end
 
+    # Invokes the given block with this client's tags and reapplies them to this client.
     def with_tags # :yields: tags
-      if block_given?
-        t = self.tags
-        yield t
-        self.tags = t
+      t = self.tags
+      yield t
+      self.tags = t
+    end
+
+    def selected?
+      tags.include? SELECTION_TAG
+    end
+
+    def select!
+      with_tags do |t|
+        t.unshift SELECTION_TAG
+      end
+    end
+
+    def unselect!
+      with_tags do |t|
+        t.delete SELECTION_TAG
+      end
+    end
+
+    def invert_selection!
+      if selected?
+        unselect!
+      else
+        select!
       end
     end
   end
 
+
   class Area < IXPFile
-    def clients
-      @wm.read(@path).split.grep(/^\d+$/)
+    alias clients indices
+
+    # Invokes the given block once for each client in this area. The area is focused before the block is invoked if aFocus is asserted.
+    def each_client aFocus = false # :yields: Client
+      each_index do |i|
+        @wm.write "#{@path}/ctl", "select #{i}" if aFocus
+        yield Client.new(@wm, "#{@path}/#{i}")
+      end
+    end
+  end
+
+
+  class View < IXPFile
+    alias areas indices
+
+    # Invokes the given block once for each client in this area. The area is focused before the block is invoked if aFocus is asserted.
+    def each_area aFocus = false # :yields: Area
+      each_index do |i|
+        @wm.write "#{@path}/ctl", "select #{i}" if aFocus
+        yield Area.new(@wm, "#{@path}/#{i}")
+      end
     end
 
-    # For each client in this area, focuses the client and invokes the given block.
-    def each_client # :yields: Client
-      if block_given?
-        # go in reverse order to accomodate destructive procedures (client index is relative to area, not globally unique)
-        clients.reverse.each do |i|
-          @wm.write "#{@path}/ctl", "select #{i}"
-          yield Client.new(@wm, "#{@path}/#{i}")
+    def each_client
+      each_area do |a|
+        a.each_client do |c|
+          yield c
         end
       end
     end
-  end
 
-  class View < IXPFile
+    def select!
+      each_client do |c|
+        c.select!
+      end
+    end
 
+    def unselect!
+      each_client do |c|
+        c.unselect!
+      end
+    end
+
+    def invert_selection!
+      each_client do |c|
+        c.invert_selection!
+      end
+    end
   end
 end
