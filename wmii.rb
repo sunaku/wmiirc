@@ -49,8 +49,12 @@ class Wmii
     View.new(self, "/view")
   end
 
+  def tags
+    read('/tags').split
+  end
+
   def views
-    read('/tags').split.map {|v| View.new self, "/#{v}"}
+    tags.map {|v| View.new self, "/#{v}"}
   end
 
   def select_none
