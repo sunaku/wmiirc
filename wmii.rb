@@ -67,18 +67,16 @@ class Wmii
 
   # Returns a list of all selected clients in the current view. If there are no selected clients, then the currently focused client is returned in the list.
   def selected_clients
-    clientList = current_view.areas.map do |a|
-      a.clients.select do |c|
-        c.tags.include? SELECTION_TAG
-      end
+    list = current_view.areas.map do |a|
+      a.clients.select do |c| c.selected? end
     end
-    clientList.flatten!
+    list.flatten!
 
-    if clientList.empty?
-      clientList << current_client
+    if list.empty?
+      list << current_client
     end
 
-    clientList
+    list
   end
 
   # Creates the given WM path.
@@ -323,14 +321,18 @@ class Wmii
     def initialize aWmii, aPath
       @wm = aWmii
       @path = aPath
-      @subordinate = nil
+      @subordinateClass = nil
     end
 
-    def method_missing aMeth
-      if content = @wm.read("#{@path}/#{aMeth}")
-        content
+    def method_missing aMeth, *aArgs
+      if aMeth.to_s =~ /=$/
+        @wm.write "#{@path}/#{$`}", *aArgs
       else
-        super
+        if content = @wm.read("#{@path}/#{aMeth}")
+          content
+        else
+          super
+        end
       end
     end
   end
@@ -347,15 +349,11 @@ class Wmii
     end
 
     def subordinates
-      if @subordinate
-        indices.map {|i| @subordinate.new @wm, "#{@path}/#{i}"}
+      if @subordinateClass
+        indices.map {|i| @subordinateClass.new @wm, "#{@path}/#{i}"}
       else
         []
       end
-    end
-
-    def control aCommand
-      @wm.write "#{@path}/ctl", aCommand
     end
 
     def select!
@@ -431,7 +429,7 @@ class Wmii
   class Area < Container
     def initialize *args
       super
-      @subordinate = Client
+      @subordinateClass = Client
     end
 
     alias clients subordinates
@@ -441,7 +439,7 @@ class Wmii
   class View < Container
     def initialize *args
       super
-      @subordinate = Area
+      @subordinateClass = Area
     end
 
     alias areas subordinates

@@ -8,8 +8,8 @@ DELAY = 1
 
 WM = Wmii.instance
 
-system('wmiir remove /bar/status') && sleep(DELAY * 2)
-system 'wmiir create /bar/status'
+WM.remove '/bar/status'
+WM.create '/bar/status'
 WM.write '/bar/status/colors', ENV['WMII_NORMCOLORS']
 
 while WM.write('/bar/status/data', Time.now.to_s << " " << `uptime`.scan(/\d+\.\d+/).join(' '))

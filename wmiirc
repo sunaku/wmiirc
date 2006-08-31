@@ -168,7 +168,9 @@ SHORTCUTS = {
     system(program << '&') unless program.empty?
   end,
 
-  "#{MENU}v" => lambda do WM.focus_view(WM.show_menu(WM.read('/tags'))) end,
+  "#{MENU}Shift-v" => lambda do
+    WM.focus_view(WM.show_menu(WM.read('/tags')))
+  end,
 
   # focus any client by choosing from a menu
   "#{MENU}a" => lambda do
@@ -197,25 +199,25 @@ SHORTCUTS = {
 
   "#{SEND}#{LEFT}" => lambda do
     WM.selected_clients.each do |c|
-      c.control 'sendto prev'
+      c.ctl = 'sendto prev'
     end
   end,
 
   "#{SEND}#{RIGHT}" => lambda do
     WM.selected_clients.each do |c|
-      c.control 'sendto next'
+      c.ctl = 'sendto next'
     end
   end,
 
   "#{SEND}space" => lambda do
     WM.selected_clients.each do |c|
-      c.control 'sendto toggle'
+      c.ctl = 'sendto toggle'
     end
   end,
 
   "#{SEND}Delete" => lambda do
     WM.selected_clients.each do |c|
-      c.control 'kill'
+      c.ctl = 'kill'
     end
   end,
 
@@ -325,6 +327,14 @@ SHORTCUTS = {
     end
   end
 
+  ('a'..'z').each do |char|
+    SHORTCUTS["#{MENU}v,#{char}"] = lambda do
+      if view = WM.tags.select {|t| t =~ /^#{char}/i}.first
+        WM.focus_view view
+      end
+    end
+  end
+
 WM.write '/def/grabmod', MODKEY
 WM.write '/def/keys', SHORTCUTS.keys.join("\n")
 
@@ -342,7 +352,8 @@ begin
           exit if arg == 'wmiirc'
 
         when 'BarClick'
-          WM.focus_view arg
+          view, button = arg.split
+          WM.focus_view view
 
         when 'ClientClick'
           client, button = arg.split
