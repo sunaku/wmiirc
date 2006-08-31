@@ -63,8 +63,8 @@ EOF
 # system 'xsetroot -solid "#333333"'
 system 'status &'
 
-PROGRAM_MENU = WM.findPrograms(*ENV['PATH'].split(':')).join("\n")
-ACTION_MENU = WM.findPrograms('/home/sun/dry/apps/wmii/etc/wmii-3', '~/.wmii-3').join("\n")
+PROGRAM_MENU = WM.find_programs(*ENV['PATH'].split(':')).join("\n")
+ACTION_MENU = WM.find_programs('/home/sun/dry/apps/wmii/etc/wmii-3', '~/.wmii-3').join("\n")
 
 
 # KEY CONFIGURATION
@@ -105,11 +105,11 @@ SHORTCUTS = {
 
 
   "#{SELECT}comma" => lambda do
-     WM.cycleView :left
+     WM.cycle_view :left
   end,
 
   "#{SELECT}period" => lambda do
-     WM.cycleView :right
+     WM.cycle_view :right
   end,
 
 
@@ -132,11 +132,11 @@ SHORTCUTS = {
 
 
   "#{LAYOUT}t" => lambda do
-     WM.applyTilingLayout
+     WM.apply_tiling_layout
   end,
 
   "#{LAYOUT}g" => lambda do
-     WM.applyGridLayout
+     WM.apply_grid_layout
   end,
 
 
@@ -159,16 +159,16 @@ SHORTCUTS = {
 
 
   "#{MENU}i" => lambda do
-    action = WM.showMenu(ACTION_MENU)
+    action = WM.show_menu(ACTION_MENU)
     system(action << '&') unless action.empty?
   end,
 
   "#{MENU}e" => lambda do
-    program = WM.showMenu(PROGRAM_MENU)
+    program = WM.show_menu(PROGRAM_MENU)
     system(program << '&') unless program.empty?
   end,
 
-  "#{MENU}v" => lambda do WM.showView(WM.showMenu(WM.read('/tags'))) end,
+  "#{MENU}v" => lambda do WM.focus_view(WM.show_menu(WM.read('/tags'))) end,
 
   # focus any client by choosing from a menu
   "#{MENU}a" => lambda do
@@ -182,10 +182,10 @@ SHORTCUTS = {
 
 
     # show the menu and focus the chosen client
-    target = WM.showMenu(choices.join("\n"))
+    target = WM.show_menu(choices.join("\n"))
 
     unless target.empty?
-      WM.showClient target.scan(/\d+/).first
+      WM.focus_client target.scan(/\d+/).first
     end
   end,
 
@@ -223,7 +223,7 @@ SHORTCUTS = {
   # +tag -tag idea from Jonas Pfenniger <http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby>
   "#{SEND}t" => lambda do
     choices = WM.tags.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
-    target = WM.showMenu(choices.join("\n"))
+    target = WM.show_menu(choices.join("\n"))
 
     WM.selected_clients.each do |c|
       c.with_tags do
@@ -244,13 +244,13 @@ SHORTCUTS = {
 
   "#{SEND}d" => lambda do
     # WM.with_selection do
-      WM.detachClient
+      WM.detach_current_client
     # end
   end,
 
   "#{SEND}Shift-d" => lambda do
     # WM.with_selection do
-      WM.attachClient
+      WM.attach_last_client
     # end
   end,
 
@@ -265,11 +265,11 @@ SHORTCUTS = {
   # NOTE: columns & layouts are not preserved
   "#{SEND}r" => lambda do
     old = WM.read('/view/name')
-    new = WM.showMenu(WM.read('/tags'))
+    new = WM.show_menu(WM.read('/tags'))
 
     unless new.empty?
-      WM.renameView old, new
-      WM.showView new
+      WM.rename_view old, new
+      WM.focus_view new
     end
   end,
 =end
@@ -286,7 +286,7 @@ SHORTCUTS = {
     k = (i - 1) % 10	# associate '1' with the leftmost label, instead of '0'
 
     SHORTCUTS["#{SELECT}#{i}"] = lambda do
-      WM.showView(WM.read('/tags').split[k] || i)
+      WM.focus_view(WM.read('/tags').split[k] || i)
     end
 
     SHORTCUTS["#{SEND}#{i}"] = lambda do
@@ -294,7 +294,7 @@ SHORTCUTS = {
     end
 
     SHORTCUTS["#{LAYOUT}#{i}"] = lambda do
-      WM.applyGridLayout i
+      WM.apply_grid_layout i
     end
 
 
@@ -342,7 +342,7 @@ begin
           exit if arg == 'wmiirc'
 
         when 'BarClick'
-          WM.showView arg
+          WM.focus_view arg
 
         when 'ClientClick'
           client, button = arg.split

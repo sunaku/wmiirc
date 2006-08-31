@@ -132,12 +132,12 @@ class Wmii
   end
 
   # Shows the view with the given name.
-  def showView aName
+  def focus_view aName
     View.new(self, "/#{aName}").focus!
   end
 
   # Shows a WM menu with the given content and returns its output.
-  def showMenu aContent
+  def show_menu aContent
     output = nil
 
     IO.popen('wmiimenu', 'r+') do |menu|
@@ -151,7 +151,7 @@ class Wmii
   end
 
   # Shows the client which has the given ID.
-  def showClient aClientId
+  def focus_client aClientId
     views.each do |v|
       v.areas.each do |a|
         a.clients.each do |c|
@@ -169,19 +169,19 @@ class Wmii
   DETACHED_TAG = 'status'
 
   # Detach the currently selected client
-  def detachClient
+  def detach_current_client
     current_client.tags = DETACHED_TAG
   end
 
   # Attach the most recently detached client
-  def attachClient
+  def attach_last_client
     if c = View.new(self, "/#{DETACHED_TAG}").areas.first.clients.first
       c.tags = read('/view/name')
     end
   end
 
   # Changes the current view to an adjacent one (:left or :right).
-  def cycleView aTarget
+  def cycle_view aTarget
     tags = self.tags
     curTag = current_view.name
     curIndex = tags.index(curTag)
@@ -199,12 +199,12 @@ class Wmii
 
       end % tags.length
 
-    showView tags[newIndex]
+    focus_view tags[newIndex]
   end
 
 =begin
   # Renames the given view and sends its clients along for the ride.
-  def renameView aOld, aNew
+  def rename_view aOld, aNew
     read('/client').split.each do |id|
       tags = read("/client/#{id}/tags")
 
@@ -214,7 +214,7 @@ class Wmii
 =end
 
   # Applies wmii-2 style tiling layout to the current view while maintaining the order of clients in the current view. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any teritiary, quaternary, etc. columns are squeezed into the *bottom* of the secondary column.
-  def applyTilingLayout
+  def apply_tiling_layout
     areaList = read('/view').split.grep(/^[^0]\d*$/)
 
     unless areaList.empty?
@@ -244,7 +244,7 @@ class Wmii
   end
 
   # Applies wmii-2 style grid layout to the current view while maintaining the order of clients in the current view. If the maximum number of clients per column, the distribution of clients among the columns is calculated according to wmii-2 style. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any teritiary, quaternary, etc. columns are squeezed into the *bottom* of the secondary column.
-  def applyGridLayout aMaxClientsPerColumn = nil
+  def apply_grid_layout aMaxClientsPerColumn = nil
     # determine client distribution
       unless aMaxClientsPerColumn
         numClients = 0
@@ -304,7 +304,7 @@ class Wmii
   end
 
   # Returns a list of program names available in the given paths.
-  def findPrograms *aPaths
+  def find_programs *aPaths
     list = []
 
     Find.find(*aPaths) do |f|
