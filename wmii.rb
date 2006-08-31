@@ -65,21 +65,25 @@ class Wmii
     View.new(self, "/#{SELECTION_TAG}").unselect!
   end
 
-  # Invokes the given block upon all selected clients in the current view. If there are no selected clients, then the block is invoked upon the currently focused client.
-  def with_selection # :yields: client
-    # determine selected clients in current view
-      clientList = current_view.areas.map do |a|
-        a.clients.select do |c|
-          c.tags.include? SELECTION_TAG
-        end
+  # Returns a list of all selected clients in the current view. If there are no selected clients, then the currently focused client is returned in the list.
+  def selection
+    clientList = current_view.areas.map do |a|
+      a.clients.select do |c|
+        c.tags.include? SELECTION_TAG
       end
-      clientList.flatten!
+    end
+    clientList.flatten!
 
     if clientList.empty?
       clientList << current_client
     end
 
-    clientList.each do |c|
+    clientList
+  end
+
+  # Invokes the given block upon all selected clients in the current view. If there are no selected clients, then the block is invoked upon the currently focused client.
+  def with_selection # :yields: client
+    selection.each do |c|
       c.focus!
       yield c
     end
@@ -329,7 +333,11 @@ class Wmii
     end
 
     def method_missing aMeth
-      @wm.read("#{@path}/#{aMeth}")
+      if content = @wm.read("#{@path}/#{aMeth}")
+        content
+      else
+        super
+      end
     end
   end
 

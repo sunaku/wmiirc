@@ -103,8 +103,9 @@ SHORTCUTS = {
   "#{LAYOUT}t" => lambda do WM.applyTilingLayout end,
   "#{LAYOUT}g" => lambda do WM.applyGridLayout end,
 
-  "#{GROUP}g" => lambda do WM.current_client.select! end,
+  "#{GROUP}g" => lambda do WM.current_client.invert_selection! end,
   "#{GROUP}a" => lambda do WM.current_view.select! end,
+  "#{GROUP}i" => lambda do WM.current_view.invert_selection! end,
   "#{GROUP}n" => lambda do WM.select_none end,
 
 
