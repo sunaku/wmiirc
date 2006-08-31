@@ -353,7 +353,10 @@ SHORTCUTS = {
 
   ('a'..'z').each do |char|
     SHORTCUTS["#{MENU}v,#{char}"] = lambda do
-      if view = WM.tags.select {|t| t =~ /^#{char}/i}.first
+      choices = WM.tags
+      choices.delete WM.current_view.name
+
+      if view = choices.select {|t| t =~ /^#{char}/i}.first
         WM.focus_view view
       end
     end
@@ -391,15 +394,31 @@ begin
     while event = io.readline.chomp
       type, arg = event.split($;, 2)
 
-      p event, type, arg if $DEBUG
-
       case type
         when 'Start'
           exit if arg == 'wmiirc'
 
         when 'BarClick'
           view, button = arg.split
-          WM.focus_view view
+
+          case button.to_i
+            when 1
+              WM.focus_view view
+
+            when 2
+              WM.selected_clients.each do |c|
+                c.with_tags do
+                  push view
+                end
+              end
+
+            when 3
+              WM.selected_clients.each do |c|
+                c.with_tags do
+                  delete view
+                end
+              end
+          end
 
         when 'ClientClick'
           client, button = arg.split

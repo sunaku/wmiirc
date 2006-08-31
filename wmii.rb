@@ -331,8 +331,10 @@ class Wmii < IxpFile
 
   # Attach the most recently detached client
   def attach_last_client
-    if c = View.new("/#{DETACHED_TAG}").areas.last.clients.last
-      c.tags = read('/view/name')
+    if a = View.new("/#{DETACHED_TAG}").areas.first
+      if c = a.clients.first
+        c.tags = read('/view/name')
+      end
     end
   end
 
@@ -434,7 +436,8 @@ class Wmii < IxpFile
 
     # Modifies the tags associated with this client.
     def tags= *aTags
-      write "#{@path}/tags", aTags.flatten.uniq.join(TAG_DELIMITER)
+      t = aTags.flatten.uniq
+      write "#{@path}/tags", t.join(TAG_DELIMITER) unless t.empty?
     end
 
     # Invokes the given block within the context of this client's list of tags.
