@@ -262,20 +262,6 @@ SHORTCUTS = {
     SHORTCUTS["#{LAYOUT}z"].call
   end,
 
-=begin
-  # rename the current view
-  # NOTE: columns & layouts are not preserved
-  "#{SEND}r" => lambda do
-    old = WM.read('/view/name')
-    new = WM.show_menu(WM.read('/tags'))
-
-    unless new.empty?
-      WM.rename_view old, new
-      WM.focus_view new
-    end
-  end,
-=end
-
 
   "#{SWAP}#{LEFT}" => lambda do WM.write '/view/sel/sel/ctl', 'swap prev' end,
   "#{SWAP}#{RIGHT}" => lambda do WM.write '/view/sel/sel/ctl', 'swap next' end,

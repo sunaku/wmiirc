@@ -200,17 +200,6 @@ class Wmii
     focus_view tags[newIndex]
   end
 
-=begin
-  # Renames the given view and sends its clients along for the ride.
-  def rename_view aOld, aNew
-    read('/client').split.each do |id|
-      tags = read("/client/#{id}/tags")
-
-      write "/client/#{id}/tags", tags.gsub(aOld, aNew).squeeze('+')
-    end
-  end
-=end
-
   # Applies wmii-2 style tiling layout to the current view while maintaining the order of clients in the current view. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any teritiary, quaternary, etc. columns are squeezed into the *bottom* of the secondary column.
   def apply_tiling_layout
     areaList = read('/view').split.grep(/^[^0]\d*$/)
