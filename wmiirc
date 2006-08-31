@@ -1,24 +1,24 @@
 #!/usr/bin/ruby -w
 # wmii-3 configuration, written in Ruby.
 =begin
-	Copyright 2006 Suraj N. Kurapati
+  Copyright 2006 Suraj N. Kurapati
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =end
 
-ENV['LC_ALL'] = 'te_IN.UTF-8'
+#ENV['LC_ALL'] = 'te_IN.UTF-8'
 
 $: << File.dirname(__FILE__)
 require 'wmii'
@@ -83,143 +83,148 @@ SWAP="#{SELECT}w,"
 LAYOUT="#{SELECT}z,"
 MENU="#{SELECT}"
 PROGRAM="#{SELECT}"
+GROUP="#{SELECT}g,"
 
 SHORTCUTS = {
-	"#{SELECT}#{LEFT}" => lambda do WM.write '/view/ctl', 'select prev' end,
-	"#{SELECT}#{RIGHT}" => lambda do WM.write '/view/ctl', 'select next' end,
-	"#{SELECT}#{DOWN}" => lambda do WM.write '/view/sel/ctl', 'select next' end,
-	"#{SELECT}#{UP}" => lambda do WM.write '/view/sel/ctl', 'select prev' end,
-	"#{SELECT}space" => lambda do WM.write '/view/ctl', 'select toggle' end,
+  "#{SELECT}#{LEFT}" => lambda do WM.write '/view/ctl', 'select prev' end,
+  "#{SELECT}#{RIGHT}" => lambda do WM.write '/view/ctl', 'select next' end,
+  "#{SELECT}#{DOWN}" => lambda do WM.write '/view/sel/ctl', 'select next' end,
+  "#{SELECT}#{UP}" => lambda do WM.write '/view/sel/ctl', 'select prev' end,
+  "#{SELECT}space" => lambda do WM.write '/view/ctl', 'select toggle' end,
 
-	"#{SELECT}comma" => lambda do WM.cycleView :left end,
-	"#{SELECT}period" => lambda do WM.cycleView :right end,
-
-
-	"#{LAYOUT}w" => lambda do WM.write '/view/sel/mode', 'default' end,
-	"#{LAYOUT}v" => lambda do WM.write '/view/sel/mode', 'stack' end,
-	"#{LAYOUT}m" => lambda do WM.write '/view/sel/mode', 'max' end,
-	"#{LAYOUT}z" => lambda do WM.write '/view/0/sel/geom', '0 0 east south' end,
-
-	"#{LAYOUT}t" => lambda do WM.applyTilingLayout end,
-	"#{LAYOUT}g" => lambda do WM.applyGridLayout end,
+  "#{SELECT}comma" => lambda do WM.cycleView :left end,
+  "#{SELECT}period" => lambda do WM.cycleView :right end,
 
 
-	"#{MENU}i" => lambda do
-		action = WM.showMenu(ACTION_MENU)
-		system(action << '&') unless action.empty?
-	end,
+  "#{LAYOUT}w" => lambda do WM.write '/view/sel/mode', 'default' end,
+  "#{LAYOUT}v" => lambda do WM.write '/view/sel/mode', 'stack' end,
+  "#{LAYOUT}m" => lambda do WM.write '/view/sel/mode', 'max' end,
+  "#{LAYOUT}z" => lambda do WM.write '/view/0/sel/geom', '0 0 east south' end,
 
-	"#{MENU}e" => lambda do
-		program = WM.showMenu(PROGRAM_MENU)
-		system(program << '&') unless program.empty?
-	end,
+  "#{LAYOUT}t" => lambda do WM.applyTilingLayout end,
+  "#{LAYOUT}g" => lambda do WM.applyGridLayout end,
 
-	"#{MENU}v" => lambda do WM.showView(WM.showMenu(WM.read('/tags'))) end,
-
-	# focus any client by choosing from a menu
-	"#{MENU}a" => lambda do
-		# prepare a list of menu choices
-		choices = WM.read('/client').split.inject([]) do |acc, id|
-			tags = WM.read("/client/#{id}/tags")
-			name = WM.read("/client/#{id}/name").downcase
-
-			acc << format("%d. [%s] %s", id, tags, name)
-		end
+  "#{GROUP}g" => lambda do WM.select_current_client end,
+  "#{GROUP}a" => lambda do WM.select_current_view end,
+  "#{GROUP}n" => lambda do WM.select_none end,
 
 
-		# show the menu and focus the chosen client
-		target = WM.showMenu(choices.join("\n"))
+  "#{MENU}i" => lambda do
+    action = WM.showMenu(ACTION_MENU)
+    system(action << '&') unless action.empty?
+  end,
 
-		unless target.empty?
-			WM.showClient target.scan(/\d+/).first
-		end
-	end,
+  "#{MENU}e" => lambda do
+    program = WM.showMenu(PROGRAM_MENU)
+    system(program << '&') unless program.empty?
+  end,
 
+  "#{MENU}v" => lambda do WM.showView(WM.showMenu(WM.read('/tags'))) end,
 
-	"#{PROGRAM}x" => lambda do system 'terminal &' end,
-	"#{PROGRAM}k" => lambda do system 'epiphany &' end,
-	"#{PROGRAM}j" => lambda do system 'nautilus --no-desktop &' end,
+  # focus any client by choosing from a menu
+  "#{MENU}a" => lambda do
+    # prepare a list of menu choices
+    choices = WM.read('/client').split.inject([]) do |acc, id|
+      tags = WM.read("/client/#{id}/tags")
+      name = WM.read("/client/#{id}/name").downcase
 
-
-	"#{SEND}#{LEFT}" => lambda do WM.write '/view/sel/sel/ctl', 'sendto prev' end,
-	"#{SEND}#{RIGHT}" => lambda do WM.write '/view/sel/sel/ctl', 'sendto next' end,
-	"#{SEND}space" => lambda do WM.write '/view/sel/sel/ctl', 'sendto toggle' end,
-	"#{SEND}Delete" => lambda do WM.write '/view/sel/sel/ctl', 'kill' end,
-
-	# change the tag of the current client
-	# +tag -tag idea from Jonas Pfenniger <http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby>
-	"#{SEND}t" => lambda do
-		choices = WM.read('/tags').split.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
-		tags = WM.read('/view/sel/sel/tags').split('+')
-
-		case target = WM.showMenu(choices.join("\n"))
-			when /^\+/
-				tags << $'
-
-			when /^\-/
-				tags.delete $'
-
-			else
-				tags = [target]
-		end
-
-		WM.write '/view/sel/sel/tags', tags.join('+')
-	end,
-
-	"#{SEND}d" => lambda do WM.detachClient end,
-	"#{SEND}a" => lambda do WM.attachClient end,
-
-	# toggle maximizing the current client to full screen
-	"#{SEND}m" => lambda do
-		SHORTCUTS["#{SEND}space"].call
-		SHORTCUTS["#{LAYOUT}z"].call
-	end,
-
-	# rename the current view
-	# NOTE: columns & layouts are not preserved
-	"#{SEND}r" => lambda do
-		old = WM.read('/view/name')
-		new = WM.showMenu(WM.read('/tags'))
-
-		unless new.empty?
-			WM.renameView old, new
-			WM.showView new
-		end
-	end,
+      acc << format("%d. [%s] %s", id, tags, name)
+    end
 
 
-	"#{SWAP}#{LEFT}" => lambda do WM.write '/view/sel/sel/ctl', 'swap prev' end,
-	"#{SWAP}#{RIGHT}" => lambda do WM.write '/view/sel/sel/ctl', 'swap next' end,
-	"#{SWAP}#{DOWN}" => lambda do WM.write '/view/sel/sel/ctl', 'swap down' end,
-	"#{SWAP}#{UP}" => lambda do WM.write '/view/sel/sel/ctl', 'swap up' end,
+    # show the menu and focus the chosen client
+    target = WM.showMenu(choices.join("\n"))
+
+    unless target.empty?
+      WM.showClient target.scan(/\d+/).first
+    end
+  end,
+
+
+  "#{PROGRAM}x" => lambda do system 'terminal &' end,
+  "#{PROGRAM}k" => lambda do system 'epiphany &' end,
+  "#{PROGRAM}j" => lambda do system 'nautilus --no-desktop &' end,
+
+
+  "#{SEND}#{LEFT}" => lambda do WM.write '/view/sel/sel/ctl', 'sendto prev' end,
+  "#{SEND}#{RIGHT}" => lambda do WM.write '/view/sel/sel/ctl', 'sendto next' end,
+  "#{SEND}space" => lambda do WM.write '/view/sel/sel/ctl', 'sendto toggle' end,
+  "#{SEND}Delete" => lambda do WM.write '/view/sel/sel/ctl', 'kill' end,
+
+  # change the tag of the current client
+  # +tag -tag idea from Jonas Pfenniger <http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby>
+  "#{SEND}t" => lambda do
+    choices = WM.read('/tags').split.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
+    tags = WM.read('/view/sel/sel/tags').split('+')
+
+    case target = WM.showMenu(choices.join("\n"))
+      when /^\+/
+        tags << $'
+
+      when /^\-/
+        tags.delete $'
+
+      else
+        tags = [target]
+    end
+
+    WM.write '/view/sel/sel/tags', tags.join('+')
+  end,
+
+  "#{SEND}d" => lambda do WM.detachClient end,
+  "#{SEND}Shift-d" => lambda do WM.attachClient end,
+
+  # toggle maximizing the current client to full screen
+  "#{SEND}m" => lambda do
+    SHORTCUTS["#{SEND}space"].call
+    SHORTCUTS["#{LAYOUT}z"].call
+  end,
+
+  # rename the current view
+  # NOTE: columns & layouts are not preserved
+  "#{SEND}r" => lambda do
+    old = WM.read('/view/name')
+    new = WM.showMenu(WM.read('/tags'))
+
+    unless new.empty?
+      WM.renameView old, new
+      WM.showView new
+    end
+  end,
+
+
+  "#{SWAP}#{LEFT}" => lambda do WM.write '/view/sel/sel/ctl', 'swap prev' end,
+  "#{SWAP}#{RIGHT}" => lambda do WM.write '/view/sel/sel/ctl', 'swap next' end,
+  "#{SWAP}#{DOWN}" => lambda do WM.write '/view/sel/sel/ctl', 'swap down' end,
+  "#{SWAP}#{UP}" => lambda do WM.write '/view/sel/sel/ctl', 'swap up' end,
 }
 
-	# keyboard access to views (shown as labels on the WM bar)
-	10.times do |i|
-		k = (i - 1) % 10	# associate '1' with the leftmost label, instead of '0'
+  # keyboard access to views (shown as labels on the WM bar)
+  10.times do |i|
+    k = (i - 1) % 10	# associate '1' with the leftmost label, instead of '0'
 
-		SHORTCUTS["#{SELECT}#{i}"] = lambda do WM.showView(WM.read('/tags').split[k] || i) end
-		SHORTCUTS["#{SEND}#{i}"] = lambda do WM.write '/view/sel/sel/tags', (WM.read('/tags').split[k] || i) end
-		SHORTCUTS["#{LAYOUT}#{i}"] = lambda do WM.applyGridLayout i end
+    SHORTCUTS["#{SELECT}#{i}"] = lambda do WM.showView(WM.read('/tags').split[k] || i) end
+    SHORTCUTS["#{SEND}#{i}"] = lambda do WM.write '/view/sel/sel/tags', (WM.read('/tags').split[k] || i) end
+    SHORTCUTS["#{LAYOUT}#{i}"] = lambda do WM.applyGridLayout i end
 
 
-		# shortcuts for adding and removing tags of a client
-		SHORTCUTS["#{SEND}equal,#{i}"] =
-		SHORTCUTS["#{SEND}Shift-equal,#{i}"] = lambda do
-			tags = WM.read('/view/sel/sel/tags').split('+')
-			tags.push WM.read('/tags').split[k] || i
+    # shortcuts for adding and removing tags of a client
+    SHORTCUTS["#{SEND}equal,#{i}"] =
+    SHORTCUTS["#{SEND}Shift-equal,#{i}"] = lambda do
+      tags = WM.read('/view/sel/sel/tags').split('+')
+      tags.push WM.read('/tags').split[k] || i
 
-			WM.write '/view/sel/sel/tags', tags.uniq.join('+')
-		end
+      WM.write '/view/sel/sel/tags', tags.uniq.join('+')
+    end
 
-		SHORTCUTS["#{SEND}minus,#{i}"] = lambda do
-			tags = WM.read('/view/sel/sel/tags').split('+')
+    SHORTCUTS["#{SEND}minus,#{i}"] = lambda do
+      tags = WM.read('/view/sel/sel/tags').split('+')
 
-			if tags.delete WM.read('/tags').split[k] || i
-				WM.write '/view/sel/sel/tags', tags.join('+')
-			end
-		end
-	end
+      if tags.delete WM.read('/tags').split[k] || i
+        WM.write '/view/sel/sel/tags', tags.join('+')
+      end
+    end
+  end
 
 WM.write '/def/grabmod', MODKEY
 WM.write '/def/keys', SHORTCUTS.keys.join("\n")
@@ -227,24 +232,24 @@ WM.write '/def/keys', SHORTCUTS.keys.join("\n")
 
 # EVENT LOOP
 begin
-	IO.popen('wmiir read /event') do |io|
-		while event = io.readline.chomp
-			type, arg = event.split
+  IO.popen('wmiir read /event') do |io|
+    while event = io.readline.chomp
+      type, arg = event.split
 
-			p event, type, arg if $DEBUG
+      p event, type, arg if $DEBUG
 
-			case type
-				when 'Start'
-					exit if arg == 'wmiirc'
+      case type
+        when 'Start'
+          exit if arg == 'wmiirc'
 
-				when 'BarClick'
-					WM.showView arg
+        when 'BarClick'
+          WM.showView arg
 
-				when 'Key'
-					SHORTCUTS[arg].call
-			end
-		end
-	end
+        when 'Key'
+          SHORTCUTS[arg].call
+      end
+    end
+  end
 rescue EOFError
-	exit # wmiiwm has quit
+  exit # wmiiwm has quit
 end
