@@ -99,15 +99,15 @@ class Wmii
   #
 
   def current_client
-    Client.new(self, "/view/sel/sel")
+    Client.new("/view/sel/sel")
   end
 
   def current_area
-    Area.new(self, "/view/sel")
+    Area.new("/view/sel")
   end
 
   def current_view
-    View.new(self, "/view")
+    View.new("/view")
   end
 
   def tags
@@ -119,7 +119,7 @@ class Wmii
   end
 
   def clients
-    Area.new(self, "/client").clients
+    Area.new("/client").clients
   end
 
 
@@ -129,7 +129,7 @@ class Wmii
 
   # Focuses the view with the given name.
   def focus_view aName
-    View.new(self, "/#{aName}").focus!
+    View.new("/#{aName}").focus!
   end
 
   # Focuses the client which has the given ID.
@@ -285,7 +285,7 @@ class Wmii
   end
 
   def select_none
-    View.new(self, "/#{SELECTION_TAG}").unselect!
+    View.new("/#{SELECTION_TAG}").unselect!
   end
 
 
@@ -300,7 +300,7 @@ class Wmii
 
   # Attach the most recently detached client
   def attach_last_client
-    if c = View.new(self, "/#{DETACHED_TAG}").areas.first.clients.first
+    if c = View.new("/#{DETACHED_TAG}").areas.first.clients.first
       c.tags = read('/view/name')
     end
   end
@@ -346,8 +346,8 @@ class Wmii
   class IxpFile
     attr_reader :wm, :path
 
-    def initialize aWmii, aPath
-      @wm = aWmii
+    def initialize aPath
+      @wm = Wmii.instance
       @path = aPath
       @subordinateClass = nil
     end
@@ -377,7 +377,7 @@ class Wmii
 
     def subordinates
       if @subordinateClass
-        indices.map {|i| @subordinateClass.new @wm, "#{@path}/#{i}"}
+        indices.map {|i| @subordinateClass.new "#{@path}/#{i}"}
       else
         []
       end

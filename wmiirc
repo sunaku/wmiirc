@@ -348,7 +348,7 @@ WM.write '/def/keys', SHORTCUTS.keys.join("\n")
 
 # display time and system status in the bar
   Thread.new do
-    status = Wmii::IxpFile.new(WM, "/bar/status")
+    status = Wmii::IxpFile.new("/bar/status")
     WM.create status.path
 
     status.colors = ENV['WMII_NORMCOLORS']
