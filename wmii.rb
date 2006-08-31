@@ -151,18 +151,13 @@ class Wmii
 
   # Detach the currently selected client
   def detachClient
-    write '/view/sel/sel/tags', DETACHED_TAG
+    current_client.tags = DETACHED_TAG
   end
 
   # Attach the most recently detached client
   def attachClient
-    if areaList = read("/#{DETACHED_TAG}")
-      areaList.split.grep(/^\d+$/).reverse.each do |area|
-        if client = read("/#{DETACHED_TAG}/#{area}").split.grep(/^\d+$/).last
-          write "/#{DETACHED_TAG}/#{area}/#{client}/tags", read('/view/name')
-          return
-        end
-      end
+    if c = View.new(self, "/#{DETACHED_TAG}").areas.first.clients.first
+      c.tags = read('/view/name')
     end
   end
 
@@ -368,8 +363,8 @@ class Wmii
       @wm.read("#{@path}/tags").split(TAG_DELIMITER)
     end
 
-    def tags= aTags
-      @wm.write "#{@path}/tags", aTags.uniq.join(TAG_DELIMITER)
+    def tags= *aTags
+      @wm.write "#{@path}/tags", aTags.flatten.uniq.join(TAG_DELIMITER)
     end
 
     # Invokes the given block with this client's tags and reapplies them to this client.
