@@ -27,14 +27,10 @@ require 'wmii'
 #
 
 WM = Wmii.new
-
-# terminate existing wmiirc processes
-  WM.event = "Start wmiirc\n"
+WM.event = "Start wmiirc\n" # terminate existing wmiirc processes
 
 PROGRAM_MENU = WM.find_programs(*ENV['PATH'].split(':')).join("\n")
 ACTION_MENU = WM.find_programs('/home/sun/dry/apps/wmii/etc/wmii-3', '~/.wmii-3').join("\n")
-
-# system 'xsetroot -solid "#333333"'
 
 
 ##
@@ -50,30 +46,28 @@ ENV['WMII_NORMCOLORS']='#222222 #eeeeee #666666'
 # WM CONFIGURATION
 #
 
-WM.config.instance_eval do
-  border = 2
+WM.config.border = 2
 
-  font = ENV['WMII_FONT']
-  selcolors = ENV['WMII_SELCOLORS']
-  normcolors = ENV['WMII_NORMCOLORS']
+WM.config.font = ENV['WMII_FONT']
+WM.config.selcolors = ENV['WMII_SELCOLORS']
+WM.config.normcolors = ENV['WMII_NORMCOLORS']
 
-  colmode = 'default'
-  colwidth = 0
+WM.config.colmode = 'default'
+WM.config.colwidth = 0
 
-  rules = <<-EOS.gsub(/^\s+/, '')
-    /QEMU.*/ -> ~
-    /jEdit.*/ -> code
-    /Buddy List.*/ -> chat
-    /XChat.*/ -> chat
-    /.*thunderbird.*/ -> mail
-    /Gimp.*/ -> gimp
-    /MPlayer.*/ -> ~
-    /xconsole.*/ -> ~
-    /alsamixer.*/ -> ~
-    /.*/ -> !
-    /.*/ -> 1
-  EOS
-end
+WM.config.rules = <<EOS
+  /QEMU.*/ -> ~
+  /jEdit.*/ -> code
+  /Buddy List.*/ -> chat
+  /XChat.*/ -> chat
+  /.*thunderbird.*/ -> mail
+  /Gimp.*/ -> gimp
+  /MPlayer.*/ -> ~
+  /xconsole.*/ -> ~
+  /alsamixer.*/ -> ~
+  /.*/ -> !
+  /.*/ -> 1
+EOS
 
 
 ##
