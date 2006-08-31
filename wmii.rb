@@ -1,4 +1,3 @@
-# Ruby interface to WMII.
 =begin
   Copyright 2006 Suraj N. Kurapati
   Copyright 2006 Stephan Maka
@@ -22,7 +21,6 @@ $:.unshift File.join(File.dirname(__FILE__), 'ruby-ixp', 'lib')
 require 'ixp'
 
 require 'find'
-require 'singleton'
 
 
 # Encapsulates access to a file in the IXP file system
@@ -96,17 +94,15 @@ class IxpFile
   def method_missing aMeth, *aArgs
     if aMeth.to_s =~ /=$/
       write "#{@path}/#{$`}", *aArgs
-
     elsif content = read("#{@path}/#{aMeth}")
       content
-
     else
       super
-
     end
   end
 end
 
+# Ruby interface to WMII.
 class Wmii < IxpFile
   SELECTION_TAG = 'SEL'
   DETACHED_TAG = 'status'
