@@ -18,8 +18,6 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =end
 
-#ENV['LC_ALL'] = 'te_IN.UTF-8'
-
 $: << File.dirname(__FILE__)
 require 'wmii'
 
@@ -85,28 +83,79 @@ PROGRAM="#{SELECT}"
 GROUP="#{SELECT}g,"
 
 SHORTCUTS = {
-  "#{SELECT}#{LEFT}" => lambda do WM.write '/view/ctl', 'select prev' end,
-  "#{SELECT}#{RIGHT}" => lambda do WM.write '/view/ctl', 'select next' end,
-  "#{SELECT}#{DOWN}" => lambda do WM.write '/view/sel/ctl', 'select next' end,
-  "#{SELECT}#{UP}" => lambda do WM.write '/view/sel/ctl', 'select prev' end,
-  "#{SELECT}space" => lambda do WM.write '/view/ctl', 'select toggle' end,
+  "#{SELECT}#{LEFT}" => lambda do
+    WM.write '/view/ctl', 'select prev'
+  end,
 
-  "#{SELECT}comma" => lambda do WM.cycleView :left end,
-  "#{SELECT}period" => lambda do WM.cycleView :right end,
+  "#{SELECT}#{RIGHT}" => lambda do
+     WM.write '/view/ctl', 'select next'
+  end,
+
+  "#{SELECT}#{DOWN}" => lambda do
+     WM.write '/view/sel/ctl', 'select next'
+  end,
+
+  "#{SELECT}#{UP}" => lambda do
+     WM.write '/view/sel/ctl', 'select prev'
+  end,
+
+  "#{SELECT}space" => lambda do
+     WM.write '/view/ctl', 'select toggle'
+  end,
 
 
-  "#{LAYOUT}w" => lambda do WM.write '/view/sel/mode', 'default' end,
-  "#{LAYOUT}v" => lambda do WM.write '/view/sel/mode', 'stack' end,
-  "#{LAYOUT}m" => lambda do WM.write '/view/sel/mode', 'max' end,
-  "#{LAYOUT}z" => lambda do WM.write '/view/0/sel/geom', '0 0 east south' end,
+  "#{SELECT}comma" => lambda do
+     WM.cycleView :left
+  end,
 
-  "#{LAYOUT}t" => lambda do WM.applyTilingLayout end,
-  "#{LAYOUT}g" => lambda do WM.applyGridLayout end,
+  "#{SELECT}period" => lambda do
+     WM.cycleView :right
+  end,
 
-  "#{GROUP}g" => lambda do WM.current_client.invert_selection! end,
-  "#{GROUP}a" => lambda do WM.current_view.select! end,
-  "#{GROUP}i" => lambda do WM.current_view.invert_selection! end,
-  "#{GROUP}n" => lambda do WM.select_none end,
+
+
+  "#{LAYOUT}w" => lambda do
+     WM.write '/view/sel/mode', 'default'
+  end,
+
+  "#{LAYOUT}v" => lambda do
+     WM.write '/view/sel/mode', 'stack'
+  end,
+
+  "#{LAYOUT}m" => lambda do
+     WM.write '/view/sel/mode', 'max'
+  end,
+
+  "#{LAYOUT}z" => lambda do
+     WM.write '/view/0/sel/geom', '0 0 east south'
+  end,
+
+
+  "#{LAYOUT}t" => lambda do
+     WM.applyTilingLayout
+  end,
+
+  "#{LAYOUT}g" => lambda do
+     WM.applyGridLayout
+  end,
+
+
+  "#{GROUP}g" => lambda do
+     WM.current_client.invert_selection!
+  end,
+
+  "#{GROUP}a" => lambda do
+     WM.current_view.select!
+  end,
+
+  "#{GROUP}i" => lambda do
+     WM.current_view.invert_selection!
+  end,
+
+  "#{GROUP}n" => lambda do
+     WM.select_none
+  end,
+
 
 
   "#{MENU}i" => lambda do
@@ -147,51 +196,63 @@ SHORTCUTS = {
 
 
   "#{SEND}#{LEFT}" => lambda do
-    WM.with_selection do
-      WM.write '/view/sel/sel/ctl', 'sendto prev'
+    WM.selected_clients.each do |c|
+      c.control 'sendto prev'
     end
   end,
 
   "#{SEND}#{RIGHT}" => lambda do
-    WM.with_selection do
-      WM.write '/view/sel/sel/ctl', 'sendto next'
+    WM.selected_clients.each do |c|
+      c.control 'sendto next'
     end
   end,
 
   "#{SEND}space" => lambda do
-    WM.with_selection do
-      WM.write '/view/sel/sel/ctl', 'sendto toggle'
+    WM.selected_clients.each do |c|
+      c.control 'sendto toggle'
     end
   end,
 
   "#{SEND}Delete" => lambda do
-    WM.with_selection do
-      WM.write '/view/sel/sel/ctl', 'kill'
+    WM.selected_clients.each do |c|
+      c.control 'kill'
     end
   end,
 
   # change the tag of the current client
   # +tag -tag idea from Jonas Pfenniger <http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby>
   "#{SEND}t" => lambda do
-    choices = WM.read('/tags').split.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
-    tags = WM.read('/view/sel/sel/tags').split('+')
+    choices = WM.tags.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
+    target = WM.showMenu(choices.join("\n"))
 
-    case target = WM.showMenu(choices.join("\n"))
-      when /^\+/
-        tags << $'
+    WM.selected_clients.each do |c|
+      c.with_tags do
+        case target
+          when /^\+/
+            push $'
 
-      when /^\-/
-        tags.delete $'
+          when /^\-/
+            delete $'
 
-      else
-        tags = [target]
+          else
+            clear
+            push target
+        end
+      end
     end
-
-    WM.write '/view/sel/sel/tags', tags.join('+')
   end,
 
-  "#{SEND}d" => lambda do WM.detachClient end,
-  "#{SEND}Shift-d" => lambda do WM.attachClient end,
+  "#{SEND}d" => lambda do
+    # WM.with_selection do
+      WM.detachClient
+    # end
+  end,
+
+  "#{SEND}Shift-d" => lambda do
+    # WM.with_selection do
+      WM.attachClient
+    # end
+  end,
 
   # toggle maximizing the current client to full screen
   "#{SEND}m" => lambda do
@@ -199,6 +260,7 @@ SHORTCUTS = {
     SHORTCUTS["#{LAYOUT}z"].call
   end,
 
+=begin
   # rename the current view
   # NOTE: columns & layouts are not preserved
   "#{SEND}r" => lambda do
@@ -210,6 +272,7 @@ SHORTCUTS = {
       WM.showView new
     end
   end,
+=end
 
 
   "#{SWAP}#{LEFT}" => lambda do WM.write '/view/sel/sel/ctl', 'swap prev' end,
@@ -222,28 +285,42 @@ SHORTCUTS = {
   10.times do |i|
     k = (i - 1) % 10	# associate '1' with the leftmost label, instead of '0'
 
-    SHORTCUTS["#{SELECT}#{i}"] = lambda do WM.showView(WM.read('/tags').split[k] || i) end
-    SHORTCUTS["#{SEND}#{i}"] = lambda do WM.write '/view/sel/sel/tags', (WM.read('/tags').split[k] || i) end
-    SHORTCUTS["#{LAYOUT}#{i}"] = lambda do WM.applyGridLayout i end
+    SHORTCUTS["#{SELECT}#{i}"] = lambda do
+      WM.showView(WM.read('/tags').split[k] || i)
+    end
+
+    SHORTCUTS["#{SEND}#{i}"] = lambda do
+      WM.write '/view/sel/sel/tags', (WM.read('/tags').split[k] || i)
+    end
+
+    SHORTCUTS["#{LAYOUT}#{i}"] = lambda do
+      WM.applyGridLayout i
+    end
 
 
     # shortcuts for adding and removing tags of a client
     SHORTCUTS["#{SEND}equal,#{i}"] =
     SHORTCUTS["#{SEND}Shift-equal,#{i}"] = lambda do
-      WM.current_client.with_tags do
-        push(WM.tags[k] || i)
+      WM.selected_clients.each do |c|
+        c.with_tags do
+          push(WM.tags[k] || i)
+        end
       end
     end
 
     SHORTCUTS["#{SEND}minus,#{i}"] = lambda do
-      WM.current_client.with_tags do
-        delete(WM.tags[k] || i)
+      WM.selected_clients.each do |c|
+        c.with_tags do
+          delete(WM.tags[k] || i)
+        end
       end
     end
 
     SHORTCUTS["#{SEND}Shift-minus"] = lambda do
-      WM.current_client.with_tags do
-        delete WM.current_view.name
+      WM.selected_clients.each do |c|
+        c.with_tags do
+          delete WM.current_view.name
+        end
       end
     end
   end
@@ -256,7 +333,7 @@ WM.write '/def/keys', SHORTCUTS.keys.join("\n")
 begin
   IO.popen('wmiir read /event') do |io|
     while event = io.readline.chomp
-      type, arg = event.split
+      type, arg = event.split($;, 2)
 
       p event, type, arg if $DEBUG
 
@@ -266,6 +343,10 @@ begin
 
         when 'BarClick'
           WM.showView arg
+
+        when 'ClientClick'
+          client, button = arg.split
+          Wmii::Client.new(WM, "/client/#{client}").invert_selection!
 
         when 'Key'
           SHORTCUTS[arg].call

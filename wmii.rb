@@ -66,7 +66,7 @@ class Wmii
   end
 
   # Returns a list of all selected clients in the current view. If there are no selected clients, then the currently focused client is returned in the list.
-  def selection
+  def selected_clients
     clientList = current_view.areas.map do |a|
       a.clients.select do |c|
         c.tags.include? SELECTION_TAG
@@ -79,14 +79,6 @@ class Wmii
     end
 
     clientList
-  end
-
-  # Invokes the given block upon all selected clients in the current view. If there are no selected clients, then the block is invoked upon the currently focused client.
-  def with_selection # :yields: client
-    selection.each do |c|
-      c.focus!
-      yield c
-    end
   end
 
   # Creates the given WM path.
@@ -210,6 +202,7 @@ class Wmii
     showView tags[newIndex]
   end
 
+=begin
   # Renames the given view and sends its clients along for the ride.
   def renameView aOld, aNew
     read('/client').split.each do |id|
@@ -218,6 +211,7 @@ class Wmii
       write "/client/#{id}/tags", tags.gsub(aOld, aNew).squeeze('+')
     end
   end
+=end
 
   # Applies wmii-2 style tiling layout to the current view while maintaining the order of clients in the current view. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any teritiary, quaternary, etc. columns are squeezed into the *bottom* of the secondary column.
   def applyTilingLayout
@@ -358,6 +352,10 @@ class Wmii
       else
         []
       end
+    end
+
+    def control aCommand
+      @wm.write "#{@path}/ctl", aCommand
     end
 
     def select!
