@@ -23,18 +23,27 @@ require 'wmii'
 
 WM = Wmii.instance
 
+##
 # WM STARTUP
-# terminate other running wmiirc
-sleep 1 until WM.write('/event', "Start wmiirc\n")
+#
+
+# terminate other running wmiirc's
+  sleep 1 until WM.write('/event', "Start wmiirc\n")
 
 
+##
 # UI CONFIGURATION
+#
+
 ENV['WMII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
 ENV['WMII_SELCOLORS']='#ffffff #285577 #4c7899'
 ENV['WMII_NORMCOLORS']='#222222 #eeeeee #666666'
 
 
+##
 # WM CONFIGURATION
+#
+
 WM.write '/def/border', 2
 WM.write '/def/font', ENV['WMII_FONT']
 WM.write '/def/selcolors', ENV['WMII_SELCOLORS']
@@ -43,7 +52,10 @@ WM.write '/def/colmode', 'default'
 WM.write '/def/colwidth', 0
 
 
+##
 # TAGGING RULES
+#
+
 WM.write '/def/rules', <<EOF
 /QEMU.*/ -> ~
 /jEdit.*/ -> code
@@ -59,15 +71,20 @@ WM.write '/def/rules', <<EOF
 EOF
 
 
+##
 # MISC CONFIGURATION
+#
+
 # system 'xsetroot -solid "#333333"'
-system 'status &'
 
 PROGRAM_MENU = WM.find_programs(*ENV['PATH'].split(':')).join("\n")
 ACTION_MENU = WM.find_programs('/home/sun/dry/apps/wmii/etc/wmii-3', '~/.wmii-3').join("\n")
 
 
+##
 # KEY CONFIGURATION
+#
+
 MODKEY='Mod1'
 UP='t'
 DOWN='n'
@@ -325,7 +342,27 @@ WM.write '/def/grabmod', MODKEY
 WM.write '/def/keys', SHORTCUTS.keys.join("\n")
 
 
+##
+# MINI SCRIPTS
+#
+
+# display time and system status in the bar
+  Thread.new do
+    status = Wmii::IxpFile.new(WM, "/bar/status")
+    WM.create status.path
+
+    status.colors = ENV['WMII_NORMCOLORS']
+
+    loop do
+      status.data = Time.now.to_s << " " << `uptime`.scan(/\d+\.\d+/).join(' ')
+      sleep 5
+    end
+  end
+
+##
 # EVENT LOOP
+#
+
 begin
   IO.popen('wmiir read /event') do |io|
     while event = io.readline.chomp

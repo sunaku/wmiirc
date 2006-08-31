@@ -27,56 +27,20 @@ require 'singleton'
 class Wmii
   include Singleton
 
+  SELECTION_TAG = 'SEL'
+  DETACHED_TAG = 'status'
+
+
+  ##
+  # IXP file system
+  #
+
   def initialize
     begin
       @cl = IXP::Client.new
     rescue Errno::ECONNREFUSED
       retry
     end
-  end
-
-  SELECTION_TAG = 'SEL'
-
-  def current_client
-    Client.new(self, "/view/sel/sel")
-  end
-
-  def current_area
-    Area.new(self, "/view/sel")
-  end
-
-  def current_view
-    View.new(self, "/view")
-  end
-
-  def tags
-    read('/tags').split
-  end
-
-  def views
-    tags.map {|v| View.new self, "/#{v}"}
-  end
-
-  def clients
-    Area.new(self, "/client").clients
-  end
-
-  def select_none
-    View.new(self, "/#{SELECTION_TAG}").unselect!
-  end
-
-  # Returns a list of all selected clients in the current view. If there are no selected clients, then the currently focused client is returned in the list.
-  def selected_clients
-    list = current_view.areas.map do |a|
-      a.clients.select do |c| c.selected? end
-    end
-    list.flatten!
-
-    if list.empty?
-      list << current_client
-    end
-
-    list
   end
 
   # Creates the given WM path.
@@ -129,26 +93,46 @@ class Wmii
     end
   end
 
-  # Shows the view with the given name.
+
+  ##
+  # WM state access
+  #
+
+  def current_client
+    Client.new(self, "/view/sel/sel")
+  end
+
+  def current_area
+    Area.new(self, "/view/sel")
+  end
+
+  def current_view
+    View.new(self, "/view")
+  end
+
+  def tags
+    read('/tags').split
+  end
+
+  def views
+    tags.map {|v| View.new self, "/#{v}"}
+  end
+
+  def clients
+    Area.new(self, "/client").clients
+  end
+
+
+  ##
+  # WM state manipulation
+  #
+
+  # Focuses the view with the given name.
   def focus_view aName
     View.new(self, "/#{aName}").focus!
   end
 
-  # Shows a WM menu with the given content and returns its output.
-  def show_menu aContent
-    output = nil
-
-    IO.popen('wmiimenu', 'r+') do |menu|
-      menu.write aContent
-      menu.close_write
-
-      output = menu.read
-    end
-
-    output
-  end
-
-  # Shows the client which has the given ID.
+  # Focuses the client which has the given ID.
   def focus_client aClientId
     views.each do |v|
       v.areas.each do |a|
@@ -161,20 +145,6 @@ class Wmii
           end
         end
       end
-    end
-  end
-
-  DETACHED_TAG = 'status'
-
-  # Detach the currently selected client
-  def detach_current_client
-    current_client.tags = DETACHED_TAG
-  end
-
-  # Attach the most recently detached client
-  def attach_last_client
-    if c = View.new(self, "/#{DETACHED_TAG}").areas.first.clients.first
-      c.tags = read('/view/name')
     end
   end
 
@@ -199,6 +169,11 @@ class Wmii
 
     focus_view tags[newIndex]
   end
+
+
+  ##
+  # View arrangement
+  #
 
   # Applies wmii-2 style tiling layout to the current view while maintaining the order of clients in the current view. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any teritiary, quaternary, etc. columns are squeezed into the *bottom* of the secondary column.
   def apply_tiling_layout
@@ -290,6 +265,65 @@ class Wmii
       end
   end
 
+
+  ##
+  # Multiple client selection
+  #
+
+  # Returns a list of all selected clients in the current view. If there are no selected clients, then the currently focused client is returned in the list.
+  def selected_clients
+    list = current_view.areas.map do |a|
+      a.clients.select do |c| c.selected? end
+    end
+    list.flatten!
+
+    if list.empty?
+      list << current_client
+    end
+
+    list
+  end
+
+  def select_none
+    View.new(self, "/#{SELECTION_TAG}").unselect!
+  end
+
+
+  ##
+  # wmii-2 style client detaching
+  #
+
+  # Detach the currently selected client
+  def detach_current_client
+    current_client.tags = DETACHED_TAG
+  end
+
+  # Attach the most recently detached client
+  def attach_last_client
+    if c = View.new(self, "/#{DETACHED_TAG}").areas.first.clients.first
+      c.tags = read('/view/name')
+    end
+  end
+
+
+  ##
+  # Utility methods
+  #
+
+  # Shows a WM menu with the given content and returns its output.
+  def show_menu aContent
+    output = nil
+
+    IO.popen('wmiimenu', 'r+') do |menu|
+      menu.write aContent
+      menu.close_write
+
+      output = menu.read
+    end
+
+    output
+  end
+
   # Returns a list of program names available in the given paths.
   def find_programs *aPaths
     list = []
@@ -304,6 +338,11 @@ class Wmii
   end
 
 
+  ##
+  # Subclasses
+  #
+
+  # Encapsulates access to a file in the IXP file system
   class IxpFile
     attr_reader :wm, :path
 
@@ -325,7 +364,6 @@ class Wmii
       end
     end
   end
-
 
   class Container < IxpFile
     def indices
@@ -370,7 +408,6 @@ class Wmii
     end
   end
 
-
   class Client < Container
     TAG_DELIMITER = "+"
 
@@ -414,7 +451,6 @@ class Wmii
     end
   end
 
-
   class Area < Container
     def initialize *args
       super
@@ -423,7 +459,6 @@ class Wmii
 
     alias clients subordinates
   end
-
 
   class View < Container
     def initialize *args
