@@ -1,3 +1,4 @@
+require 'rake/clean'
 require 'rake/rdoctask'
 require 'rake/packagetask'
 
@@ -6,6 +7,8 @@ task :default => [:doc, :package, :web]
 task :web => ['doc', 'pkg'] do |t|
   sh 'rsync', '--rsh=ssh', '-av', *(t.prerequisites << "#{ENV['UC']}:web/pub/wmii")
 end
+
+CLOBBER.include 'doc', 'pkg'
 
 
 Rake::RDocTask.new(:doc) do |rd|
