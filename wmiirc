@@ -19,7 +19,7 @@
 =end
 
 $: << File.dirname(__FILE__)
-require 'wmii'
+require 'Wmii'
 
 
 ##
@@ -41,6 +41,7 @@ ENV['WMII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
 ENV['WMII_SELCOLORS']='#ffffff #285577 #4c7899'
 ENV['WMII_NORMCOLORS']='#222222 #eeeeee #666666'
 
+system %{xsetroot -solid '#333333'}
 
 ##
 # WM CONFIGURATION
