@@ -5,7 +5,7 @@ require 'rake/packagetask'
 task :default => [:doc, :package, :web]
 
 task :web => ['doc', 'pkg'] do |t|
-  sh 'rsync', '--rsh=ssh', '-av', *(t.prerequisites << "#{ENV['UC']}:web/pub/wmii")
+  sh 'rsync', '--rsh=ssh', '-av', '--delete', *(t.prerequisites << "#{ENV['UC']}:web/pub/wmii")
 end
 
 CLOBBER.include 'doc', 'pkg'
