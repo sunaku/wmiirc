@@ -216,7 +216,7 @@ class Wmii < IxpNode
   # Returns a list of all selected clients in the current view. If there are no selected clients, then the currently focused client is returned in the list.
   def selected_clients
     list = current_view.areas.map do |a|
-      a.clients.select do |c| c.selected? end
+      a.clients.select {|c| c.selected?}
     end
     list.flatten!
 
@@ -246,7 +246,7 @@ class Wmii < IxpNode
   def attach_last_client
     if a = View.new("/#{DETACHED_TAG}").areas.first
       if c = a.clients.first
-        c.tags = read('/view/name')
+        c.tags = current_view.name
       end
     end
   end

@@ -251,6 +251,7 @@ SHORTCUTS = {
       WM.selected_clients.each do |c|
         c.with_tags do
           delete curView
+          push $` if empty?
         end
       end
 
