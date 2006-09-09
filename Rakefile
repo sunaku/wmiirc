@@ -11,9 +11,10 @@ task :web do
   sh 'rsync', '--rsh=ssh', '-av', '--delete', *(FileList['pkg/*'] << "#{ENV['UC']}:web/pub/wmii")
 end
 
-Rake::RDocTask.new(:doc) do |rd|
-  rd.rdoc_files.include('wmiirc', '*.rb')
-  rd.rdoc_dir = 'doc'
+Rake::RDocTask.new(:doc) do |t|
+  t.rdoc_files.include('wmiirc', '*.rb')
+  t.rdoc_dir = 'doc'
+  t.main = 'Wmii'
 end
 
 Rake::PackageTask.new('snk_wmiirc', :noversion) do |p|

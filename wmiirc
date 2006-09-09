@@ -22,30 +22,25 @@ $: << File.dirname(__FILE__)
 require 'Wmii'
 
 
-##
-# WM STARTUP
-#
+## WM STARTUP
 
 WM = Wmii.new
-WM.event = "Start wmiirc\n" # terminate existing wmiirc processes
+sleep 1 until WM.event = "Start wmiirc\n" # terminate existing wmiirc processes
 
 PROGRAM_MENU = WM.find_programs(*ENV['PATH'].split(':')).join("\n")
 ACTION_MENU = WM.find_programs('/home/sun/dry/apps/wmii/etc/wmii-3', '~/.wmii-3').join("\n")
 
 
-##
-# UI CONFIGURATION
-#
+## UI CONFIGURATION
 
 ENV['WMII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
 ENV['WMII_SELCOLORS']='#ffffff #285577 #4c7899'
 ENV['WMII_NORMCOLORS']='#222222 #eeeeee #666666'
 
-system %{xsetroot -solid '#333333'}
+#system %{xsetroot -solid '#333333'}
 
-##
-# WM CONFIGURATION
-#
+
+## WM CONFIGURATION
 
 WM.config.border = 2
 
@@ -71,9 +66,7 @@ WM.config.rules = <<EOS
 EOS
 
 
-##
-# KEY CONFIGURATION
-#
+## KEY CONFIGURATION
 
 MODKEY='Mod1'
 UP='t'
@@ -81,7 +74,8 @@ DOWN='n'
 LEFT='h'
 RIGHT='s'
 
-FOCUS="#{MODKEY}-Control-"
+DEFAULT="#{MODKEY}-Control-"
+FOCUS=DEFAULT
 SEND="#{FOCUS}m,"
 SWAP="#{FOCUS}w,"
 LAYOUT="#{FOCUS}z,"
@@ -127,15 +121,15 @@ SHORTCUTS = {
 
 
   "#{LAYOUT}w" => lambda do
-    WM.write '/view/sel/mode', 'default'
+    WM.current_area.mode = 'default'
   end,
 
   "#{LAYOUT}v" => lambda do
-    WM.write '/view/sel/mode', 'stack'
+    WM.current_area.mode = 'stack'
   end,
 
   "#{LAYOUT}m" => lambda do
-    WM.write '/view/sel/mode', 'max'
+    WM.current_area.mode = 'max'
   end,
 
   "#{LAYOUT}z" => lambda do
@@ -250,7 +244,7 @@ SHORTCUTS = {
   end,
 
   # send to temporary view or switch back again
-  "#{SEND}Shift-t" => lambda do
+  "#{DEFAULT}d" => lambda do
     curView = WM.current_view.name
 
     if curView =~ /~\d+$/
@@ -361,9 +355,7 @@ WM.config.grabmod = MODKEY
 WM.config.keys = SHORTCUTS.keys.join("\n")
 
 
-##
-# MINI SCRIPTS
-#
+## MINI SCRIPTS
 
 # display time and system status in the bar
   Thread.new do
@@ -380,9 +372,8 @@ WM.config.keys = SHORTCUTS.keys.join("\n")
     end
   end
 
-##
-# EVENT LOOP
-#
+
+## EVENT LOOP
 
 begin
   IO.popen('wmiir read /event') do |io|
@@ -417,7 +408,10 @@ begin
 
         when 'ClientClick'
           client, button = arg.split
-          Wmii::Client.new("/client/#{client}").invert_selection!
+
+          if button.to_i == 3
+            Wmii::Client.new("/client/#{client}").invert_selection!
+          end
 
         when 'Key'
           SHORTCUTS[arg].call
