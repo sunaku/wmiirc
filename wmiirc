@@ -25,10 +25,11 @@ require 'Wmii'
 ## WM STARTUP
 
 WM = Wmii.new
-sleep 1 until WM.event = "Start wmiirc\n" # terminate existing wmiirc processes
-
 PROGRAM_MENU = WM.find_programs(*ENV['PATH'].split(':')).join("\n")
-ACTION_MENU = WM.find_programs('/home/sun/dry/apps/wmii/etc/wmii-3', '~/.wmii-3').join("\n")
+ACTION_MENU = WM.find_programs('~/dry/apps/wmii/etc/wmii-3', '~/.wmii-3').join("\n")
+
+# terminate existing wmiirc processes
+sleep 1 until WM.event = "Start wmiirc\n"
 
 
 ## UI CONFIGURATION
@@ -37,7 +38,7 @@ ENV['WMII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
 ENV['WMII_SELCOLORS']='#ffffff #285577 #4c7899'
 ENV['WMII_NORMCOLORS']='#222222 #eeeeee #666666'
 
-#system %{xsetroot -solid '#333333'}
+system %{xsetroot -solid '#333333'}
 
 
 ## WM CONFIGURATION
@@ -51,19 +52,36 @@ WM.config.normcolors = ENV['WMII_NORMCOLORS']
 WM.config.colmode = 'default'
 WM.config.colwidth = 0
 
-WM.config.rules = <<EOS
-  /QEMU.*/ -> ~
-  /jEdit.*/ -> code
-  /Buddy List.*/ -> chat
-  /XChat.*/ -> chat
-  /.*thunderbird.*/ -> mail
-  /Gimp.*/ -> gimp
-  /MPlayer.*/ -> ~
-  /xconsole.*/ -> ~
-  /alsamixer.*/ -> ~
-  /.*/ -> !
-  /.*/ -> 1
-EOS
+TAGGING_RULES = {
+  '~' => [
+    'QEMU.*',
+    'MPlayer.*',
+    'xconsole.*',
+    'alsamixer.*',
+  ],
+
+  :code => [
+    'jEdit.*',
+  ],
+
+  :chat => [
+    'Buddy List.*', # gaim
+    'XChat.*',
+  ],
+
+  :gimp => ['Gimp.*'],
+
+  '!' => ['.*'],
+  '1' => ['.*'],
+}
+
+WM.config.rules = TAGGING_RULES.inject('') do |memo, (tag, regexps)|
+  regexps.each do |re|
+    memo << "/#{re}/ -> #{tag}\n"
+  end
+
+  memo
+end
 
 
 ## KEY CONFIGURATION
@@ -96,27 +114,27 @@ SHORTCUTS = {
 
   # focus previous area
   "#{FOCUS}#{LEFT}" => lambda do
-    WM.write '/view/ctl', 'select prev'
+    WM.current_view.ctl = 'select prev'
   end,
 
   # focus next area
   "#{FOCUS}#{RIGHT}" => lambda do
-    WM.write '/view/ctl', 'select next'
+    WM.current_view.ctl = 'select next'
   end,
 
   # focus floating area
   "#{FOCUS}space" => lambda do
-    WM.write '/view/ctl', 'select toggle'
+    WM.current_view.ctl = 'select toggle'
   end,
 
   # focus previous client
   "#{FOCUS}#{UP}" => lambda do
-    WM.write '/view/sel/ctl', 'select prev'
+    WM.current_area.ctl = 'select prev'
   end,
 
   # focus next client
   "#{FOCUS}#{DOWN}" => lambda do
-    WM.write '/view/sel/ctl', 'select next'
+    WM.current_area.ctl = 'select next'
   end,
 
 
@@ -133,7 +151,7 @@ SHORTCUTS = {
   end,
 
   "#{LAYOUT}z" => lambda do
-    WM.write '/view/0/sel/geom', '0 0 east south'
+    WM.current_view[0].foci.geom = '0 0 east south'
   end,
 
 
@@ -243,8 +261,17 @@ SHORTCUTS = {
     end
   end,
 
+  # remove current view from current selection's tags
+  "#{SEND}Shift-minus" => lambda do
+    WM.selected_clients.each do |c|
+      c.with_tags do
+        delete WM.current_view.name
+      end
+    end
+  end,
+
   # send to temporary view or switch back again
-  "#{DEFAULT}d" => lambda do
+  "#{DEFAULT}b" => lambda do
     curView = WM.current_view.name
 
     if curView =~ /~\d+$/
@@ -256,6 +283,7 @@ SHORTCUTS = {
       end
 
       WM.focus_view $`
+
     else
       tmpView = "#{curView}~#{Time.now.to_i}"
 
@@ -271,9 +299,10 @@ SHORTCUTS = {
   end,
 
   "#{SEND}d" => lambda do
-    # WM.with_selection do
+    WM.with_selection do |c|
+      c.focus!
       WM.detach_current_client
-    # end
+    end
   end,
 
   "#{SEND}Shift-d" => lambda do
@@ -288,69 +317,78 @@ SHORTCUTS = {
     SHORTCUTS["#{LAYOUT}z"].call
   end,
 
+  # swap the current client with the one to its left
+  "#{SWAP}#{LEFT}" => lambda do
+    WM.current_client.ctl = 'swap prev'
+  end,
 
-  "#{SWAP}#{LEFT}" => lambda do WM.write '/view/sel/sel/ctl', 'swap prev' end,
-  "#{SWAP}#{RIGHT}" => lambda do WM.write '/view/sel/sel/ctl', 'swap next' end,
-  "#{SWAP}#{DOWN}" => lambda do WM.write '/view/sel/sel/ctl', 'swap down' end,
-  "#{SWAP}#{UP}" => lambda do WM.write '/view/sel/sel/ctl', 'swap up' end,
+  # swap the current client with the one to its right
+  "#{SWAP}#{RIGHT}" => lambda do
+    WM.current_client.ctl = 'swap next'
+  end,
+
+  # swap the current client with the one below it
+  "#{SWAP}#{DOWN}" => lambda do
+    WM.current_client.ctl = 'swap down'
+  end,
+
+  # swap the current client with the one above it
+  "#{SWAP}#{UP}" => lambda do
+    WM.current_client.ctl = 'swap up'
+  end,
 }
 
-  # keyboard access to views (shown as labels on the WM bar)
-  10.times do |i|
-    k = (i - 1) % 10	# associate '1' with the leftmost label, instead of '0'
+10.times do |i|
+  k = (i - 1) % 10	# associate '1' with the leftmost label, instead of '0'
 
-    SHORTCUTS["#{FOCUS}#{i}"] = lambda do
-      WM.focus_view(WM.tags[k] || i)
+  # focus _i_th view
+  SHORTCUTS["#{FOCUS}#{i}"] = lambda do
+    WM.focus_view(WM.tags[k] || i)
+  end
+
+  # send selection to _i_th view
+  SHORTCUTS["#{SEND}#{i}"] = lambda do
+    WM.selected_clients.each do |c|
+      c.tags = (WM.tags[k] || i)
     end
+  end
 
-    SHORTCUTS["#{SEND}#{i}"] = lambda do
-      WM.selected_clients.each do |c|
-        c.tags = (WM.tags[k] || i)
-      end
-    end
+  # apply grid layout with _i_ clients per column
+  SHORTCUTS["#{LAYOUT}#{i}"] = lambda do
+    WM.current_view.apply_grid_layout i
+  end
 
-    SHORTCUTS["#{LAYOUT}#{i}"] = lambda do
-      WM.current_view.apply_grid_layout i
-    end
-
-
-    # shortcuts for adding and removing tags of a client
-    SHORTCUTS["#{SEND}equal,#{i}"] =
-    SHORTCUTS["#{SEND}Shift-equal,#{i}"] = lambda do
-      WM.selected_clients.each do |c|
-        c.with_tags do
-          push(WM.tags[k] || i)
-        end
-      end
-    end
-
-    SHORTCUTS["#{SEND}minus,#{i}"] = lambda do
-      WM.selected_clients.each do |c|
-        c.with_tags do
-          delete(WM.tags[k] || i)
-        end
-      end
-    end
-
-    SHORTCUTS["#{SEND}Shift-minus"] = lambda do
-      WM.selected_clients.each do |c|
-        c.with_tags do
-          delete WM.current_view.name
-        end
+  # add _i_th view to current selection's tags
+  SHORTCUTS["#{SEND}equal,#{i}"] =
+  SHORTCUTS["#{SEND}Shift-equal,#{i}"] = lambda do
+    WM.selected_clients.each do |c|
+      c.with_tags do
+        push(WM.tags[k] || i)
       end
     end
   end
 
-  ('a'..'z').each do |char|
-    SHORTCUTS["#{MENU}v,#{char}"] = lambda do
-      choices = WM.tags
-      choices.delete WM.current_view.name
-
-      if view = choices.select {|t| t =~ /^#{char}/i}.first
-        WM.focus_view view
+  # remove _i_th view from current selection's tags
+  SHORTCUTS["#{SEND}minus,#{i}"] = lambda do
+    WM.selected_clients.each do |c|
+      c.with_tags do
+        delete(WM.tags[k] || i)
       end
     end
   end
+end
+
+# jump to view whose name begins with the pressed key
+('a'..'z').each do |char|
+  SHORTCUTS["#{MENU}v,#{char}"] = lambda do
+    choices = WM.tags
+    choices.delete WM.current_view.name
+
+    if view = choices.select {|t| t =~ /^#{char}/i}.first
+      WM.focus_view view
+    end
+  end
+end
 
 WM.config.grabmod = MODKEY
 WM.config.keys = SHORTCUTS.keys.join("\n")
@@ -368,7 +406,7 @@ WM.config.keys = SHORTCUTS.keys.join("\n")
 
       5.times do
         status.data = "#{Time.now.to_s} | #{uptime}"
-        sleep 2
+        sleep 1
       end
     end
   end

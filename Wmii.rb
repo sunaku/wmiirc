@@ -74,15 +74,16 @@ class Wmii < IxpNode
 
   # Focuses the client which has the given ID.
   def focus_client aClientId
-    views.each do |v|
+    needle = Client.new("/client/#{aClientId}")
+    haystack = needle.tags.map {|t| View.new("/#{t}")}
+
+    haystack.each do |v|
       v.areas.each do |a|
-        a.clients.each do |c|
-          if c.index == aClientId
-            v.focus!
-            a.focus!
-            c.focus!
-            return
-          end
+        if a.indices.detect {|i| i == aClientId}
+          v.focus!
+          a.focus!
+          a[aClientId].focus!
+          return
         end
       end
     end
