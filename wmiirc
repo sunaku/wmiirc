@@ -138,11 +138,11 @@ SHORTCUTS = {
 
 
   "#{LAYOUT}t" => lambda do
-    WM.apply_tiling_layout
+    WM.current_view.apply_tile_layout
   end,
 
   "#{LAYOUT}g" => lambda do
-    WM.apply_grid_layout
+    WM.current_view.apply_grid_layout
   end,
 
 
@@ -266,7 +266,7 @@ SHORTCUTS = {
       end
 
       WM.focus_view tmpView
-      WM.apply_grid_layout
+      WM.current_view.apply_grid_layout
     end
   end,
 
@@ -310,7 +310,7 @@ SHORTCUTS = {
     end
 
     SHORTCUTS["#{LAYOUT}#{i}"] = lambda do
-      WM.apply_grid_layout i
+      WM.current_view.apply_grid_layout i
     end
 
 
