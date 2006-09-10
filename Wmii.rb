@@ -19,16 +19,90 @@
 require 'IxpNode'
 require 'find'
 
+# Encapsulates a graphical region in the window manager.
+class Container < IxpNode
+  def initialize aParentClass, aChildClass, *aArgs
+    @parentClass = aParentClass
+    @childClass = aChildClass
+    super(*aArgs)
+  end
+
+  # Returns a child with the given sub-path.
+  def [] *args
+    child = super
+
+    if child.respond_to? :path
+      child = @childClass.new(child.path)
+    end
+
+    child
+  end
+
+  # Returns the parent of this region.
+  def parent
+    @parentClass.new File.dirname(@path)
+  end
+
+  # Returns the index of this region in the parent.
+  def index
+    File.basename(@path).to_i
+  end
+
+  # Returns the next region in the parent.
+  def next
+    parent[self.index + 1]
+  end
+
+  # Returns a list of indices of items in this region.
+  def indices
+    if list = self.read
+      list.split.grep(/^\d+$/)
+    else
+      []
+    end
+  end
+
+  # Returns a list of items in this region.
+  def children
+    indices.map {|i| @childClass.new "#{@path}/#{i}"}
+  end
+
+  # Adds all clients in this region to the selection.
+  def select!
+    children.each do |s|
+      s.select!
+    end
+  end
+
+  # Removes all clients in this region from the selection.
+  def unselect!
+    children.each do |s|
+      s.unselect!
+    end
+  end
+
+  # Inverts the selection of clients in this region.
+  def invert_selection!
+    children.each do |s|
+      s.invert_selection!
+    end
+  end
+
+  # Puts focus on this region.
+  def focus!
+    ['select', 'view'].each do |cmd|
+      parent.ctl = "#{cmd} #{File.basename @path}"
+    end
+  end
+end
+
 # Ruby interface to WMII.
-class Wmii < IxpNode
+class Wmii < Container
   SELECTION_TAG = 'SEL'
   DETACHED_TAG = 'status'
 
-  attr_reader :config
-
   def initialize
-    super "/"
-    @config = IxpNode.new('/def')
+    super IxpNode, View, '/'
   end
 
 
@@ -51,7 +125,7 @@ class Wmii < IxpNode
 
   # Returns the current set of tags.
   def tags
-    read('/tags').split
+    IxpFs.read('/tags').split
   end
 
   # Returns the current set of views.
@@ -133,6 +207,25 @@ class Wmii < IxpNode
     View.new("/#{SELECTION_TAG}").unselect!
   end
 
+  # Invokes the given block for each client in the selection.
+  def with_selection # :yields: client
+    return unless block_given?
+
+    oldJobs = []
+
+    loop do
+      selection = selected_clients
+      curJobs = selection.map {|c| c.index}
+
+      pending = (curJobs - oldJobs)
+      break if pending.empty?
+
+      job = pending.shift
+      yield selection.detect {|i| i.index == job}
+      oldJobs << job
+    end
+  end
+
 
   ## wmii-2 style client detaching
 
@@ -185,82 +278,6 @@ class Wmii < IxpNode
 
   ## Subclasses for abstraction
 
-  # Encapsulates a graphical region and its file system properties.
-  class Container < IxpNode
-    def initialize aParentClass, aChildClass, *aArgs
-      @parentClass = aParentClass
-      @childClass = aChildClass
-      super(*aArgs)
-    end
-
-    # Returns a child with the given sub-path.
-    def [] aSubPath
-      @childClass.new "#{@path}/#{aSubPath}"
-    end
-
-    # Returns the parent of this region.
-    def parent
-      @parentClass.new File.dirname(@path)
-    end
-
-    # Returns the index of this region in the parent.
-    def index
-      File.basename(@path).to_i
-    end
-
-    # Returns the next region in the parent.
-    def next
-      parent[self.index + 1]
-    end
-
-    # Returns the currently focused item in this region.
-    def foci
-      self['sel']
-    end
-
-    # Returns a list of indices of items in this region.
-    def indices
-      if list = read(@path)
-        list.split.grep(/^\d+$/)
-      else
-        []
-      end
-    end
-
-    # Returns a list of items in this region.
-    def children
-      indices.map {|i| @childClass.new "#{@path}/#{i}"}
-    end
-
-    # Adds all clients in this region to the selection.
-    def select!
-      children.each do |s|
-        s.select!
-      end
-    end
-
-    # Removes all clients in this region from the selection.
-    def unselect!
-      children.each do |s|
-        s.unselect!
-      end
-    end
-
-    # Inverts the selection of clients in this region.
-    def invert_selection!
-      children.each do |s|
-        s.invert_selection!
-      end
-    end
-
-    # Puts focus on this region.
-    def focus!
-      ['select', 'view'].each do |cmd|
-        return if write "#{@path}/../ctl", "#{cmd} #{File.basename @path}"
-      end
-    end
-  end
-
   # Represents a running, graphical program.
   class Client < Container
     def initialize *aArgs
@@ -271,13 +288,13 @@ class Wmii < IxpNode
 
     # Returns the tags associated with this client.
     def tags
-      read("#{@path}/tags").split(TAG_DELIMITER)
+      self['tags'].split(TAG_DELIMITER)
     end
 
     # Modifies the tags associated with this client.
     def tags= *aTags
       t = aTags.flatten.uniq
-      write "#{@path}/tags", t.join(TAG_DELIMITER) unless t.empty?
+      self['tags'] = t.join(TAG_DELIMITER) unless t.empty?
     end
 
     # Evaluates the given block within the context of this client's list of tags.
@@ -351,7 +368,7 @@ class Wmii < IxpNode
       end
 
       dstIdx = setup_for_insertion(aClients.shift)
-      parent[dstIdx].foci.ctl = 'swap up'
+      parent[dstIdx].sel.ctl = 'swap up'
 
       aClients.each do |c|
         c.ctl = "sendto #{dstIdx}"
@@ -372,7 +389,7 @@ class Wmii < IxpNode
         if dstIdx > maxIdx
           aFirstClient.ctl = "sendto #{maxIdx}"
 
-          parent[maxIdx].foci.ctl = "sendto next"
+          parent[maxIdx].sel.ctl = "sendto next"
           dstIdx = maxIdx.next
         else
           aFirstClient.ctl = "sendto #{dstIdx}"
@@ -384,7 +401,7 @@ class Wmii < IxpNode
 
   class View < Container
     def initialize *aArgs
-      super Container, Area, *aArgs
+      super IxpNode, Area, *aArgs
     end
 
     alias areas children

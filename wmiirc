@@ -43,45 +43,32 @@ system %{xsetroot -solid '#333333'}
 
 ## WM CONFIGURATION
 
-WM.config.border = 2
+WM.def.border = 2
 
-WM.config.font = ENV['WMII_FONT']
-WM.config.selcolors = ENV['WMII_SELCOLORS']
-WM.config.normcolors = ENV['WMII_NORMCOLORS']
+WM.def.font = ENV['WMII_FONT']
+WM.def.selcolors = ENV['WMII_SELCOLORS']
+WM.def.normcolors = ENV['WMII_NORMCOLORS']
 
-WM.config.colmode = 'default'
-WM.config.colwidth = 0
+WM.def.colmode = 'default'
+WM.def.colwidth = 0
 
-TAGGING_RULES = {
-  '~' => [
-    'QEMU.*',
-    'MPlayer.*',
-    'xconsole.*',
-    'alsamixer.*',
-  ],
+TAGGING_RULES = [
+  [:code, /jEdit/],
+  [:chat, /gaim/, /xchat/],
+  [:gimp, /gimp/],
+  ['~', /QEMU/, /^MPlayer/, /xconsole/],
+]
 
-  :code => [
-    'jEdit.*',
-  ],
-
-  :chat => [
-    'Buddy List.*', # gaim
-    'XChat.*',
-  ],
-
-  :gimp => ['Gimp.*'],
-
-  '!' => ['.*'],
-  '1' => ['.*'],
-}
-
-WM.config.rules = TAGGING_RULES.inject('') do |memo, (tag, regexps)|
-  regexps.each do |re|
-    memo << "/#{re}/ -> #{tag}\n"
+WM.def.rules = TAGGING_RULES.inject('') do |memo, (tag, *regexps)|
+  regexps.each do |r|
+    memo << "/#{r.source}/ -> #{tag}\n"
   end
 
   memo
-end
+end << <<EOS
+/.*/ -> !
+/.*/ -> 1
+EOS
 
 
 ## KEY CONFIGURATION
@@ -151,7 +138,7 @@ SHORTCUTS = {
   end,
 
   "#{LAYOUT}z" => lambda do
-    WM.focused_view[0].foci.geom = '0 0 east south'
+    WM.focused_view[0].sel.geom = '0 0 east south'
   end,
 
 
@@ -192,7 +179,7 @@ SHORTCUTS = {
   end,
 
   "#{MENU}Shift-v" => lambda do
-    WM.focus_view(WM.show_menu(WM.read('/tags')))
+    WM.focus_view(WM.show_menu(WM.tags))
   end,
 
   # focus any client by choosing from a menu
@@ -215,19 +202,19 @@ SHORTCUTS = {
 
 
   "#{SEND}#{LEFT}" => lambda do
-    WM.selected_clients.each do |c|
+    WM.with_selection do |c|
       c.ctl = 'sendto prev'
     end
   end,
 
   "#{SEND}#{RIGHT}" => lambda do
-    WM.selected_clients.each do |c|
+    WM.with_selection do |c|
       c.ctl = 'sendto next'
     end
   end,
 
   "#{SEND}space" => lambda do
-    WM.selected_clients.each do |c|
+    WM.with_selection do |c|
       c.ctl = 'sendto toggle'
     end
   end,
@@ -298,10 +285,12 @@ SHORTCUTS = {
     end
   end,
 
+  # wmii-2 style detaching
   "#{SEND}d" => lambda do
     WM.detach_selection
   end,
 
+  # wmii-2 style detaching
   "#{SEND}Shift-d" => lambda do
     WM.attach_last_client
   end,
@@ -385,22 +374,23 @@ end
   end
 end
 
-WM.config.grabmod = MODKEY
-WM.config.keys = SHORTCUTS.keys.join("\n")
+WM.def.grabmod = MODKEY
+WM.def.keys = SHORTCUTS.keys.join("\n")
 
 
 ## MINI SCRIPTS
 
 # display time and system status in the bar
   Thread.new do
-    status = WM.create("/bar/status")
+    status = IxpNode.new("/bar/status", true)
     status.colors = ENV['WMII_NORMCOLORS']
 
     loop do
-      uptime = `uptime`.scan(/\d+\.\d+/).join(' ')
+      upTime = `uptime`.scan(/\d+\.\d+/).join(' ')
+      diskUsage = `df -h ~`.split[-3..-1].join(' ')
 
       5.times do
-        status.data = "#{Time.now.to_s} | #{uptime}"
+        status.data = "#{Time.now.to_s} | #{upTime} | #{diskUsage}"
         sleep 1
       end
     end
@@ -446,6 +436,19 @@ begin
           if button.to_i == 3
             Wmii::Client.new("/client/#{client}").invert_selection!
           end
+
+        when 'CreateClient'
+          client = Wmii::Client.new("/client/#{arg}")
+          info = client[:class]
+
+          TAGGING_RULES.each do |(tag, *regexps)|
+            regexps.each do |r|
+              if info =~ r
+                client.tags = tag
+                raise
+              end
+            end
+          end rescue nil
 
         when 'Key'
           SHORTCUTS[arg].call
