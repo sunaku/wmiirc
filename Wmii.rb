@@ -35,17 +35,17 @@ class Wmii < IxpNode
   ## access to WM state
 
   # Returns the currently focused client.
-  def current_client
+  def focused_client
     Client.new("/view/sel/sel")
   end
 
   # Returns the currently focused area.
-  def current_area
+  def focused_area
     Area.new("/view/sel")
   end
 
   # Returns the currently focused view.
-  def current_view
+  def focused_view
     View.new("/view")
   end
 
@@ -89,10 +89,10 @@ class Wmii < IxpNode
     end
   end
 
-  # Changes the current view to an adjacent one (:left or :right).
+  # Changes the currently focused view to an adjacent one (:left or :right).
   def cycle_view aTarget
     tags = self.tags
-    curTag = current_view.name
+    curTag = focused_view.name
     curIndex = tags.index(curTag)
 
     newIndex =
@@ -114,15 +114,15 @@ class Wmii < IxpNode
 
   ## Multiple client selection
 
-  # Returns a list of all selected clients in the current view. If there are no selected clients, then the currently focused client is returned in the list.
+  # Returns a list of all selected clients in the currently focused view. If there are no selected clients, then the currently focused client is returned in the list.
   def selected_clients
-    list = current_view.areas.map do |a|
+    list = focused_view.areas.map do |a|
       a.clients.select {|c| c.selected?}
     end
     list.flatten!
 
     if list.empty?
-      list << current_client
+      list << focused_client
     end
 
     list
@@ -136,16 +136,18 @@ class Wmii < IxpNode
 
   ## wmii-2 style client detaching
 
-  # Detach the currently selected client
-  def detach_current_client
-    current_client.tags = DETACHED_TAG
+  # Detach the current selection.
+  def detach_selection
+    selected_clients.each do |c|
+      c.tags = DETACHED_TAG
+    end
   end
 
   # Attach the most recently detached client
   def attach_last_client
     if a = View.new("/#{DETACHED_TAG}").areas.first
       if c = a.clients.first
-        c.tags = current_view.name
+        c.tags = focused_view.name
       end
     end
   end
@@ -285,7 +287,7 @@ class Wmii < IxpNode
       self.tags = t
     end
 
-    # Returns true if this client is included in the selection.
+    # Checks if this client is included in the current selection.
     def selected?
       tags.include? SELECTION_TAG
     end
@@ -388,7 +390,7 @@ class Wmii < IxpNode
     alias areas children
 
     # Applies wmii-2 style tiling layout to this view while maintaining its order of clients. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any subsequent columns are squeezed into the *bottom* of the secondary column.
-    def apply_tile_layout
+    def tile!
       numAreas = self.indices.length
 
       if numAreas > 1
@@ -412,7 +414,7 @@ class Wmii < IxpNode
     end
 
     # Applies wmii-2 style grid layout to this view while maintaining its order of clients. If the maximum number of clients per column, the distribution of clients among the columns is calculated according to wmii-2 style. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any teritiary, quaternary, etc. columns are squeezed into the *bottom* of the secondary column.
-    def apply_grid_layout aMaxClientsPerColumn = nil
+    def grid! aMaxClientsPerColumn = nil
       # determine client distribution
         unless aMaxClientsPerColumn
           numClients = self.areas[1..-1].inject(0) do |count, area|
