@@ -207,7 +207,7 @@ class Wmii < Container
     View.new("/#{SELECTION_TAG}").unselect!
   end
 
-  # Invokes the given block for each client in the selection.
+  # Invokes the given block for each client in the selection. This is suited for operations which modify the areas of a view by re-numbering the areas indices.
   def with_selection # :yields: client
     return unless block_given?
 
