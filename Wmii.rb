@@ -190,12 +190,24 @@ class Wmii < IxpNode
       super(*aArgs)
     end
 
+    # Returns a child with the given sub-path.
     def [] aSubPath
       @childClass.new "#{@path}/#{aSubPath}"
     end
 
+    # Returns the parent of this region.
     def parent
       @parentClass.new File.dirname(@path)
+    end
+
+    # Returns the index of this region in the parent.
+    def index
+      File.basename(@path).to_i
+    end
+
+    # Returns the next region in the parent.
+    def next
+      parent[self.index + 1]
     end
 
     # Returns the currently focused item in this region.
@@ -351,7 +363,7 @@ class Wmii < IxpNode
     private
       # Sets up this area for insertion and returns the area ID into which insertion is performed.
       def setup_for_insertion aFirstClient
-        dstIdx = File.basename(@path).to_i
+        dstIdx = self.index
         maxIdx = parent.indices.length - 1
 
         if dstIdx > maxIdx
@@ -374,7 +386,7 @@ class Wmii < IxpNode
 
     alias areas children
 
-    # Applies wmii-2 style tiling layout to the current view while maintaining the order of clients in the current view. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any teritiary, quaternary, etc. columns are squeezed into the *bottom* of the secondary column.
+    # Applies wmii-2 style tiling layout to this view while maintaining its order of clients. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any subsequent columns are squeezed into the *bottom* of the secondary column.
     def apply_tile_layout
       numAreas = self.indices.length
 
@@ -398,18 +410,15 @@ class Wmii < IxpNode
       end
     end
 
-    # Applies wmii-2 style grid layout to the current view while maintaining the order of clients in the current view. If the maximum number of clients per column, the distribution of clients among the columns is calculated according to wmii-2 style. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any teritiary, quaternary, etc. columns are squeezed into the *bottom* of the secondary column.
+    # Applies wmii-2 style grid layout to this view while maintaining its order of clients. If the maximum number of clients per column, the distribution of clients among the columns is calculated according to wmii-2 style. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any teritiary, quaternary, etc. columns are squeezed into the *bottom* of the secondary column.
     def apply_grid_layout aMaxClientsPerColumn = nil
       # determine client distribution
         unless aMaxClientsPerColumn
-          numClients = 0
-
-          read('/view').split.grep(/^[^0]\d*$/).each do |column|
-            numClients += read("/view/#{column}").split.grep(/^\d+$/).length
+          numClients = self.areas[1..-1].inject(0) do |count, area|
+            count + area.clients.length
           end
 
-          return if numClients.zero?
-
+          return unless numClients > 1
 
           numColumns = Math.sqrt(numClients)
           aMaxClientsPerColumn = (numClients / numColumns).round
@@ -418,43 +427,39 @@ class Wmii < IxpNode
       # distribute the clients
         if aMaxClientsPerColumn <= 0
           # squeeze all clients into a single column
-            while clientList = read('/view/2')
-              numClients = clientList.split.grep(/^\d+$/).length
-              numClients.times do
-                write '/view/2/0/ctl', 'sendto prev'
-              end
+            areaList = self.areas
+
+            (areaList.length - 2).times do
+              areaList[1].concat! areaList[2]
             end
+
         else
-          begin
-            columnList = read('/view').split.grep(/^[^0]\d*$/)
+          i = 1
 
-            columnList.each do |column|
-              if clientList = read("/view/#{column}")
-                write "/view/#{column}/mode", 'default'	# set *equal* layout for column
+          until i >= (areaList = self.areas).length
+            a = areaList[i]
 
-                numClients = clientList.split.grep(/^\d+$/).length
-                nextColumn = column.to_i + 1
 
-                if numClients > aMaxClientsPerColumn
-                  # evict excess clients to next column
-                    write "/view/#{nextColumn}/ctl", 'select 0'
+            a.mode = 'default'
+            clientList = a.clients
 
-                    (numClients - aMaxClientsPerColumn).times do |i|
-                      write "/view/#{column}/#{aMaxClientsPerColumn}/ctl", 'sendto next'
-                      write "/view/#{nextColumn}/sel/ctl", 'swap up' if i.zero?
-                    end
+            if clientList.length > aMaxClientsPerColumn
+              # evict excess clients to next column
+                a.next.unshift!(*clientList[aMaxClientsPerColumn..-1])
 
-                elsif numClients < aMaxClientsPerColumn
-                  # import clients from next column
-                    write "/view/#{column}/ctl", "select #{read("/view/#{column}").split.grep(/^\d+$/).last}"
+            elsif clientList.length < aMaxClientsPerColumn
+              # import clients from next column
+                until (diff = aMaxClientsPerColumn - a.clients.length) == 0
+                  pool = a.next.clients[0...diff]
+                  break if pool.empty?
 
-                    (aMaxClientsPerColumn - numClients).times do
-                      write "/view/#{nextColumn}/0/ctl", 'sendto prev'
-                    end
+                  a.push!(*pool)
                 end
-              end
             end
-          end until columnList.length == read('/view').split.grep(/^[^0]\d*$/).length
+
+
+            i += 1
+          end
         end
     end
   end
