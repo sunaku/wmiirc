@@ -19,69 +19,11 @@
 
 require 'fs'
 
-# Encapsulates access to the window manager.
-class Wmii < IxpNode
+module Wmii
   SELECTION_TAG = 'SEL'
-  DETACHED_TAG = 'status'
 
-  def initialize
-    super '/'
-  end
-
-
-  ## access to WM state
-
-  # Returns the currently focused client.
-  def focused_client
-    Client.new("/view/sel/sel")
-  end
-
-  # Returns the currently focused area.
-  def focused_area
-    Area.new("/view/sel")
-  end
-
-  # Returns the currently focused view.
-  def focused_view
-    View.new("/view")
-  end
-
-  # Returns the current set of tags.
-  def tags
-    self[:tags].split
-  end
-
-  # Returns the current set of views.
-  def views
-    tags.map {|v| View.new "/#{v}"}
-  end
-
-  # Returns the current set of clients.
-  def clients
-    Area.new("/client").clients
-  end
-
-
-  ## WM state manipulation
-
-  # Focuses the view with the given name.
-  def focus_view aName
-    View.new("/#{aName}").focus!
-  end
-
-  # Focuses the client which has the given ID.
-  def focus_client aClientId
-    if c = find_client(aClientId)
-      v = (a = c.parent).parent
-
-      v.focus!
-      a.focus!
-      c.focus!
-    end
-  end
-
-  # Returns the client which has the given ID or +nil+ if not found. The search is performed in the given places if specified.
-  def Wmii.find_client aClientId, aArea = nil, aView = nil
+  # Returns the client which has the given ID or +nil+ if not found. The search is performed within the given places if they are specified.
+  def find_client aClientId, aArea = nil, aView = nil
     aClientId = aClientId.to_i
     needle = Client.new("/client/#{aClientId}")
 
@@ -108,91 +50,112 @@ class Wmii < IxpNode
     nil
   end
 
-  # Changes the currently focused view to an adjacent one (:left or :right).
-  def cycle_view aTarget
-    tags = self.tags
-    curTag = focused_view.name
-    curIndex = tags.index(curTag)
+  # Encapsulates the window manager's state.
+  module State
+    ## state access
 
-    newIndex =
-      case aTarget
-        when :right
-          curIndex + 1
-
-        when :left
-          curIndex - 1
-
-        else
-          return
-
-      end % tags.length
-
-    focus_view tags[newIndex]
-  end
-
-
-  ## Multiple client selection
-
-  # Returns a list of all selected clients in the currently focused view. If there are no selected clients, then the currently focused client is returned in the list.
-  def selected_clients
-    list = focused_view.areas.map do |a|
-      a.clients.select {|c| c.selected?}
-    end
-    list.flatten!
-
-    if list.empty?
-      list << focused_client
+    # Returns the currently focused client.
+    def focused_client
+      Client.new("/view/sel/sel")
     end
 
-    list
-  end
-
-  # Un-selects all selected clients.
-  def select_none
-    View.new("/#{SELECTION_TAG}").unselect!
-  end
-
-  # Invokes the given block for each #selected_clients in a way that supports destructive operations, which change the number of areas in a view.
-  def with_selection # :yields: client
-    return unless block_given?
-
-    curView = focused_view
-
-    selected_clients.each do |c|
-      # resolve stale paths caused by destructive operations
-        unless c.exist?
-          c = find_client(c.basename, nil, curView)
-          c || next # skip upon failure
-        end
-
-      yield c
+    # Returns the currently focused area.
+    def focused_area
+      Area.new("/view/sel")
     end
-  end
 
-
-  ## wmii-2 style client detaching
-
-  # Detach the current selection.
-  def detach_selection
-    selected_clients.each do |c|
-      c.tags = DETACHED_TAG
+    # Returns the currently focused view.
+    def focused_view
+      View.new("/view")
     end
-  end
 
-  # Attach the most recently detached client
-  def attach_last_client
-    if a = View.new("/#{DETACHED_TAG}").areas.last
-      if c = a.clients.last
-        c.tags = focused_view.name
+    # Returns the current set of tags.
+    def tags
+      IxpFs.read('/tags').split
+    end
+
+    # Returns the current set of views.
+    def views
+      tags.map {|v| View.new "/#{v}"}
+    end
+
+    # Returns the current set of clients.
+    def clients
+      Area.new("/client").clients
+    end
+
+
+    ## state manipulation
+
+    # Focuses the view with the given name.
+    def focus_view aName
+      View.new("/#{aName}").focus!
+    end
+
+    # Focuses the client which has the given ID.
+    def focus_client aClientId
+      if c = find_client(aClientId)
+        v = (a = c.parent).parent
+
+        v.focus!
+        a.focus!
+        c.focus!
+      end
+    end
+
+
+    ## Multiple client selection
+
+    # Returns a list of all selected clients in the currently focused view. If there are no selected clients, then the currently focused client is returned in the list.
+    def selected_clients
+      list = focused_view.areas.map do |a|
+        a.clients.select {|c| c.selected?}
+      end
+      list.flatten!
+
+      if list.empty?
+        list << focused_client
+      end
+
+      list
+    end
+
+    # Un-selects all selected clients so that there is nothing selected.
+    def select_none!
+      View.new("/#{SELECTION_TAG}").unselect!
+    end
+
+    # Invokes the given block for each #selected_clients in a way that supports destructive operations, which change the number of areas in a view.
+    def with_selection # :yields: client
+      return unless block_given?
+
+      curView = focused_view
+
+      selected_clients.each do |c|
+        # resolve stale paths caused by destructive operations
+          unless c.exist?
+            c = find_client(c.basename, nil, curView)
+            c || next # skip upon failure
+          end
+
+        yield c
       end
     end
   end
 
+  # Represents the window manager at root of the file system.
+  class Root < IxpNode
+    include State
 
-  ## sub classes
+    def initialize
+      super '/'
+    end
+  end
 
   # Encapsulates a graphical region in the window manager.
   class Container < IxpNode
+    include Wmii
+
     def initialize aParentClass, aChildClass, *aArgs
       @parentClass = aParentClass
       @childClass = aChildClass
@@ -381,7 +344,7 @@ class Wmii < IxpNode
               maxIdx = parent.indices.last
               maxCol = parent[maxIdx]
 
-              aFirstClient = Wmii.find_client(aFirstClient.index, maxCol)
+              aFirstClient = find_client(aFirstClient.index, maxCol)
 
           # move *into* final destination
             if maxCol.indices.length > 1

@@ -1,6 +1,5 @@
 #!/usr/bin/ruby
 # This is an interactive Ruby shell for wmii.
-# - Access & manipulate wmii via the *W* constant.
 # - Press the TAB key for command completion.
 =begin
   Copyright 2006 Suraj N. Kurapati
@@ -22,14 +21,11 @@
 
 
 require 'rdoc/usage'
-
 RDoc::usage_no_exit
 
 
 $:.unshift File.dirname(__FILE__)
-require 'wm'
-
-W = Wmii.new
+require 'rc'
 
 
 require 'irb'
