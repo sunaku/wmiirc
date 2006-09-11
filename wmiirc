@@ -346,6 +346,15 @@ SHORTCUTS = {
     end
   end
 
+  # send selection to _i_th area
+  SHORTCUTS["#{SEND}Shift-#{i}"] = lambda do
+    dst = WM.focused_view[i]
+
+    WM.with_selection do |c|
+      dst.insert! c
+    end
+  end
+
   # apply grid layout with _i_ clients per column
   SHORTCUTS["#{LAYOUT}#{i}"] = lambda do
     WM.focused_view.grid! i

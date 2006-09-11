@@ -207,7 +207,7 @@ class Wmii < IxpNode
     # Returns a list of indices of items in this region.
     def indices
       if list = self.read
-        list.grep(/^\d+$/)
+        list.grep(/^\d+$/).map {|s| s.to_i}
       else
         []
       end
@@ -252,6 +252,8 @@ class Wmii < IxpNode
     def initialize *aArgs
       super Area, IxpNode, *aArgs
     end
+
+    undef index
 
     TAG_DELIMITER = "+"
 
@@ -308,9 +310,6 @@ class Wmii < IxpNode
 
     # Inserts the given clients at the bottom of this area.
     def push! *aClients
-      aClients.flatten!
-      return if aClients.empty?
-
       unless (list = clients).empty?
         list.last.focus!
       end
@@ -356,13 +355,20 @@ class Wmii < IxpNode
       # Sets up this area for insertion and returns the area ID into which insertion is performed.
       def setup_for_insertion aFirstClient
         dstIdx = self.index
-        maxIdx = parent.indices.length - 1
+        maxIdx = parent.indices.last
 
         if dstIdx > maxIdx
           aFirstClient.ctl = "sendto #{maxIdx}"
+          maxIdx = parent.indices.last  # recalculate b/c sendto can be destructive
 
-          parent[maxIdx].sel.ctl = "sendto next"
-          dstIdx = maxIdx.next
+          maxCol = parent[maxIdx]
+
+          if maxCol.indices.length > 1
+            maxCol.sel.ctl = "sendto next"
+            dstIdx = maxIdx + 1
+          else
+            dstIdx = maxIdx
+          end
         else
           aFirstClient.ctl = "sendto #{dstIdx}"
         end
