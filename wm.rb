@@ -415,7 +415,7 @@ class Wmii < Container
     View.new("/#{SELECTION_TAG}").unselect!
   end
 
-  # Invokes the given block for each client in the selection. This is suited for operations which modify the areas of a view by re-numbering the areas indices.
+  # Invokes the given block for each #selected_clients in a way that supports destructive operations, which change the number of areas in a view. Non-destructive operations can work with #selected_clients directly.
   def with_selection # :yields: client
     return unless block_given?
 
@@ -446,8 +446,8 @@ class Wmii < Container
 
   # Attach the most recently detached client
   def attach_last_client
-    if a = View.new("/#{DETACHED_TAG}").areas.first
-      if c = a.clients.first
+    if a = View.new("/#{DETACHED_TAG}").areas.last
+      if c = a.clients.last
         c.tags = focused_view.name
       end
     end

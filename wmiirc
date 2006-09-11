@@ -70,20 +70,21 @@ EOS
 
 ## KEY CONFIGURATION
 
-MODKEY='Mod1'
-UP='t'
-DOWN='n'
-LEFT='h'
-RIGHT='s'
+MODKEY = 'Mod1'
+UP = 't'
+DOWN = 'n'
+LEFT = 'h'
+RIGHT = 's'
 
-DEFAULT="#{MODKEY}-Control-"
-FOCUS=DEFAULT
-SEND="#{FOCUS}m,"
-SWAP="#{FOCUS}w,"
-LAYOUT="#{FOCUS}z,"
-MENU="#{FOCUS}"
-PROGRAM="#{FOCUS}"
-GROUP="#{FOCUS}g,"
+ACTION = "#{MODKEY}-Control-"
+FOCUS = ACTION
+SEND = "#{ACTION}m,"
+SWAP = "#{ACTION}w,"
+LAYOUT = "#{ACTION}z,"
+GROUP = "#{ACTION}g,"
+MENU = ACTION
+PROGRAM = ACTION
+
 
 SHORTCUTS = {
   # focus previous view
@@ -255,7 +256,7 @@ SHORTCUTS = {
   end,
 
   # send to temporary view or switch back again
-  "#{DEFAULT}b" => lambda do
+  "#{ACTION}b" => lambda do
     curView = WM.focused_view.name
 
     if curView =~ /~\d+$/
@@ -283,12 +284,12 @@ SHORTCUTS = {
   end,
 
   # wmii-2 style detaching
-  "#{SEND}d" => lambda do
+  "#{ACTION}d" => lambda do
     WM.detach_selection
   end,
 
   # wmii-2 style detaching
-  "#{SEND}Shift-d" => lambda do
+  "#{ACTION}Shift-d" => lambda do
     WM.attach_last_client
   end,
 
