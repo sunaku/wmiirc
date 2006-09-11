@@ -20,12 +20,19 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =end
 
+
 require 'rdoc/usage'
+
 RDoc::usage_no_exit
 
+
+$:.unshift File.dirname(__FILE__)
 require 'wm'
+
 W = Wmii.new
+
 
 require 'irb'
 require 'irb/completion'
+
 IRB.start __FILE__
