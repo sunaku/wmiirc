@@ -17,13 +17,11 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =end
 
+require 'find'
 require 'wm'
 
 include Wmii
 include Wmii::State
-
-
-require 'find'
 
 # Returns a list of program names available in the given paths.
 def find_programs *aPaths

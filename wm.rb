@@ -1,4 +1,4 @@
-# Abstractions for graphical stuff in wmii.
+# Abstractions for window manager stuff.
 =begin
   Copyright 2006 Suraj N. Kurapati
 
@@ -22,7 +22,7 @@ require 'fs'
 module Wmii
   SELECTION_TAG = 'SEL'
 
-  # Returns the client which has the given ID or +nil+ if not found. The search is performed within the given places if they are specified.
+  # Searches for the client with the given ID and returns it. If the client is not found, *nil* is returned. The search is performed within the given places if they are specified.
   def find_client aClientId, aArea = nil, aView = nil
     aClientId = aClientId.to_i
     needle = Client.new("/client/#{aClientId}")
@@ -143,7 +143,7 @@ module Wmii
     end
   end
 
-  # Represents the window manager at root of the file system.
+  # Head of the window manager's hierarchy.
   class Root < IxpFs::Node
     include State
 
@@ -152,7 +152,7 @@ module Wmii
     end
   end
 
-  # A graphical region in the window manager.
+  # A region in the window manager's hierarchy.
   class Node < IxpFs::Node
     include Wmii
 
@@ -369,7 +369,7 @@ module Wmii
 
     alias areas children
 
-    # Applies wmii-2 style tiling layout to this view while maintaining its order of clients. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any subsequent columns are squeezed into the *bottom* of the secondary column.
+    # Arranges the clients in this view, while maintaining their relative order, in the tiling fashion of LarsWM. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any subsequent columns are squeezed into the *bottom* of the secondary column.
     def tile!
       numAreas = self.indices.length
 
@@ -393,7 +393,7 @@ module Wmii
       end
     end
 
-    # Applies wmii-2 style grid layout to this view while maintaining its order of clients. If the maximum number of clients per column, the distribution of clients among the columns is calculated according to wmii-2 style. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any teritiary, quaternary, etc. columns are squeezed into the *bottom* of the secondary column.
+    # Arranges the clients in this view, while maintaining their relative order, in a (at best) square grid.
     def grid! aMaxClientsPerColumn = nil
       # determine client distribution
         unless aMaxClientsPerColumn

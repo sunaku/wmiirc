@@ -14,7 +14,6 @@ end
 Rake::RDocTask.new(:doc) do |t|
   t.rdoc_files.include('wmii*', '*.rb')
   t.rdoc_dir = 'doc'
-  t.main = 'Wmii'
 end
 
 Rake::PackageTask.new('snk_wmiirc', :noversion) do |p|
