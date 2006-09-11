@@ -1,5 +1,5 @@
 #!/usr/bin/ruby -w
-# wmii-3 configuration, written in Ruby.
+# Ruby-based configuration file for wmii-3.
 =begin
   Copyright 2006 Suraj N. Kurapati
 
