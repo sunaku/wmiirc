@@ -70,19 +70,38 @@ class Wmii < IxpNode
 
   # Focuses the client which has the given ID.
   def focus_client aClientId
-    needle = Client.new("/client/#{aClientId}")
-    haystack = needle.tags.map {|t| View.new("/#{t}")}
+    if c = find_client(aClientId)
+      v = (a = c.parent).parent
 
-    haystack.each do |v|
-      v.areas.each do |a|
-        if a.indices.detect {|i| i == aClientId}
-          v.focus!
-          a.focus!
-          a[aClientId].focus!
-          return
+      v.focus!
+      a.focus!
+      c.focus!
+    end
+  end
+
+  # Returns the client which has the given ID or +nil+ if not found. The search is performed in the given view, if specified.
+  def find_client aClientId, aView = nil
+    aClientId = aClientId.to_i
+    needle = Client.new("/client/#{aClientId}")
+
+    if needle.exist?
+      haystack =
+        if aView && aView.exist?
+          [aView]
+        else
+          needle.tags.map {|t| View.new("/#{t}")}
+        end
+
+      haystack.each do |v|
+        v.areas.each do |a|
+          if a.indices.detect {|i| i == aClientId}
+            return a[aClientId]
+          end
         end
       end
     end
+
+    nil
   end
 
   # Changes the currently focused view to an adjacent one (:left or :right).
@@ -133,18 +152,16 @@ class Wmii < IxpNode
   def with_selection # :yields: client
     return unless block_given?
 
-    oldJobs = []
+    curView = focused_view
 
-    loop do
-      selection = selected_clients
-      curJobs = selection.map {|c| c.index}
+    selected_clients.each do |c|
+      # resolve stale paths caused by destructive operations
+        unless c.exist?
+          c = find_client(File.basename(c.path), curView)
+          c || next # skip upon failure
+        end
 
-      pending = (curJobs - oldJobs)
-      break if pending.empty?
-
-      job = pending.shift
-      yield selection.detect {|i| i.index == job}
-      oldJobs << job
+      yield c
     end
   end
 
@@ -432,7 +449,7 @@ class Wmii < IxpNode
             end
 
         else
-          i = 1
+          i = 1 # skip the floating area
 
           until i >= (areaList = self.areas).length
             a = areaList[i]
