@@ -263,7 +263,7 @@ SHORTCUTS = {
     curView = WM.focused_view.name
 
     if curView =~ /~\d+$/
-      WM.selected_clients.each do |c|
+      WM.with_selection do |c|
         c.with_tags do
           delete curView
           push $` if empty?
@@ -275,7 +275,7 @@ SHORTCUTS = {
     else
       tmpView = "#{curView}~#{Time.now.to_i}"
 
-      WM.selected_clients.each do |c|
+      WM.with_selection do |c|
         c.with_tags do
           push tmpView
         end
