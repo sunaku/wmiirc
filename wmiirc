@@ -75,6 +75,9 @@ UP = 't'
 DOWN = 'n'
 LEFT = 'h'
 RIGHT = 's'
+PRIMARY = 1
+MIDDLE = 2
+SECONDARY = 3
 
 ACTION = "#{MODKEY}-Control-"
 FOCUS = ACTION
@@ -415,32 +418,33 @@ begin
           exit if arg == 'wmiirc'
 
         when 'BarClick'
-          view, button = arg.split
+          viewId, mouseBtn = arg.split
 
-          case button.to_i
-            when 1
-              WM.focus_view view
+          case mouseBtn.to_i
+            when PRIMARY
+              WM.focus_view viewId
 
-            when 2
+            when MIDDLE
               WM.selected_clients.each do |c|
                 c.with_tags do
-                  push view
+                  push viewId
                 end
               end
 
-            when 3
+            when SECONDARY
               WM.selected_clients.each do |c|
                 c.with_tags do
-                  delete view
+                  delete viewId
                 end
               end
           end
 
         when 'ClientClick'
-          client, button = arg.split
+          clientId, mouseBtn = arg.split
 
-          if button.to_i == 3
-            Wmii::Client.new("/client/#{client}").invert_selection!
+          case mouseBtn.to_i
+            when MIDDLE, SECONDARY
+              Wmii::Client.new("/client/#{clientId}").invert_selection!
           end
 
         when 'Key'
