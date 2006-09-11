@@ -19,7 +19,7 @@
 =end
 
 $: << File.dirname(__FILE__)
-require 'Wmii'
+require 'wm'
 
 
 ## WM STARTUP
@@ -52,23 +52,18 @@ WM.def.normcolors = ENV['WMII_NORMCOLORS']
 WM.def.colmode = 'default'
 WM.def.colwidth = 0
 
-TAGGING_RULES = [
-  [:code, /jEdit/],
-  [:chat, /gaim/, /xchat/],
-  [:gimp, /gimp/],
-  ['~', /QEMU/, /^MPlayer/, /xconsole/],
-]
-
-WM.def.rules = TAGGING_RULES.inject('') do |memo, (tag, *regexps)|
-  regexps.each do |r|
-    memo << "/#{r.source}/ -> #{tag}\n"
-  end
-
-  memo
-end << <<EOS
+WM.def.rules = <<EOS
+/MPlayer/ -> ~
 /.*/ -> !
 /.*/ -> 1
 EOS
+
+TAGGING_RULES = [
+  [:code, /jEdit/],
+  [:chat, /gaim/, /xchat/],
+  [:mail, /thunderbird/i, /azureus/i],
+  [:gimp, /gimp/],
+]
 
 
 ## KEY CONFIGURATION

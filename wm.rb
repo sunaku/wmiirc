@@ -16,7 +16,7 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =end
 
-require 'IxpNode'
+require 'fs'
 require 'find'
 
 # Encapsulates a graphical region in the window manager.
