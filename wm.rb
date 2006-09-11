@@ -144,7 +144,7 @@ module Wmii
   end
 
   # Represents the window manager at root of the file system.
-  class Root < IxpNode
+  class Root < IxpFs::Node
     include State
 
     def initialize
@@ -152,8 +152,8 @@ module Wmii
     end
   end
 
-  # Encapsulates a graphical region in the window manager.
-  class Container < IxpNode
+  # A graphical region in the window manager.
+  class Node < IxpFs::Node
     include Wmii
 
     def initialize aParentClass, aChildClass, *aArgs
@@ -231,9 +231,9 @@ module Wmii
     end
   end
 
-  class Client < Container
+  class Client < Node
     def initialize *aArgs
-      super Area, IxpNode, *aArgs
+      super Area, IxpFs::Node, *aArgs
     end
 
     undef index
@@ -284,7 +284,7 @@ module Wmii
     end
   end
 
-  class Area < Container
+  class Area < Node
     def initialize *aArgs
       super View, Client, *aArgs
     end
@@ -362,9 +362,9 @@ module Wmii
       end
   end
 
-  class View < Container
+  class View < Node
     def initialize *aArgs
-      super IxpNode, Area, *aArgs
+      super IxpFs::Node, Area, *aArgs
     end
 
     alias areas children

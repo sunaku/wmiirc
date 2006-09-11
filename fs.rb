@@ -99,84 +99,84 @@ module IxpFs
       end
     end
   end
-end
 
-# Encapsulates access to an entry (node) in the IXP file system.
-class IxpNode
-  attr_reader :path
+  # An entry in the IXP file system.
+  class Node
+    attr_reader :path
 
-  # Obtains the IXP node at the given path. If aCreateIt is asserted, then the given path is created unless it already exists.
-  def initialize aPath, aCreateIt = false
-    @path = aPath.squeeze('/')
-    create! if aCreateIt && !exist?
-  end
-
-  # Creates this node.
-  def create!
-    IxpFs.create @path
-  end
-
-  # Deletes this node.
-  def remove!
-    IxpFs.remove @path
-  end
-
-  # Writes the given content to this node.
-  def write! aContent
-    IxpFs.write @path, aContent
-  end
-
-  # Returns the contents of this node or the names of all sub-nodes if this is a directory.
-  def read
-    IxpFs.read @path
-  end
-
-  # Returns true if this node is a file.
-  def file?
-    IxpFs.file? @path
-  end
-
-  # Returns true if this node is a directory.
-  def directory?
-    IxpFs.directory? @path
-  end
-
-  # Returns true if this node exists in the file system.
-  def exist?
-    IxpFs.exist? @path
-  end
-
-  def basename
-    File.basename @path
-  end
-
-  def dirname
-    File.dirname @path
-  end
-
-  # Accesses the given sub-path. The contents of the sub-path are returned if it is a file. Otherwise, its node is returned if it is a directory.
-  def [] aSubPath
-    child = IxpNode.new("#{@path}/#{aSubPath}")
-
-    if child.file?
-      child.read
-    else
-      child
+    # Obtains the IXP node at the given path. If aCreateIt is asserted, then the given path is created unless it already exists.
+    def initialize aPath, aCreateIt = false
+      @path = aPath.squeeze('/')
+      create! if aCreateIt && !exist?
     end
-  end
 
-  # Writes to the given sub-path.
-  def []= aSubPath, aContent
-    child = IxpNode.new("#{@path}/#{aSubPath}")
-    child.write! aContent if child.file?
-  end
+    # Creates this node.
+    def create!
+      IxpFs.create @path
+    end
 
-  # Provides easy access to sub-nodes.
-  def method_missing aMeth, *aArgs
-    if aMeth.to_s =~ /=$/
-      self[$`] = *aArgs
-    else
-      self[aMeth]
+    # Deletes this node.
+    def remove!
+      IxpFs.remove @path
+    end
+
+    # Writes the given content to this node.
+    def write! aContent
+      IxpFs.write @path, aContent
+    end
+
+    # Returns the contents of this node or the names of all sub-nodes if this is a directory.
+    def read
+      IxpFs.read @path
+    end
+
+    # Returns true if this node is a file.
+    def file?
+      IxpFs.file? @path
+    end
+
+    # Returns true if this node is a directory.
+    def directory?
+      IxpFs.directory? @path
+    end
+
+    # Returns true if this node exists in the file system.
+    def exist?
+      IxpFs.exist? @path
+    end
+
+    def basename
+      File.basename @path
+    end
+
+    def dirname
+      File.dirname @path
+    end
+
+    # Accesses the given sub-path. The contents of the sub-path are returned if it is a file. Otherwise, its node is returned if it is a directory.
+    def [] aSubPath
+      child = IxpFs::Node.new("#{@path}/#{aSubPath}")
+
+      if child.file?
+        child.read
+      else
+        child
+      end
+    end
+
+    # Writes to the given sub-path.
+    def []= aSubPath, aContent
+      child = IxpFs::Node.new("#{@path}/#{aSubPath}")
+      child.write! aContent if child.file?
+    end
+
+    # Provides easy access to sub-nodes.
+    def method_missing aMeth, *aArgs
+      if aMeth.to_s =~ /=$/
+        self[$`] = *aArgs
+      else
+        self[aMeth]
+      end
     end
   end
 end
