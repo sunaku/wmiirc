@@ -1,5 +1,5 @@
 #!/usr/bin/ruby
-# This is an interactive Ruby shell for wmiirc.
+# This is an interactive Ruby shell for wmii.
 # - Access & manipulate wmii via the *W* constant.
 # - Press the TAB key for command completion.
 =begin

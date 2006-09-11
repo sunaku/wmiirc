@@ -1,3 +1,4 @@
+# Abstractions for graphical stuff in wmii.
 =begin
   Copyright 2006 Suraj N. Kurapati
 

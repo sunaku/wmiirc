@@ -1,5 +1,5 @@
 #!/usr/bin/ruby -w
-# Ruby-based configuration file for wmii-3.
+# Ruby-based configuration file for wmii.
 =begin
   Copyright 2006 Suraj N. Kurapati
 
@@ -70,16 +70,34 @@ EOS
 
 ## KEY CONFIGURATION
 
+# Symbolic name of modifier key.
 MODKEY = 'Mod1'
+
+# Symbolic name for up direction key.
 UP = 't'
+
+# Symbolic name for down direction key.
 DOWN = 'n'
+
+# Symbolic name for left direction key.
 LEFT = 'h'
+
+# Symbolic name for right direction key.
 RIGHT = 's'
+
+# Keycode for the primary mouse button.
 PRIMARY = 1
+
+# Keycode for the middle mouse button.
 MIDDLE = 2
+
+# Keycode for the secondary mouse button.
 SECONDARY = 3
 
+
+# Initial key sequence used by all shortcuts.
 ACTION = "#{MODKEY}-Control-"
+
 FOCUS = ACTION
 SEND = "#{ACTION}m,"
 SWAP = "#{ACTION}w,"
@@ -89,6 +107,7 @@ MENU = ACTION
 PROGRAM = ACTION
 
 
+# Shortcut key sequences and their associated logic.
 SHORTCUTS = {
   # focus previous view
   "#{FOCUS}comma" => lambda do
