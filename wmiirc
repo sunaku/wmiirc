@@ -380,7 +380,7 @@ WM.def.keys = SHORTCUTS.keys.join("\n")
 ## STATUS BAR
 
 Thread.new do
-  status = IxpFs::Node.new("/bar/status", true)
+  status = Ixp::Node.new("/bar/status", true)
   status.colors = ENV['WMII_NORMCOLORS']
 
   loop do

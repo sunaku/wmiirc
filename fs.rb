@@ -1,4 +1,4 @@
-## Abstractions for wmii's {IXP file system}[http://wmii.de/contrib/guide/wmii-3/guide-en/guide_en/node9.html] interface.
+# Abstractions for wmii's {IXP file system}[http://wmii.de/contrib/guide/wmii-3/guide-en/guide_en/node9.html] interface.
 =begin
   Copyright 2006 Suraj N. Kurapati
   Copyright 2006 Stephan Maka
@@ -22,7 +22,7 @@ $:.unshift File.join(File.dirname(__FILE__), 'ruby-ixp', 'lib')
 require 'ixp'
 
 # Encapsulates access to the IXP file system.
-module IxpFs
+module Ixp
   begin
     @@ixp = IXP::Client.new
   rescue Errno::ECONNREFUSED
@@ -112,37 +112,37 @@ module IxpFs
 
     # Creates this node.
     def create!
-      IxpFs.create @path
+      Ixp.create @path
     end
 
     # Deletes this node.
     def remove!
-      IxpFs.remove @path
+      Ixp.remove @path
     end
 
     # Writes the given content to this node.
     def write! aContent
-      IxpFs.write @path, aContent
+      Ixp.write @path, aContent
     end
 
     # Returns the contents of this node or the names of all sub-nodes if this is a directory.
     def read
-      IxpFs.read @path
+      Ixp.read @path
     end
 
     # Returns true if this node is a file.
     def file?
-      IxpFs.file? @path
+      Ixp.file? @path
     end
 
     # Returns true if this node is a directory.
     def directory?
-      IxpFs.directory? @path
+      Ixp.directory? @path
     end
 
     # Returns true if this node exists in the file system.
     def exist?
-      IxpFs.exist? @path
+      Ixp.exist? @path
     end
 
     def basename
@@ -155,7 +155,7 @@ module IxpFs
 
     # Accesses the given sub-path. The contents of the sub-path are returned if it is a file. Otherwise, its node is returned if it is a directory.
     def [] aSubPath
-      child = IxpFs::Node.new("#{@path}/#{aSubPath}")
+      child = Ixp::Node.new("#{@path}/#{aSubPath}")
 
       if child.file?
         child.read
@@ -166,7 +166,7 @@ module IxpFs
 
     # Writes to the given sub-path.
     def []= aSubPath, aContent
-      child = IxpFs::Node.new("#{@path}/#{aSubPath}")
+      child = Ixp::Node.new("#{@path}/#{aSubPath}")
       child.write! aContent if child.file?
     end
 

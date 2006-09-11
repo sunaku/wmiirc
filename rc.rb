@@ -1,4 +1,4 @@
-## Utility methods used by wmiirc.
+# Utility methods used by wmiirc.
 =begin
   Copyright 2006 Suraj N. Kurapati
 

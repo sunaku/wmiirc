@@ -1,4 +1,4 @@
-# Abstractions for window manager stuff.
+# Abstractions for the window manager.
 =begin
   Copyright 2006 Suraj N. Kurapati
 
@@ -71,7 +71,7 @@ module Wmii
 
     # Returns the current set of tags.
     def tags
-      IxpFs.read('/tags').split
+      Ixp.read('/tags').split
     end
 
     # Returns the current set of views.
@@ -144,7 +144,7 @@ module Wmii
   end
 
   # Head of the window manager's hierarchy.
-  class Root < IxpFs::Node
+  class Root < Ixp::Node
     include State
 
     def initialize
@@ -153,7 +153,7 @@ module Wmii
   end
 
   # A region in the window manager's hierarchy.
-  class Node < IxpFs::Node
+  class Node < Ixp::Node
     include Wmii
 
     def initialize aParentClass, aChildClass, *aArgs
@@ -233,7 +233,7 @@ module Wmii
 
   class Client < Node
     def initialize *aArgs
-      super Area, IxpFs::Node, *aArgs
+      super Area, Ixp::Node, *aArgs
     end
 
     undef index
@@ -364,7 +364,7 @@ module Wmii
 
   class View < Node
     def initialize *aArgs
-      super IxpFs::Node, Area, *aArgs
+      super Ixp::Node, Area, *aArgs
     end
 
     alias areas children
