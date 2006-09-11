@@ -18,7 +18,7 @@
 
 require 'fs'
 
-# Ruby interface to WMII.
+# Encapsulates access to the window manager.
 class Wmii < IxpNode
   SELECTION_TAG = 'SEL'
   DETACHED_TAG = 'status'
@@ -151,7 +151,7 @@ class Wmii < IxpNode
     View.new("/#{SELECTION_TAG}").unselect!
   end
 
-  # Invokes the given block for each #selected_clients in a way that supports destructive operations, which change the number of areas in a view. Non-destructive operations can work with #selected_clients directly.
+  # Invokes the given block for each #selected_clients in a way that supports destructive operations, which change the number of areas in a view.
   def with_selection # :yields: client
     return unless block_given?
 
@@ -267,7 +267,6 @@ class Wmii < IxpNode
     end
   end
 
-  # Represents a running, graphical program.
   class Client < Container
     def initialize *aArgs
       super Area, IxpNode, *aArgs

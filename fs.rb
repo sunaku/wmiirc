@@ -29,7 +29,7 @@ module IxpFs
     retry
   end
 
-  # Creates a file at the given path and returns it.
+  # Creates a file at the given path.
   def self.create aPath
     begin
       @@ixp.create aPath
@@ -73,18 +73,22 @@ module IxpFs
     end
   end
 
+  # Returns true if the given path is a file.
   def self.file? aPath
     open(aPath) {|f| f.instance_of? IXP::File}
   end
 
+  # Returns true if the given path is a directory.
   def self.directory? aPath
     open(aPath) {|f| f.instance_of? IXP::Directory}
   end
 
+  # Returns true if the given path exists.
   def self.exist? aPath
     open(aPath) {true}
   end
 
+  # Opens the given path for reading and writing and passes it to the given block.
   def self.open aPath # :yields: IO
     if block_given?
       begin
@@ -94,44 +98,50 @@ module IxpFs
       rescue IXP::IXPException
       end
     end
-
-    nil
   end
 end
 
-# Encapsulates access to an entry in the IXP file system.
+# Encapsulates access to an entry (node) in the IXP file system.
 class IxpNode
   attr_reader :path
 
+  # Obtains the IXP node at the given path. If aCreateIt is asserted, then the given path is created unless it already exists.
   def initialize aPath, aCreateIt = false
     @path = aPath.squeeze('/')
     create! if aCreateIt && !exist?
   end
 
+  # Creates this node.
   def create!
     IxpFs.create @path
   end
 
+  # Deletes this node.
   def remove!
     IxpFs.remove @path
   end
 
+  # Writes the given content to this node.
   def write! aContent
     IxpFs.write @path, aContent
   end
 
+  # Returns the contents of this node or the names of all sub-nodes if this is a directory.
   def read
     IxpFs.read @path
   end
 
+  # Returns true if this node is a file.
   def file?
     IxpFs.file? @path
   end
 
+  # Returns true if this node is a directory.
   def directory?
     IxpFs.directory? @path
   end
 
+  # Returns true if this node exists in the file system.
   def exist?
     IxpFs.exist? @path
   end
@@ -144,7 +154,7 @@ class IxpNode
     File.dirname @path
   end
 
-  # Accesses the given sub-path.
+  # Accesses the given sub-path. The contents of the sub-path are returned if it is a file. Otherwise, its node is returned if it is a directory.
   def [] aSubPath
     child = IxpNode.new("#{@path}/#{aSubPath}")
 
