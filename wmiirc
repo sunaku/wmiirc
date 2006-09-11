@@ -221,7 +221,7 @@ SHORTCUTS = {
   end,
 
   "#{SEND}Delete" => lambda do
-    WM.selected_clients.each do |c|
+    WM.with_selection do |c|
       c.ctl = 'kill'
     end
   end,
@@ -232,7 +232,7 @@ SHORTCUTS = {
     choices = WM.tags.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
     target = show_menu(choices)
 
-    WM.selected_clients.each do |c|
+    WM.with_selection do |c|
       c.with_tags do
         case target
           when /^\+/
@@ -251,7 +251,7 @@ SHORTCUTS = {
 
   # remove currently focused view from current selection's tags
   "#{SEND}Shift-minus" => lambda do
-    WM.selected_clients.each do |c|
+    WM.with_selection do |c|
       c.with_tags do
         delete WM.focused_view.name
       end
@@ -312,18 +312,14 @@ SHORTCUTS = {
     WM.focused_client.ctl = 'swap next'
   end,
 
-  # swap each selected client with the one below it
+  # swap the currently focused client with the one below it
   "#{SWAP}#{DOWN}" => lambda do
-    WM.selected_clients.each do |c|
-      c.ctl = 'swap down'
-    end
+    WM.focused_client.ctl = 'swap down'
   end,
 
-  # swap each selected client with the one above it
+  # swap the currently focused client with the one above it
   "#{SWAP}#{UP}" => lambda do
-    WM.selected_clients.each do |c|
-      c.ctl = 'swap up'
-    end
+    WM.focused_client.ctl = 'swap up'
   end,
 }
 
@@ -337,7 +333,7 @@ SHORTCUTS = {
 
   # send selection to _i_th view
   SHORTCUTS["#{SEND}#{i}"] = lambda do
-    WM.selected_clients.each do |c|
+    WM.with_selection do |c|
       c.tags = (WM.tags[k] || i)
     end
   end
@@ -359,7 +355,7 @@ SHORTCUTS = {
   # add _i_th view to current selection's tags
   SHORTCUTS["#{SEND}equal,#{i}"] =
   SHORTCUTS["#{SEND}Shift-equal,#{i}"] = lambda do
-    WM.selected_clients.each do |c|
+    WM.with_selection do |c|
       c.with_tags do
         push(WM.tags[k] || i)
       end
@@ -368,7 +364,7 @@ SHORTCUTS = {
 
   # remove _i_th view from current selection's tags
   SHORTCUTS["#{SEND}minus,#{i}"] = lambda do
-    WM.selected_clients.each do |c|
+    WM.with_selection do |c|
       c.with_tags do
         delete(WM.tags[k] || i)
       end
@@ -430,14 +426,14 @@ begin
               WM.focus_view viewId
 
             when MIDDLE
-              WM.selected_clients.each do |c|
+              WM.with_selection do |c|
                 c.with_tags do
                   push viewId
                 end
               end
 
             when SECONDARY
-              WM.selected_clients.each do |c|
+              WM.with_selection do |c|
                 c.with_tags do
                   delete viewId
                 end

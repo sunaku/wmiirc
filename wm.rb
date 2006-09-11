@@ -353,9 +353,8 @@ class Wmii < IxpNode
       return if aClients.empty?
 
       clients.first.focus! if exist?
-
       setup_for_insertion! aClients.shift
-      parent.sel.ctl = 'swap up'
+      clients.first.ctl = 'swap down'
 
       dst = self.index
       aClients.each do |c|
