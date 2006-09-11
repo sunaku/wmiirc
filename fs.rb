@@ -58,10 +58,10 @@ module IxpFs
   def self.read aPath
     open(aPath) do |f|
       if f.is_a? IXP::Directory
-        names = ''
+        names = []
 
         while i = f.next
-          names << i.name << "\n"
+          names << i.name
         end
 
         names

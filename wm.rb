@@ -55,7 +55,7 @@ class Container < IxpNode
   # Returns a list of indices of items in this region.
   def indices
     if list = self.read
-      list.split.grep(/^\d+$/)
+      list.grep(/^\d+$/)
     else
       []
     end
@@ -310,7 +310,7 @@ class Wmii < Container
   DETACHED_TAG = 'status'
 
   def initialize
-    super IxpNode, View, '/'
+    super IxpNode, IxpNode, '/'
   end
 
 
@@ -333,7 +333,7 @@ class Wmii < Container
 
   # Returns the current set of tags.
   def tags
-    IxpFs.read('/tags').split
+    self['/tags'].split
   end
 
   # Returns the current set of views.
