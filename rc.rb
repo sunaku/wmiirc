@@ -91,7 +91,7 @@ end
 
 # Send selected clients to temporary view or switch back again.
 def toggle_temporary_view
-  curView = focused_view.name
+  curView = current_view.name
 
   if curView =~ /~\d+$/
     with_selection do |c|
@@ -113,14 +113,14 @@ def toggle_temporary_view
     end
 
     focus_view tmpView
-    focused_view.grid!
+    current_view.grid!
   end
 end
 
-# Changes the currently focused view to an adjacent one (:left or :right).
+# Puts focus on an adjacent view (:left or :right).
 def cycle_view aTarget
   tags = self.tags
-  curTag = focused_view.name
+  curTag = current_view.name
   curIndex = tags.index(curTag)
 
   newIndex =
@@ -155,7 +155,7 @@ end
 def attach_last_client
   if a = View.new("/#{DETACHED_TAG}").areas.last
     if c = a.clients.last
-      c.tags = focused_view.name
+      c.tags = current_view.name
     end
   end
 end

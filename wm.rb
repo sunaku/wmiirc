@@ -50,22 +50,36 @@ module Wmii
     nil
   end
 
+  # Focuses the view with the given name.
+  def focus_view aName
+    View.new("/#{aName}").focus!
+  end
+
+  # Focuses the client which has the given ID.
+  def focus_client aClientId
+    if c = find_client(aClientId)
+      v = (a = c.parent).parent
+
+      v.focus!
+      a.focus!
+      c.focus!
+    end
+  end
+
   # Encapsulates the window manager's state.
   module State
-    ## state access
-
     # Returns the currently focused client.
-    def focused_client
+    def current_client
       Client.new("/view/sel/sel")
     end
 
     # Returns the currently focused area.
-    def focused_area
+    def current_area
       Area.new("/view/sel")
     end
 
     # Returns the currently focused view.
-    def focused_view
+    def current_view
       View.new("/view")
     end
 
@@ -85,36 +99,17 @@ module Wmii
     end
 
 
-    ## state manipulation
-
-    # Focuses the view with the given name.
-    def focus_view aName
-      View.new("/#{aName}").focus!
-    end
-
-    # Focuses the client which has the given ID.
-    def focus_client aClientId
-      if c = find_client(aClientId)
-        v = (a = c.parent).parent
-
-        v.focus!
-        a.focus!
-        c.focus!
-      end
-    end
-
-
     ## Multiple client selection
 
     # Returns a list of all selected clients in the currently focused view. If there are no selected clients, then the currently focused client is returned in the list.
     def selected_clients
-      list = focused_view.areas.map do |a|
+      list = current_view.areas.map do |a|
         a.clients.select {|c| c.selected?}
       end
       list.flatten!
 
       if list.empty?
-        list << focused_client
+        list << current_client
       end
 
       list
@@ -129,7 +124,7 @@ module Wmii
     def with_selection # :yields: client
       return unless block_given?
 
-      curView = focused_view
+      curView = current_view
 
       selected_clients.each do |c|
         # resolve stale paths caused by destructive operations
