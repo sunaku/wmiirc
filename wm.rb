@@ -17,7 +17,6 @@
 =end
 
 require 'fs'
-require 'find'
 
 # Encapsulates a graphical region in the window manager.
 class Container < IxpNode
@@ -93,6 +92,215 @@ class Container < IxpNode
     ['select', 'view'].each do |cmd|
       parent.ctl = "#{cmd} #{File.basename @path}"
     end
+  end
+end
+
+# Represents a running, graphical program.
+class Client < Container
+  def initialize *aArgs
+    super Area, IxpNode, *aArgs
+  end
+
+  TAG_DELIMITER = "+"
+
+  # Returns the tags associated with this client.
+  def tags
+    self['tags'].split(TAG_DELIMITER)
+  end
+
+  # Modifies the tags associated with this client.
+  def tags= *aTags
+    t = aTags.flatten.uniq
+    self['tags'] = t.join(TAG_DELIMITER) unless t.empty?
+  end
+
+  # Evaluates the given block within the context of this client's list of tags.
+  def with_tags &aBlock
+    t = self.tags
+    t.instance_eval(&aBlock)
+    self.tags = t
+  end
+
+  # Checks if this client is included in the current selection.
+  def selected?
+    tags.include? Wmii::SELECTION_TAG
+  end
+
+  def select!
+    with_tags do
+      unshift Wmii::SELECTION_TAG
+    end
+  end
+
+  def unselect!
+    with_tags do
+      delete Wmii::SELECTION_TAG
+    end
+  end
+
+  def invert_selection!
+    if selected?
+      unselect!
+    else
+      select!
+    end
+  end
+end
+
+class Area < Container
+  def initialize *aArgs
+    super View, Client, *aArgs
+  end
+
+  alias clients children
+
+  # Inserts the given clients at the bottom of this area.
+  def push! *aClients
+    aClients.flatten!
+    return if aClients.empty?
+
+    unless (list = clients).empty?
+      list.last.focus!
+    end
+
+    insert! aClients
+  end
+
+  # Inserts the given clients after the currently focused client in this area.
+  def insert! *aClients
+    aClients.flatten!
+    return if aClients.empty?
+
+    dstIdx = setup_for_insertion(aClients.shift)
+
+    aClients.each do |c|
+      c.ctl = "sendto #{dstIdx}"
+    end
+  end
+
+  # Inserts the given clients at the top of this area.
+  def unshift! *aClients
+    aClients.flatten!
+    return if aClients.empty?
+
+    unless (list = clients).empty?
+      list.first.focus!
+    end
+
+    dstIdx = setup_for_insertion(aClients.shift)
+    parent[dstIdx].sel.ctl = 'swap up'
+
+    aClients.each do |c|
+      c.ctl = "sendto #{dstIdx}"
+    end
+  end
+
+  # Concatenates the given area to the bottom of this area.
+  def concat! aArea
+    push! aArea.clients
+  end
+
+  private
+    # Sets up this area for insertion and returns the area ID into which insertion is performed.
+    def setup_for_insertion aFirstClient
+      dstIdx = self.index
+      maxIdx = parent.indices.length - 1
+
+      if dstIdx > maxIdx
+        aFirstClient.ctl = "sendto #{maxIdx}"
+
+        parent[maxIdx].sel.ctl = "sendto next"
+        dstIdx = maxIdx.next
+      else
+        aFirstClient.ctl = "sendto #{dstIdx}"
+      end
+
+      dstIdx
+    end
+end
+
+class View < Container
+  def initialize *aArgs
+    super IxpNode, Area, *aArgs
+  end
+
+  alias areas children
+
+  # Applies wmii-2 style tiling layout to this view while maintaining its order of clients. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any subsequent columns are squeezed into the *bottom* of the secondary column.
+  def tile!
+    numAreas = self.indices.length
+
+    if numAreas > 1
+      priCol, secCol, extCol = self[1], self[2], self[3]
+
+      # keep only the first client in primary column
+        priClient, *rest = priCol.clients
+        secCol.unshift! rest
+
+      # squeeze extra columns into secondary column
+        if numAreas > 3
+          (numAreas - 2).times do
+            secCol.concat! extCol
+          end
+        end
+
+      secCol.mode = 'default'
+      # priCol.mode = 'max'
+      priClient.focus!
+    end
+  end
+
+  # Applies wmii-2 style grid layout to this view while maintaining its order of clients. If the maximum number of clients per column, the distribution of clients among the columns is calculated according to wmii-2 style. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any teritiary, quaternary, etc. columns are squeezed into the *bottom* of the secondary column.
+  def grid! aMaxClientsPerColumn = nil
+    # determine client distribution
+      unless aMaxClientsPerColumn
+        numClients = self.areas[1..-1].inject(0) do |count, area|
+          count + area.clients.length
+        end
+
+        return unless numClients > 1
+
+        numColumns = Math.sqrt(numClients)
+        aMaxClientsPerColumn = (numClients / numColumns).round
+      end
+
+    # distribute the clients
+      if aMaxClientsPerColumn <= 0
+        # squeeze all clients into a single column
+          areaList = self.areas
+
+          (areaList.length - 2).times do
+            areaList[1].concat! areaList[2]
+          end
+
+      else
+        i = 1
+
+        until i >= (areaList = self.areas).length
+          a = areaList[i]
+
+
+          a.mode = 'default'
+          clientList = a.clients
+
+          if clientList.length > aMaxClientsPerColumn
+            # evict excess clients to next column
+              a.next.unshift! clientList[aMaxClientsPerColumn..-1]
+
+          elsif clientList.length < aMaxClientsPerColumn
+            # import clients from next column
+              until (diff = aMaxClientsPerColumn - a.clients.length) == 0
+                immigrants = a.next.clients[0...diff]
+                break if immigrants.empty?
+
+                a.push! immigrants
+              end
+          end
+
+
+          i += 1
+        end
+      end
   end
 end
 
@@ -242,246 +450,6 @@ class Wmii < Container
       if c = a.clients.first
         c.tags = focused_view.name
       end
-    end
-  end
-
-
-  ## Utility methods
-
-  # Shows a WM menu with the given content and returns its output.
-  def show_menu aContent
-    output = nil
-
-    IO.popen('wmiimenu', 'r+') do |menu|
-      menu.write aContent
-      menu.close_write
-
-      output = menu.read
-    end
-
-    output
-  end
-
-  # Returns a list of program names available in the given paths.
-  def find_programs *aPaths
-    aPaths.map! {|p| File.expand_path p}
-    list = []
-
-    Find.find(*aPaths) do |f|
-      if File.executable?(f) && !File.directory?(f)
-        list << File.basename(f)
-      end
-    end
-
-    list.uniq.sort
-  end
-
-
-  ## Subclasses for abstraction
-
-  # Represents a running, graphical program.
-  class Client < Container
-    def initialize *aArgs
-      super Area, IxpNode, *aArgs
-    end
-
-    TAG_DELIMITER = "+"
-
-    # Returns the tags associated with this client.
-    def tags
-      self['tags'].split(TAG_DELIMITER)
-    end
-
-    # Modifies the tags associated with this client.
-    def tags= *aTags
-      t = aTags.flatten.uniq
-      self['tags'] = t.join(TAG_DELIMITER) unless t.empty?
-    end
-
-    # Evaluates the given block within the context of this client's list of tags.
-    def with_tags &aBlock
-      t = self.tags
-      t.instance_eval(&aBlock)
-      self.tags = t
-    end
-
-    # Checks if this client is included in the current selection.
-    def selected?
-      tags.include? SELECTION_TAG
-    end
-
-    def select!
-      with_tags do
-        unshift SELECTION_TAG
-      end
-    end
-
-    def unselect!
-      with_tags do
-        delete SELECTION_TAG
-      end
-    end
-
-    def invert_selection!
-      if selected?
-        unselect!
-      else
-        select!
-      end
-    end
-  end
-
-  class Area < Container
-    def initialize *aArgs
-      super View, Client, *aArgs
-    end
-
-    alias clients children
-
-    # Inserts the given clients at the bottom of this area.
-    def push! *aClients
-      return if aClients.empty?
-
-      unless (list = clients).empty?
-        list.last.focus!
-      end
-
-      insert!(*aClients)
-    end
-
-    # Inserts the given clients after the currently focused client in this area.
-    def insert! *aClients
-      return if aClients.empty?
-
-      dstIdx = setup_for_insertion(aClients.shift)
-
-      aClients.each do |c|
-        c.ctl = "sendto #{dstIdx}"
-      end
-    end
-
-    # Inserts the given clients at the top of this area.
-    def unshift! *aClients
-      return if aClients.empty?
-
-      unless (list = clients).empty?
-        list.first.focus!
-      end
-
-      dstIdx = setup_for_insertion(aClients.shift)
-      parent[dstIdx].sel.ctl = 'swap up'
-
-      aClients.each do |c|
-        c.ctl = "sendto #{dstIdx}"
-      end
-    end
-
-    # Concatenates the given area to the bottom of this area.
-    def concat! aArea
-      push!(*aArea.clients)
-    end
-
-    private
-      # Sets up this area for insertion and returns the area ID into which insertion is performed.
-      def setup_for_insertion aFirstClient
-        dstIdx = self.index
-        maxIdx = parent.indices.length - 1
-
-        if dstIdx > maxIdx
-          aFirstClient.ctl = "sendto #{maxIdx}"
-
-          parent[maxIdx].sel.ctl = "sendto next"
-          dstIdx = maxIdx.next
-        else
-          aFirstClient.ctl = "sendto #{dstIdx}"
-        end
-
-        dstIdx
-      end
-  end
-
-  class View < Container
-    def initialize *aArgs
-      super IxpNode, Area, *aArgs
-    end
-
-    alias areas children
-
-    # Applies wmii-2 style tiling layout to this view while maintaining its order of clients. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any subsequent columns are squeezed into the *bottom* of the secondary column.
-    def tile!
-      numAreas = self.indices.length
-
-      if numAreas > 1
-        priCol, secCol, extCol = self[1], self[2], self[3]
-
-        # keep only the first client in primary column
-          priClient, *rest = priCol.clients
-          secCol.unshift!(*rest)
-
-        # squeeze extra columns into secondary column
-          if numAreas > 3
-            (numAreas - 2).times do
-              secCol.concat! extCol
-            end
-          end
-
-        secCol.mode = 'default'
-        # priCol.mode = 'max'
-        priClient.focus!
-      end
-    end
-
-    # Applies wmii-2 style grid layout to this view while maintaining its order of clients. If the maximum number of clients per column, the distribution of clients among the columns is calculated according to wmii-2 style. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any teritiary, quaternary, etc. columns are squeezed into the *bottom* of the secondary column.
-    def grid! aMaxClientsPerColumn = nil
-      # determine client distribution
-        unless aMaxClientsPerColumn
-          numClients = self.areas[1..-1].inject(0) do |count, area|
-            count + area.clients.length
-          end
-
-          return unless numClients > 1
-
-          numColumns = Math.sqrt(numClients)
-          aMaxClientsPerColumn = (numClients / numColumns).round
-        end
-
-      # distribute the clients
-        if aMaxClientsPerColumn <= 0
-          # squeeze all clients into a single column
-            areaList = self.areas
-
-            (areaList.length - 2).times do
-              areaList[1].concat! areaList[2]
-            end
-
-        else
-          i = 1
-
-          until i >= (areaList = self.areas).length
-            a = areaList[i]
-
-
-            a.mode = 'default'
-            clientList = a.clients
-
-            if clientList.length > aMaxClientsPerColumn
-              # evict excess clients to next column
-                a.next.unshift!(*clientList[aMaxClientsPerColumn..-1])
-
-            elsif clientList.length < aMaxClientsPerColumn
-              # import clients from next column
-                until (diff = aMaxClientsPerColumn - a.clients.length) == 0
-                  pool = a.next.clients[0...diff]
-                  break if pool.empty?
-
-                  a.push!(*pool)
-                end
-            end
-
-
-            i += 1
-          end
-        end
     end
   end
 end

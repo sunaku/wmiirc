@@ -20,13 +20,14 @@
 
 $: << File.dirname(__FILE__)
 require 'wm'
+require 'rc'
 
 
 ## WM STARTUP
 
 WM = Wmii.new
-PROGRAM_MENU = WM.find_programs(*ENV['PATH'].split(':')).join("\n")
-ACTION_MENU = WM.find_programs('~/dry/apps/wmii/etc/wmii-3', '~/.wmii-3').join("\n")
+PROGRAM_MENU = find_programs( ENV['PATH'].squeeze(':').split(':') )
+ACTION_MENU = find_programs('~/dry/apps/wmii/etc/wmii-3', '~/.wmii-3')
 
 # terminate existing wmiirc processes
 sleep 1 until WM.event = "Start wmiirc\n"
@@ -165,17 +166,17 @@ SHORTCUTS = {
 
 
   "#{MENU}i" => lambda do
-    action = WM.show_menu(ACTION_MENU)
+    action = show_menu(ACTION_MENU)
     system(action << '&') unless action.empty?
   end,
 
   "#{MENU}e" => lambda do
-    program = WM.show_menu(PROGRAM_MENU)
+    program = show_menu(PROGRAM_MENU)
     system(program << '&') unless program.empty?
   end,
 
   "#{MENU}Shift-v" => lambda do
-    WM.focus_view(WM.show_menu(WM.tags))
+    WM.focus_view(show_menu(WM.tags))
   end,
 
   # focus any client by choosing from a menu
@@ -184,7 +185,7 @@ SHORTCUTS = {
       format "%d. [%s] %s", c.index, c.tags, c.name.downcase
     end
 
-    target = WM.show_menu(choices.join("\n"))
+    target = show_menu(choices)
 
     unless target.empty?
       WM.focus_client target.scan(/\d+/).first
@@ -225,7 +226,7 @@ SHORTCUTS = {
   # +tag -tag idea from Jonas Pfenniger <http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby>
   "#{SEND}t" => lambda do
     choices = WM.tags.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
-    target = WM.show_menu(choices.join("\n"))
+    target = show_menu(choices)
 
     WM.selected_clients.each do |c|
       c.with_tags do

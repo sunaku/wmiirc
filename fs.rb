@@ -152,7 +152,8 @@ class IxpNode
     if child.file?
       child.write! aContent
     else
-      raise IOError, "cannot write to non-file: #{child.path}"
+      #raise IOError,
+      warn "cannot write to non-file: #{child.path}"
     end
   end
 
