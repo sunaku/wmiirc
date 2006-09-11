@@ -47,7 +47,7 @@ class Wmii < IxpNode
 
   # Returns the current set of tags.
   def tags
-    self['/tags'].split
+    self[:tags].split
   end
 
   # Returns the current set of views.
@@ -79,24 +79,27 @@ class Wmii < IxpNode
     end
   end
 
-  # Returns the client which has the given ID or +nil+ if not found. The search is performed in the given view, if specified.
-  def find_client aClientId, aView = nil
+  # Returns the client which has the given ID or +nil+ if not found. The search is performed in the given places if specified.
+  def Wmii.find_client aClientId, aArea = nil, aView = nil
     aClientId = aClientId.to_i
     needle = Client.new("/client/#{aClientId}")
 
     if needle.exist?
-      haystack =
-        if aView && aView.exist?
-          [aView]
-        else
-          needle.tags.map {|t| View.new("/#{t}")}
-        end
+      areas = []
 
-      haystack.each do |v|
-        v.areas.each do |a|
-          if a.indices.detect {|i| i == aClientId}
-            return a[aClientId]
-          end
+      if aArea && aArea.exist?
+        areas << aArea
+      elsif aView && aView.exist?
+        areas.concat aView.areas
+      else
+        needle.tags.map {|t| View.new("/#{t}")}.each do |v|
+          areas.concat v.areas
+        end
+      end
+
+      areas.each do |a|
+        if a.indices.detect {|i| i == aClientId}
+          return a[aClientId]
         end
       end
     end
@@ -157,7 +160,7 @@ class Wmii < IxpNode
     selected_clients.each do |c|
       # resolve stale paths caused by destructive operations
         unless c.exist?
-          c = find_client(c.basename, curView)
+          c = find_client(c.basename, nil, curView)
           c || next # skip upon failure
         end
 
@@ -327,10 +330,7 @@ class Wmii < IxpNode
 
     # Inserts the given clients at the bottom of this area.
     def push! *aClients
-      unless (list = clients).empty?
-        list.last.focus!
-      end
-
+      clients.last.focus! if exist?
       insert! aClients
     end
 
@@ -352,9 +352,7 @@ class Wmii < IxpNode
       aClients.flatten!
       return if aClients.empty?
 
-      unless (list = clients).empty?
-        list.first.focus!
-      end
+      clients.first.focus! if exist?
 
       setup_for_insertion! aClients.shift
       parent.sel.ctl = 'swap up'
@@ -377,23 +375,27 @@ class Wmii < IxpNode
         maxIdx = parent.indices.last
 
         if dstIdx > maxIdx
-          aFirstClient.ctl = "sendto #{maxIdx}"
-          maxIdx = parent.indices.last  # recalculate b/c sendto can be destructive
+          # move *near* final destination
+            aFirstClient.ctl = "sendto #{maxIdx}"
 
-          maxCol = parent[maxIdx]
+            # recalculate b/c sendto can be destructive
+              maxIdx = parent.indices.last
+              maxCol = parent[maxIdx]
 
-          if maxCol.indices.length > 1
-            maxCol.sel.ctl = "sendto next"
-            dstIdx = maxIdx + 1
-          else
-            dstIdx = maxIdx
-          end
+              aFirstClient = Wmii.find_client(aFirstClient.index, maxCol)
+
+          # move *into* final destination
+            if maxCol.indices.length > 1
+              aFirstClient.ctl = "sendto next"
+              dstIdx = maxIdx + 1
+            else
+              dstIdx = maxIdx
+            end
 
           @path = "#{dirname}/#{dstIdx}"
 
         else
           aFirstClient.ctl = "sendto #{dstIdx}"
-
         end
       end
   end
@@ -464,7 +466,8 @@ class Wmii < IxpNode
 
             if clientList.length > aMaxClientsPerColumn
               # evict excess clients to next column
-                a.next.unshift! clientList[aMaxClientsPerColumn..-1]
+                emigrants = clientList[aMaxClientsPerColumn..-1]
+                a.next.unshift! emigrants
 
             elsif clientList.length < aMaxClientsPerColumn
               # import clients from next column
