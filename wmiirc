@@ -53,17 +53,18 @@ WM.def.colmode = 'default'
 WM.def.colwidth = 0
 
 WM.def.rules = <<EOS
-/MPlayer/ -> ~
+/jEdit.*/ -> code
+/Buddy List.*/ -> chat
+/XChat.*/ -> chat
+/.*thunderbird.*/ -> mail
+/Gimp.*/ -> gimp
+/QEMU.*/ -> ~
+/MPlayer.*/ -> ~
+/xconsole.*/ -> ~
+/alsamixer.*/ -> ~
 /.*/ -> !
 /.*/ -> 1
 EOS
-
-TAGGING_RULES = [
-  [:code, /jEdit/],
-  [:chat, /gaim/, /xchat/],
-  [:mail, /thunderbird/i, /azureus/i],
-  [:gimp, /gimp/],
-]
 
 
 ## KEY CONFIGURATION
@@ -439,19 +440,6 @@ begin
           if button.to_i == 3
             Wmii::Client.new("/client/#{client}").invert_selection!
           end
-
-        when 'CreateClient'
-          client = Wmii::Client.new("/client/#{arg}")
-          info = client[:class]
-
-          TAGGING_RULES.each do |(tag, *regexps)|
-            regexps.each do |r|
-              if info =~ r
-                client.tags = tag
-                raise
-              end
-            end
-          end rescue nil
 
         when 'Key'
           SHORTCUTS[arg].call
