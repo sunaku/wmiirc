@@ -302,18 +302,14 @@ SHORTCUTS = {
     SHORTCUTS["#{LAYOUT}z"].call
   end,
 
-  # swap each selected client with the one to its left
+  # swap the currently focused client with the one to its left
   "#{SWAP}#{LEFT}" => lambda do
-    WM.with_selection do |c|
-      c.ctl = 'swap prev'
-    end
+    WM.focused_client.ctl = 'swap prev'
   end,
 
-  # swap each selected client with the one to its right
+  # swap the currently focused client with the one to its right
   "#{SWAP}#{RIGHT}" => lambda do
-    WM.with_selection do |c|
-      c.ctl = 'swap next'
-    end
+    WM.focused_client.ctl = 'swap next'
   end,
 
   # swap each selected client with the one below it

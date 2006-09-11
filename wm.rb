@@ -157,7 +157,7 @@ class Wmii < IxpNode
     selected_clients.each do |c|
       # resolve stale paths caused by destructive operations
         unless c.exist?
-          c = find_client(File.basename(c.path), curView)
+          c = find_client(c.basename, curView)
           c || next # skip upon failure
         end
 
@@ -213,7 +213,7 @@ class Wmii < IxpNode
 
     # Returns the index of this region in the parent.
     def index
-      File.basename(@path).to_i
+      basename.to_i
     end
 
     # Returns the next region in the parent.
@@ -259,7 +259,7 @@ class Wmii < IxpNode
     # Puts focus on this region.
     def focus!
       ['select', 'view'].each do |cmd|
-        parent.ctl = "#{cmd} #{File.basename @path}"
+        parent.ctl = "#{cmd} #{basename}"
       end
     end
   end
@@ -339,10 +339,11 @@ class Wmii < IxpNode
       aClients.flatten!
       return if aClients.empty?
 
-      dstIdx = setup_for_insertion(aClients.shift)
+      setup_for_insertion! aClients.shift
 
+      dst = self.index
       aClients.each do |c|
-        c.ctl = "sendto #{dstIdx}"
+        c.ctl = "sendto #{dst}"
       end
     end
 
@@ -355,11 +356,12 @@ class Wmii < IxpNode
         list.first.focus!
       end
 
-      dstIdx = setup_for_insertion(aClients.shift)
-      parent[dstIdx].sel.ctl = 'swap up'
+      setup_for_insertion! aClients.shift
+      parent.sel.ctl = 'swap up'
 
+      dst = self.index
       aClients.each do |c|
-        c.ctl = "sendto #{dstIdx}"
+        c.ctl = "sendto #{dst}"
       end
     end
 
@@ -369,8 +371,8 @@ class Wmii < IxpNode
     end
 
     private
-      # Sets up this area for insertion and returns the area ID into which insertion is performed.
-      def setup_for_insertion aFirstClient
+      # Updates the path of this area for proper insertion and inserts the given client.
+      def setup_for_insertion! aFirstClient
         dstIdx = self.index
         maxIdx = parent.indices.last
 
@@ -386,11 +388,13 @@ class Wmii < IxpNode
           else
             dstIdx = maxIdx
           end
+
+          @path = "#{dirname}/#{dstIdx}"
+
         else
           aFirstClient.ctl = "sendto #{dstIdx}"
-        end
 
-        dstIdx
+        end
       end
   end
 

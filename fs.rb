@@ -136,6 +136,14 @@ class IxpNode
     IxpFs.exist? @path
   end
 
+  def basename
+    File.basename @path
+  end
+
+  def dirname
+    File.dirname @path
+  end
+
   # Accesses the given sub-path.
   def [] aSubPath
     child = IxpNode.new("#{@path}/#{aSubPath}")
