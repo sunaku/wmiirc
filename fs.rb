@@ -84,8 +84,7 @@ module IxpFs
     open(aPath) {true}
   end
 
-
-  def self.open aPath # :yields: IXP stream
+  def self.open aPath # :yields: IO
     if block_given?
       begin
         @@ixp.open(aPath) do |f|
@@ -136,6 +135,7 @@ class IxpNode
     IxpFs.exist? @path
   end
 
+  # Accesses the given sub-path.
   def [] aSubPath
     child = IxpNode.new("#{@path}/#{aSubPath}")
 
@@ -146,15 +146,10 @@ class IxpNode
     end
   end
 
+  # Writes to the given sub-path.
   def []= aSubPath, aContent
     child = IxpNode.new("#{@path}/#{aSubPath}")
-
-    if child.file?
-      child.write! aContent
-    else
-      #raise IOError,
-      warn "cannot write to non-file: #{child.path}"
-    end
+    child.write! aContent if child.file?
   end
 
   # Provides easy access to sub-nodes.

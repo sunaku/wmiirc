@@ -440,7 +440,7 @@ begin
           client, button = arg.split
 
           if button.to_i == 3
-            Client.new("/client/#{client}").invert_selection!
+            Wmii::Client.new("/client/#{client}").invert_selection!
           end
 
         when 'Key'
