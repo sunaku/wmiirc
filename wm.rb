@@ -264,6 +264,7 @@ class Wmii < Container
 
   # Returns a list of program names available in the given paths.
   def find_programs *aPaths
+    aPaths.map! {|p| File.expand_path p}
     list = []
 
     Find.find(*aPaths) do |f|
