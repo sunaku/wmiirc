@@ -86,7 +86,7 @@ module Wmii
       end
     end
 
-    puts "could not find #{aClientId}"
+    puts "could not find #{aClientId} in area #{aArea.inspect} or view #{aView.inspect}"
 
     nil
   end
@@ -332,18 +332,21 @@ module Wmii
     private
       # Updates the path of this area for proper insertion and inserts the given client.
       def setup_for_insertion! aFirstClient
+        raise ArgumentError, 'nonexistent client' unless aFirstClient.exist?
+
         dstIdx = self.index
         maxIdx = parent.indices.last
 
         if dstIdx > maxIdx
           # move *near* final destination
+            clientId = aFirstClient.index
             aFirstClient.ctl = "sendto #{maxIdx}"
 
             # recalculate b/c sendto can be destructive
               maxIdx = parent.indices.last
               maxCol = parent[maxIdx]
 
-              aFirstClient = Wmii.find_client(aFirstClient.basename, maxCol)
+              aFirstClient = Wmii.find_client(clientId, maxCol)
 
           # move *into* final destination
             if maxCol.indices.length > 1
