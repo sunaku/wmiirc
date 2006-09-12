@@ -23,6 +23,11 @@ require 'fs'
 module Wmii
   ## state access
 
+  # Returns the root of IXP file system hierarchy.
+  def Wmii.fs
+    Ixp::Node.new '/'
+  end
+
   # Returns the currently focused client.
   def Wmii.current_client
     Client.new("/view/sel/sel")
@@ -128,13 +133,6 @@ module Wmii
 
 
   ## subclasses for abstraction
-
-  # Head of IXP file system hierarchy.
-  class Root < Ixp::Node
-    def initialize
-      super '/'
-    end
-  end
 
   # A region in the window manager's hierarchy.
   class Node < Ixp::Node
