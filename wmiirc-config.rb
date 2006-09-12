@@ -403,36 +403,34 @@ begin
       case type
         when 'Start'
           if arg == 'wmiirc'
-            LOG.info "Exiting because another wmiirc has started."
+            LOG.info 'exiting because another instance has started'
             exit
           end
 
         when 'BarClick'
-          viewId, mouseBtn = arg.split
+          clickedView, clickedButton = arg.split
 
-          case mouseBtn.to_i
+          case clickedButton.to_i
             when PRIMARY
-              Wmii.focus_view viewId
+              Wmii.focus_view clickedView
 
             when MIDDLE
-              # add view to selection's tags
               Wmii.selected_clients.each do |c|
-                c.tag! viewId
+                c.tag! clickedView
               end
 
             when SECONDARY
-              # remove view from selection's tags
               Wmii.selected_clients.each do |c|
-                c.untag! viewId
+                c.untag! clickedView
               end
           end
 
         when 'ClientClick'
-          clientId, mouseBtn = arg.split
+          clickedClient, clickedButton = arg.split
 
-          case mouseBtn.to_i
+          case clickedButton.to_i
             when MIDDLE, SECONDARY
-              Wmii::Client.new("/client/#{clientId}").invert_selection!
+              Wmii::Client.new("/client/#{clickedClient}").invert_selection!
           end
 
         when 'Key'
@@ -441,6 +439,6 @@ begin
     end
   end
 rescue EOFError
-  LOG.fatal "wmiiwm has quit"
+  LOG.info 'wmii has been terminated'
   exit 1
 end
