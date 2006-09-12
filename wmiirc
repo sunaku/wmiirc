@@ -22,18 +22,24 @@ $: << File.dirname(__FILE__)
 require 'rc'
 
 
-## WM STARTUP
+## WM startup
 
 FS = Wmii::Root.new
 
+# terminate existing wmiirc processes
+FS.event = "Start wmiirc\n"
+
+
+## programs
+
+# names of executable external programs
 PROGRAM_MENU = find_programs( ENV['PATH'].squeeze(':').split(':') )
+
+# names of executable internal actions
 ACTION_MENU = find_programs('~/dry/apps/wmii/etc/wmii-3', File.dirname(__FILE__))
 
-# terminate existing wmiirc processes
-sleep 1 until FS.event = "Start wmiirc\n"
 
-
-## UI CONFIGURATION
+## UI configuration
 
 ENV['FSII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
 ENV['FSII_SELCOLORS']='#ffffff #285577 #4c7899'
@@ -42,7 +48,7 @@ ENV['FSII_NORMCOLORS']='#222222 #eeeeee #666666'
 system %{xsetroot -solid '#333333'}
 
 
-## WM CONFIGURATION
+## WM configuration
 
 FS.def.border = 2
 
@@ -68,7 +74,7 @@ FS.def.rules = <<EOS
 EOS
 
 
-## KEY CONFIGURATION
+## key configuration
 
 # Symbolic name of modifier key.
 MODKEY = 'Mod1'
@@ -372,7 +378,7 @@ FS.def.grabmod = MODKEY
 FS.def.keys = SHORTCUTS.keys.join("\n")
 
 
-## STATUS BAR
+## status bar
 
 Thread.new do
   sb = Ixp::Node.new('/bar/status', true)
@@ -390,7 +396,7 @@ Thread.new do
 end
 
 
-## EVENT LOOP
+## WM event loop
 
 begin
   IO.popen('wmiir read /event') do |io|
