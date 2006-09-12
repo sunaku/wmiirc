@@ -17,11 +17,8 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =end
 
-require 'find'
 require 'wm'
-
-include Wmii
-include Wmii::State
+require 'find'
 
 # Returns a list of program names available in the given paths.
 def find_programs *aPaths
@@ -55,72 +52,67 @@ end
 
 # Focuses the client chosen from a menu.
 def focus_client_from_menu
-  choices = clients.map do |c|
+  choices = Wmii.clients.map do |c|
     format "%d. [%s] %s", c.index, c.tags, c.name.downcase
   end
 
   target = show_menu(choices)
 
   unless target.empty?
-    focus_client target.scan(/\d+/).first
+    Wmii.focus_client target.scan(/\d+/).first
   end
 end
 
 # Changes the tag, chosen from a menu, of each selected client.
 # The {+tag -tag idea}[http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby] is from Jonas Pfenniger.
 def change_tag_from_menu
-  choices = tags.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
+  choices = Wmii.tags.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
   target = show_menu(choices)
 
-  with_selection do |c|
-    c.with_tags do
-      case target
-        when /^\+/
-          push $'
+  Wmii.selected_clients.each do |c|
+    case target
+      when /^\+/
+        c.tag! $'
 
-        when /^\-/
-          delete $'
+      when /^\-/
+        c.untag! $'
 
-        else
-          clear
-          push target
-      end
+      else
+        c.tags = target
     end
   end
 end
 
 # Send selected clients to temporary view or switch back again.
 def toggle_temp_view
-  curView = current_view.name
+  curTag = Wmii.current_view.name
 
-  if curView =~ /~\d+$/
-    with_selection do |c|
+  if curTag =~ /~\d+$/
+    Wmii.selected_clients.each do |c|
       c.with_tags do
-        delete curView
+        delete curTag
         push $` if empty?
       end
     end
 
-    focus_view $`
+    Wmii.focus_view $`
 
   else
-    tmpView = "#{curView}~#{Time.now.to_i}"
+    tmpTag = "#{curTag}~#{Time.now.to_i}"
 
-    with_selection do |c|
-      c.with_tags do
-        push tmpView
-      end
+    Wmii.selected_clients.each do |c|
+      c.tag! tmpTag
     end
 
-    focus_view tmpView
-    current_view.grid!
+    Wmii.focus_view tmpTag
+    Wmii.current_view.grid!
   end
 end
 
 # Puts focus on an adjacent view (:left or :right).
 def cycle_view aTarget
-  tags = self.tags
-  curTag = current_view.name
+  tags = Wmii.tags
+  curTag = Wmii.current_view.name
   curIndex = tags.index(curTag)
 
   newIndex =
@@ -136,7 +128,7 @@ def cycle_view aTarget
 
     end % tags.length
 
-  focus_view tags[newIndex]
+  Wmii.focus_view tags[newIndex]
 end
 
 
@@ -146,16 +138,16 @@ DETACHED_TAG = 'status'
 
 # Detach the current selection.
 def detach_selection
-  selected_clients.each do |c|
+  Wmii.selected_clients.each do |c|
     c.tags = DETACHED_TAG
   end
 end
 
 # Attach the most recently detached client
 def attach_last_client
-  if a = View.new("/#{DETACHED_TAG}").areas.last
+  if a = Wmii::View.new("/#{DETACHED_TAG}").areas.last
     if c = a.clients.last
-      c.tags = current_view.name
+      c.tags = Wmii.current_view.name
     end
   end
 end

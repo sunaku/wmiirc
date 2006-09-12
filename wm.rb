@@ -19,11 +19,42 @@
 
 require 'fs'
 
+# Encapsulates access to the window manager.
 module Wmii
-  SELECTION_TAG = 'SEL'
+  ## state access
+
+  # Returns the currently focused client.
+  def Wmii.current_client
+    Client.new("/view/sel/sel")
+  end
+
+  # Returns the currently focused area.
+  def Wmii.current_area
+    Area.new("/view/sel")
+  end
+
+  # Returns the currently focused view.
+  def Wmii.current_view
+    View.new("/view")
+  end
+
+  # Returns the current set of tags.
+  def Wmii.tags
+    Ixp.read('/tags').split
+  end
+
+  # Returns the current set of views.
+  def Wmii.views
+    tags.map {|v| View.new "/#{v}"}
+  end
+
+  # Returns the current set of clients.
+  def Wmii.clients
+    Area.new("/client").clients
+  end
 
   # Searches for the client with the given ID and returns it. If the client is not found, *nil* is returned. The search is performed within the given places if they are specified.
-  def find_client aClientId, aArea = nil, aView = nil
+  def Wmii.find_client aClientId, aArea = nil, aView = nil
     aClientId = aClientId.to_i
     needle = Client.new("/client/#{aClientId}")
 
@@ -32,8 +63,10 @@ module Wmii
 
       if aArea && aArea.exist?
         areas << aArea
+
       elsif aView && aView.exist?
         areas.concat aView.areas
+
       else
         needle.tags.map {|t| View.new("/#{t}")}.each do |v|
           areas.concat v.areas
@@ -50,13 +83,16 @@ module Wmii
     nil
   end
 
+
+  ## state manipulation
+
   # Focuses the view with the given name.
-  def focus_view aName
+  def Wmii.focus_view aName
     View.new("/#{aName}").focus!
   end
 
   # Focuses the client which has the given ID.
-  def focus_client aClientId
+  def Wmii.focus_client aClientId
     if c = find_client(aClientId)
       v = (a = c.parent).parent
 
@@ -66,82 +102,35 @@ module Wmii
     end
   end
 
-  # Encapsulates the window manager's state.
-  module State
-    # Returns the currently focused client.
-    def current_client
-      Client.new("/view/sel/sel")
+
+  ## Multiple client selection
+
+  SELECTION_TAG = 'SEL'
+
+  # Returns a list of all selected clients in the currently focused view. If there are no selected clients, then the currently focused client is returned in the list.
+  def Wmii.selected_clients
+    list = current_view.areas.map do |a|
+      a.clients.select {|c| c.selected?}
+    end
+    list.flatten!
+
+    if list.empty?
+      list << current_client
     end
 
-    # Returns the currently focused area.
-    def current_area
-      Area.new("/view/sel")
-    end
-
-    # Returns the currently focused view.
-    def current_view
-      View.new("/view")
-    end
-
-    # Returns the current set of tags.
-    def tags
-      Ixp.read('/tags').split
-    end
-
-    # Returns the current set of views.
-    def views
-      tags.map {|v| View.new "/#{v}"}
-    end
-
-    # Returns the current set of clients.
-    def clients
-      Area.new("/client").clients
-    end
-
-
-    ## Multiple client selection
-
-    # Returns a list of all selected clients in the currently focused view. If there are no selected clients, then the currently focused client is returned in the list.
-    def selected_clients
-      list = current_view.areas.map do |a|
-        a.clients.select {|c| c.selected?}
-      end
-      list.flatten!
-
-      if list.empty?
-        list << current_client
-      end
-
-      list
-    end
-
-    # Un-selects all selected clients so that there is nothing selected.
-    def select_none!
-      View.new("/#{SELECTION_TAG}").unselect!
-    end
-
-    # Invokes the given block for each #selected_clients in a way that supports destructive operations, which change the number of areas in a view.
-    def with_selection # :yields: client
-      return unless block_given?
-
-      curView = current_view
-
-      selected_clients.each do |c|
-        # resolve stale paths caused by destructive operations
-          unless c.exist?
-            c = find_client(c.basename, nil, curView)
-            next unless c
-          end
-
-        yield c
-      end
-    end
+    list
   end
 
-  # Head of the window manager's hierarchy.
-  class Root < Ixp::Node
-    include State
+  # Un-selects all selected clients so that there is nothing selected.
+  def Wmii.select_none!
+    View.new("/#{SELECTION_TAG}").unselect!
+  end
 
+
+  ## subclasses for abstraction
+
+  # Head of IXP file system hierarchy.
+  class Root < Ixp::Node
     def initialize
       super '/'
     end
@@ -149,8 +138,6 @@ module Wmii
 
   # A region in the window manager's hierarchy.
   class Node < Ixp::Node
-    include Wmii
-
     def initialize aParentClass, aChildClass, *aArgs
       @parentClass = aParentClass
       @childClass = aChildClass
@@ -300,7 +287,10 @@ module Wmii
 
     # Inserts the given clients at the bottom of this area.
     def push! *aClients
-      clients.last.focus! if exist?
+      if target = clients.last
+        target.focus!
+      end
+
       insert! aClients
     end
 
@@ -322,7 +312,10 @@ module Wmii
       aClients.flatten!
       return if aClients.empty?
 
-      clients.first.focus! if exist?
+      if target = clients.first
+        target.focus!
+      end
+
       setup_for_insertion! aClients.shift
       clients.first.ctl = 'swap down'
 
@@ -351,7 +344,7 @@ module Wmii
               maxIdx = parent.indices.last
               maxCol = parent[maxIdx]
 
-              aFirstClient = find_client(aFirstClient.index, maxCol)
+              aFirstClient = Wmii.find_client(aFirstClient.index, maxCol)
 
           # move *into* final destination
             if maxCol.indices.length > 1
@@ -452,6 +445,26 @@ module Wmii
             i += 1
           end
         end
+    end
+  end
+end
+
+class Array
+  alias original_each each
+
+  def each
+    return unless block_given?
+
+    original_each do |c|
+      if c.is_a? Wmii::Client
+        # resolve stale paths caused by destructive operations
+        unless c.exist?
+          c = Wmii.find_client(c.basename, nil, Wmii.current_view)
+          next unless c
+         end
+      end
+
+      yield c
     end
   end
 end

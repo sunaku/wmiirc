@@ -106,7 +106,7 @@ module Ixp
 
     # Obtains the IXP node at the given path. If aCreateIt is asserted, then the given path is created unless it already exists.
     def initialize aPath, aCreateIt = false
-      @path = aPath.squeeze('/')
+      @path = aPath.to_s.squeeze('/')
       create! if aCreateIt && !exist?
     end
 

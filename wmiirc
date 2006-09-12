@@ -24,37 +24,36 @@ require 'rc'
 
 ## WM STARTUP
 
-WM = Wmii::Root.new
-
+FS = Wmii::Root.new
 
 PROGRAM_MENU = find_programs( ENV['PATH'].squeeze(':').split(':') )
 ACTION_MENU = find_programs('~/dry/apps/wmii/etc/wmii-3', File.dirname(__FILE__))
 
 # terminate existing wmiirc processes
-sleep 1 until WM.event = "Start wmiirc\n"
+sleep 1 until FS.event = "Start wmiirc\n"
 
 
 ## UI CONFIGURATION
 
-ENV['WMII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
-ENV['WMII_SELCOLORS']='#ffffff #285577 #4c7899'
-ENV['WMII_NORMCOLORS']='#222222 #eeeeee #666666'
+ENV['FSII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
+ENV['FSII_SELCOLORS']='#ffffff #285577 #4c7899'
+ENV['FSII_NORMCOLORS']='#222222 #eeeeee #666666'
 
 system %{xsetroot -solid '#333333'}
 
 
 ## WM CONFIGURATION
 
-WM.def.border = 2
+FS.def.border = 2
 
-WM.def.font = ENV['WMII_FONT']
-WM.def.selcolors = ENV['WMII_SELCOLORS']
-WM.def.normcolors = ENV['WMII_NORMCOLORS']
+FS.def.font = ENV['FSII_FONT']
+FS.def.selcolors = ENV['FSII_SELCOLORS']
+FS.def.normcolors = ENV['FSII_NORMCOLORS']
 
-WM.def.colmode = 'default'
-WM.def.colwidth = 0
+FS.def.colmode = 'default'
+FS.def.colwidth = 0
 
-WM.def.rules = <<EOS
+FS.def.rules = <<EOS
 /jEdit.*/ -> code
 /Buddy List.*/ -> chat
 /XChat.*/ -> chat
@@ -122,80 +121,80 @@ SHORTCUTS = {
 
   # focus previous area
   "#{FOCUS}#{LEFT}" => lambda do
-    current_view.ctl = 'select prev'
+    Wmii.current_view.ctl = 'select prev'
   end,
 
   # focus next area
   "#{FOCUS}#{RIGHT}" => lambda do
-    current_view.ctl = 'select next'
+    Wmii.current_view.ctl = 'select next'
   end,
 
   # focus floating area
   "#{FOCUS}space" => lambda do
-    current_view.ctl = 'select toggle'
+    Wmii.current_view.ctl = 'select toggle'
   end,
 
   # focus previous client
   "#{FOCUS}#{UP}" => lambda do
-    current_area.ctl = 'select prev'
+    Wmii.current_area.ctl = 'select prev'
   end,
 
   # focus next client
   "#{FOCUS}#{DOWN}" => lambda do
-    current_area.ctl = 'select next'
+    Wmii.current_area.ctl = 'select next'
   end,
 
 
   # apply equal spacing layout to currently focused column
   "#{LAYOUT}w" => lambda do
-    current_area.mode = 'default'
+    Wmii.current_area.mode = 'default'
   end,
 
   # apply stacked layout to currently focused column
   "#{LAYOUT}v" => lambda do
-    current_area.mode = 'stack'
+    Wmii.current_area.mode = 'stack'
   end,
 
   # apply maximized layout to currently focused column
   "#{LAYOUT}m" => lambda do
-    current_area.mode = 'max'
+    Wmii.current_area.mode = 'max'
   end,
 
   # maximize the floating area's focused client
   "#{LAYOUT}z" => lambda do
-    current_view[0].sel.geom = '0 0 east south'
+    Wmii.current_view[0].sel.geom = '0 0 east south'
   end,
 
 
   # apply tiling layout to the currently focused view
   "#{LAYOUT}t" => lambda do
-    current_view.tile!
+    Wmii.current_view.tile!
   end,
 
   # apply gridding layout to the currently focused view
   "#{LAYOUT}g" => lambda do
-    current_view.grid!
+    Wmii.current_view.grid!
   end,
 
 
   # add/remove the currently focused client from the selection
   "#{GROUP}g" => lambda do
-    current_client.invert_selection!
+    Wmii.current_client.invert_selection!
   end,
 
   # add all clients in the currently focused view to the selection
   "#{GROUP}a" => lambda do
-    current_view.select!
+    Wmii.current_view.select!
   end,
 
   # invert the selection in the currently focused view
   "#{GROUP}i" => lambda do
-    current_view.invert_selection!
+    Wmii.current_view.invert_selection!
   end,
 
   # nullify the selection
   "#{GROUP}n" => lambda do
-    select_none!
+    Wmii.select_none!
   end,
 
 
@@ -213,7 +212,7 @@ SHORTCUTS = {
 
   # focus any view by choosing from a menu
   "#{MENU}Shift-v" => lambda do
-    focus_view(show_menu(tags))
+    Wmii.focus_view(show_menu(Wmii.tags))
   end,
 
   "#{MENU}a" => lambda do
@@ -235,25 +234,25 @@ SHORTCUTS = {
 
 
   "#{SEND}#{LEFT}" => lambda do
-    with_selection do |c|
+    Wmii.selected_clients.each do |c|
       c.ctl = 'sendto prev'
     end
   end,
 
   "#{SEND}#{RIGHT}" => lambda do
-    with_selection do |c|
+    Wmii.selected_clients.each do |c|
       c.ctl = 'sendto next'
     end
   end,
 
   "#{SEND}space" => lambda do
-    with_selection do |c|
+    Wmii.selected_clients.each do |c|
       c.ctl = 'sendto toggle'
     end
   end,
 
   "#{SEND}Delete" => lambda do
-    with_selection do |c|
+    Wmii.selected_clients.each do |c|
       c.ctl = 'kill'
     end
   end,
@@ -264,8 +263,10 @@ SHORTCUTS = {
 
   # remove currently focused view from current selection's tags
   "#{SEND}Shift-minus" => lambda do
-    with_selection do |c|
-      c.untag! current_view.name
+    curTag = Wmii.current_view.name
+
+    Wmii.selected_clients.each do |c|
+      c.untag! curTag
     end
   end,
 
@@ -291,22 +292,22 @@ SHORTCUTS = {
 
   # swap the currently focused client with the one to its left
   "#{SWAP}#{LEFT}" => lambda do
-    current_client.ctl = 'swap prev'
+    Wmii.current_client.ctl = 'swap prev'
   end,
 
   # swap the currently focused client with the one to its right
   "#{SWAP}#{RIGHT}" => lambda do
-    current_client.ctl = 'swap next'
+    Wmii.current_client.ctl = 'swap next'
   end,
 
   # swap the currently focused client with the one below it
   "#{SWAP}#{DOWN}" => lambda do
-    current_client.ctl = 'swap down'
+    Wmii.current_client.ctl = 'swap down'
   end,
 
   # swap the currently focused client with the one above it
   "#{SWAP}#{UP}" => lambda do
-    current_client.ctl = 'swap up'
+    Wmii.current_client.ctl = 'swap up'
   end,
 }
 
@@ -315,42 +316,42 @@ SHORTCUTS = {
 
   # focus _i_th view
   SHORTCUTS["#{FOCUS}#{i}"] = lambda do
-    focus_view(tags[k] || i)
+    Wmii.focus_view Wmii.tags[k] || i
   end
 
   # send selection to _i_th view
   SHORTCUTS["#{SEND}#{i}"] = lambda do
-    with_selection do |c|
-      c.tags = (tags[k] || i)
+    Wmii.selected_clients.each do |c|
+      c.tags = Wmii.tags[k] || i
     end
   end
 
   # send selection to _i_th area
   SHORTCUTS["#{SEND}Shift-#{i}"] = lambda do
-    dst = current_view[i]
+    dstCol = Wmii.current_view[i]
 
-    with_selection do |c|
-      dst.insert! c
+    Wmii.selected_clients.each do |c|
+      dstCol.insert! c
     end
   end
 
   # apply grid layout with _i_ clients per column
   SHORTCUTS["#{LAYOUT}#{i}"] = lambda do
-    current_view.grid! i
+    Wmii.current_view.grid! i
   end
 
   # add _i_th view to current selection's tags
   SHORTCUTS["#{SEND}equal,#{i}"] =
   SHORTCUTS["#{SEND}Shift-equal,#{i}"] = lambda do
-    with_selection do |c|
-      c.tag! tags[k] || i
+    Wmii.selected_clients.each do |c|
+      c.tag! Wmii.tags[k] || i
     end
   end
 
   # remove _i_th view from current selection's tags
   SHORTCUTS["#{SEND}minus,#{i}"] = lambda do
-    with_selection do |c|
-      c.untag! tags[k] || i
+    Wmii.selected_clients.each do |c|
+      c.untag! Wmii.tags[k] || i
     end
   end
 end
@@ -358,31 +359,31 @@ end
 # jump to view whose name begins with the pressed key
 ('a'..'z').each do |char|
   SHORTCUTS["#{MENU}v,#{char}"] = lambda do
-    choices = self.tags
-    choices.delete current_view.name
+    choices = Wmii.tags
+    choices.delete Wmii.current_view.name
 
     if view = choices.select {|t| t =~ /^#{char}/i}.first
-      focus_view view
+      Wmii.focus_view view
     end
   end
 end
 
-WM.def.grabmod = MODKEY
-WM.def.keys = SHORTCUTS.keys.join("\n")
+FS.def.grabmod = MODKEY
+FS.def.keys = SHORTCUTS.keys.join("\n")
 
 
 ## STATUS BAR
 
 Thread.new do
-  status = Ixp::Node.new("/bar/status", true)
-  status.colors = ENV['WMII_NORMCOLORS']
+  sb = Ixp::Node.new('/bar/status', true)
+  sb.colors = ENV['FSII_NORMCOLORS']
 
   loop do
     cpuLoad = `uptime`.scan(/\d+\.\d+/).join(' ')
     diskSpace = `df -h ~`.split[-3..-1].join(' ')
 
     5.times do
-      status.data = "#{Time.now.to_s} | #{cpuLoad} | #{diskSpace}"
+      sb.data = "#{Time.now.to_s} | #{cpuLoad} | #{diskSpace}"
       sleep 1
     end
   end
@@ -405,17 +406,17 @@ begin
 
           case mouseBtn.to_i
             when PRIMARY
-              focus_view viewId
+              Wmii.focus_view viewId
 
             when MIDDLE
               # add view to selection's tags
-              with_selection do |c|
+              Wmii.selected_clients.each do |c|
                 c.tag! viewId
               end
 
             when SECONDARY
               # remove view from selection's tags
-              with_selection do |c|
+              Wmii.selected_clients.each do |c|
                 c.untag! viewId
               end
           end
@@ -425,7 +426,6 @@ begin
 
           case mouseBtn.to_i
             when MIDDLE, SECONDARY
-              # add/remove client from selection
               Wmii::Client.new("/client/#{clientId}").invert_selection!
           end
 
