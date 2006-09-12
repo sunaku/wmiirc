@@ -80,10 +80,13 @@ module Wmii
 
       areas.each do |a|
         if a.indices.detect {|i| i == aClientId}
+          puts "found client #{a[aClientId].inspect}"
           return a[aClientId]
         end
       end
     end
+
+    puts "could not find #{aClientId}"
 
     nil
   end
@@ -136,9 +139,10 @@ module Wmii
 
   # A region in the window manager's hierarchy.
   class Node < Ixp::Node
-    def initialize aParentClass, aChildClass, *aArgs
+    def initialize aParentClass, aChildClass, aFocusCommand, *aArgs
       @parentClass = aParentClass
       @childClass = aChildClass
+      @focusCmd = aFocusCommand
       super(*aArgs)
     end
 
@@ -170,11 +174,7 @@ module Wmii
 
     # Returns a list of indices of items in this region.
     def indices
-      if list = self.read
-        list.grep(/^\d+$/).map {|s| s.to_i}
-      else
-        []
-      end
+      self.read.grep(/^\d+$/).map {|s| s.to_i} rescue []
     end
 
     # Returns a list of items in this region.
@@ -205,15 +205,13 @@ module Wmii
 
     # Puts focus on this region.
     def focus!
-      ['select', 'view'].each do |cmd|
-        parent.ctl = "#{cmd} #{basename}"
-      end
+      parent.ctl = "#{@focusCmd} #{basename}"
     end
   end
 
   class Client < Node
     def initialize *aArgs
-      super Area, Ixp::Node, *aArgs
+      super Area, Ixp::Node, :select, *aArgs
     end
 
     undef index
@@ -278,7 +276,7 @@ module Wmii
 
   class Area < Node
     def initialize *aArgs
-      super View, Client, *aArgs
+      super View, Client, :select, *aArgs
     end
 
     alias clients children
@@ -315,7 +313,10 @@ module Wmii
       end
 
       setup_for_insertion! aClients.shift
-      clients.first.ctl = 'swap down'
+
+      if top = clients.first
+        top.ctl = 'swap down'
+      end
 
       dst = self.index
       aClients.each do |c|
@@ -342,7 +343,7 @@ module Wmii
               maxIdx = parent.indices.last
               maxCol = parent[maxIdx]
 
-              aFirstClient = Wmii.find_client(aFirstClient.index, maxCol)
+              aFirstClient = Wmii.find_client(aFirstClient.basename, maxCol)
 
           # move *into* final destination
             if maxCol.indices.length > 1
@@ -362,7 +363,7 @@ module Wmii
 
   class View < Node
     def initialize *aArgs
-      super Ixp::Node, Area, *aArgs
+      super Ixp::Node, Area, :view, *aArgs
     end
 
     alias areas children
@@ -450,6 +451,7 @@ end
 class Array
   alias original_each each
 
+  # Supports destructive operations on each client in this array.
   def each
     return unless block_given?
 

@@ -31,27 +31,18 @@ module Ixp
 
   # Creates a file at the given path.
   def self.create aPath
-    begin
-      @@ixp.create aPath
-    rescue IXP::IXPException => e
-      puts e, e.backtrace
-    end
+    @@ixp.create aPath
   end
 
   # Deletes the given path.
   def self.remove aPath
-    begin
-      @@ixp.remove aPath
-    rescue IXP::IXPException => e
-      puts e, e.backtrace
-    end
+    @@ixp.remove aPath
   end
 
   # Writes the given content to the given path.
   def self.write aPath, aContent
     open(aPath) do |f|
       f.write aContent.to_s
-      # puts '', "#{self.class}.write #{aPath}, #{aContent.inspect}", caller # if $DEBUG
     end
   end
 
@@ -73,31 +64,24 @@ module Ixp
     end
   end
 
-  # Returns true if the given path is a file.
+  # Tests if the given path is a file.
   def self.file? aPath
-    open(aPath) {|f| f.instance_of? IXP::File}
+    open(aPath) {|f| f.instance_of? IXP::File} rescue false
   end
 
-  # Returns true if the given path is a directory.
+  # Tests if the given path is a directory.
   def self.directory? aPath
-    open(aPath) {|f| f.instance_of? IXP::Directory}
+    open(aPath) {|f| f.instance_of? IXP::Directory} rescue false
   end
 
-  # Returns true if the given path exists.
+  # Tests if the given path exists.
   def self.exist? aPath
-    open(aPath) {true}
+    open(aPath) {true} rescue false
   end
 
   # Opens the given path for reading and writing and passes it to the given block.
-  def self.open aPath # :yields: IO
-    if block_given?
-      begin
-        @@ixp.open(aPath) do |f|
-          return yield(f)
-        end
-      rescue IXP::IXPException
-      end
-    end
+  def self.open aPath, &aBlock # :yields: IO
+    @@ixp.open aPath, &aBlock
   end
 
   # An entry in the IXP file system.
@@ -130,17 +114,17 @@ module Ixp
       Ixp.read @path
     end
 
-    # Returns true if this node is a file.
+    # Tests if this node is a file.
     def file?
       Ixp.file? @path
     end
 
-    # Returns true if this node is a directory.
+    # Tests if this node is a directory.
     def directory?
       Ixp.directory? @path
     end
 
-    # Returns true if this node exists in the file system.
+    # Tests if this node exists in the file system.
     def exist?
       Ixp.exist? @path
     end
@@ -166,8 +150,7 @@ module Ixp
 
     # Writes to the given sub-path.
     def []= aSubPath, aContent
-      child = Ixp::Node.new("#{@path}/#{aSubPath}")
-      child.write! aContent if child.file?
+      Ixp::Node.new("#{@path}/#{aSubPath}").write! aContent
     end
 
     # Provides easy access to sub-nodes.
