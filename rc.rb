@@ -90,7 +90,7 @@ def change_tag_from_menu
 end
 
 # Send selected clients to temporary view or switch back again.
-def toggle_temporary_view
+def toggle_temp_view
   curView = current_view.name
 
   if curView =~ /~\d+$/

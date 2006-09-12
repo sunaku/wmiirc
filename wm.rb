@@ -130,7 +130,7 @@ module Wmii
         # resolve stale paths caused by destructive operations
           unless c.exist?
             c = find_client(c.basename, nil, curView)
-            c || next # skip upon failure
+            next unless c
           end
 
         yield c
@@ -253,6 +253,20 @@ module Wmii
       self.tags = t
     end
 
+    # Adds the given tags to this client.
+    def tag! *aTags
+      with_tags do
+        push(*aTags)
+      end
+    end
+
+    # Removes the given tags from this client.
+    def untag! *aTags
+      with_tags do
+        delete(*aTags)
+      end
+    end
+
     # Checks if this client is included in the current selection.
     def selected?
       tags.include? SELECTION_TAG
@@ -265,9 +279,7 @@ module Wmii
     end
 
     def unselect!
-      with_tags do
-        delete SELECTION_TAG
-      end
+      untag! SELECTION_TAG
     end
 
     def invert_selection!
