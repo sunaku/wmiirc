@@ -25,7 +25,9 @@ FS = Wmii.fs
 
 ## WM startup
 
-LOG.info($$) {"starting up"}
+at_exit do LOG.info($$) {"exiting"} end
+
+LOG.info($$) {"starting"}
 FS.event = "Start #{__FILE__}\n"
 
 
@@ -37,23 +39,19 @@ ACTION_MENU = find_programs('~/dry/apps/wmii/etc/wmii-3', File.dirname(__FILE__)
 
 ## UI configuration
 
-ENV['WMII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
-ENV['WMII_SELCOLORS']='#ffffff #285577 #4c7899'
-ENV['WMII_NORMCOLORS']='#222222 #eeeeee #666666'
+FS.def.border = 2
+
+FS.def.font = ENV['WMII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
+FS.def.selcolors = ENV['WMII_SELCOLORS'] = '#ffffff #285577 #4c7899'
+FS.def.normcolors = ENV['WMII_NORMCOLORS'] = '#222222 #eeeeee #666666'
+
+FS.def.colmode = 'default'
+FS.def.colwidth = 0
 
 system %{xsetroot -solid '#333333'}
 
 
-## WM configuration
-
-FS.def.border = 2
-
-FS.def.font = ENV['WMII_FONT']
-FS.def.selcolors = ENV['WMII_SELCOLORS']
-FS.def.normcolors = ENV['WMII_NORMCOLORS']
-
-FS.def.colmode = 'default'
-FS.def.colwidth = 0
+## tagging rules
 
 FS.def.rules = <<EOS
 /jEdit.*/ -> code
@@ -83,16 +81,16 @@ MIDDLE_CLICK = 2
 SECONDARY_CLICK = 3
 
 
-# Initial key sequence used by all shortcuts.
-ACTION_SEQ = "#{MOD_KEY}-Control-"
+# key sequence prefixed to all shortcuts
+SEQ_PREFIX = "#{MOD_KEY}-Control-"
 
-FOCUS_SEQ = ACTION_SEQ
-SEND_SEQ = "#{ACTION_SEQ}m,"
-SWAP_SEQ = "#{ACTION_SEQ}w,"
-LAYOUT_SEQ = "#{ACTION_SEQ}z,"
-GROUP_SEQ = "#{ACTION_SEQ}g,"
-MENU_SEQ = ACTION_SEQ
-PROGRAM_SEQ = ACTION_SEQ
+FOCUS_SEQ = SEQ_PREFIX
+SEND_SEQ = "#{SEQ_PREFIX}m,"
+SWAP_SEQ = "#{SEQ_PREFIX}w,"
+LAYOUT_SEQ = "#{SEQ_PREFIX}z,"
+GROUP_SEQ = "#{SEQ_PREFIX}g,"
+MENU_SEQ = SEQ_PREFIX
+PROGRAM_SEQ = SEQ_PREFIX
 
 
 # Shortcut key sequences and their associated logic.
@@ -258,17 +256,17 @@ SHORTCUTS = {
     end
   end,
 
-  "#{ACTION_SEQ}b" => lambda do
+  "#{SEQ_PREFIX}b" => lambda do
     toggle_temp_view
   end,
 
   # wmii-2 style detaching
-  "#{ACTION_SEQ}d" => lambda do
+  "#{SEQ_PREFIX}d" => lambda do
     detach_selection
   end,
 
   # wmii-2 style detaching
-  "#{ACTION_SEQ}Shift-d" => lambda do
+  "#{SEQ_PREFIX}Shift-d" => lambda do
     attach_last_client
   end,
 
@@ -414,9 +412,8 @@ begin
         when 'ClientClick'
           clickedClient, clickedButton = arg.split
 
-          case clickedButton.to_i
-            when MIDDLE_CLICK, SECONDARY_CLICK
-              Wmii::Client.new("/client/#{clickedClient}").invert_selection!
+          if clickedButton.to_i != PRIMARY_CLICK
+            Wmii::Client.new("/client/#{clickedClient}").invert_selection!
           end
 
         when 'Key'
@@ -425,6 +422,6 @@ begin
     end
   end
 rescue EOFError
-  LOG.warn($$) {"exiting because wmii has been terminated"}
+  LOG.warn "wmii has been terminated"
   exit 1
 end
