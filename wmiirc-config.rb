@@ -164,6 +164,10 @@ SHORTCUTS = {
     Wmii.current_view.grid!
   end,
 
+  "#{LAYOUT_SEQ}d" => lambda do
+    Wmii.current_view.diamond!
+  end,
+
 
   # add/remove the currently focused client from the selection
   "#{GROUP_SEQ}g" => lambda do

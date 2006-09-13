@@ -173,7 +173,12 @@ module Wmii
 
     # Returns a list of indices of items in this region.
     def indices
-      self.read.grep(/^\d+$/).map {|s| s.to_i} rescue []
+      read.grep(/^\d+$/).map {|s| s.to_i} rescue []
+    end
+
+    # Returns the number of items in this region.
+    def length
+      indices.length
     end
 
     # Returns a list of items in this region.
@@ -219,13 +224,13 @@ module Wmii
 
     # Returns the tags associated with this client.
     def tags
-      self['tags'].split(TAG_DELIMITER)
+      self[:tags].split(TAG_DELIMITER)
     end
 
     # Modifies the tags associated with this client.
     def tags= *aTags
       t = aTags.flatten.uniq
-      self['tags'] = t.join(TAG_DELIMITER) unless t.empty?
+      self[:tags] = t.join(TAG_DELIMITER) unless t.empty?
     end
 
     # Evaluates the given block within the context of this client's list of tags.
@@ -328,19 +333,15 @@ module Wmii
       push! aArea.clients
     end
 
-    # Returns the number of clients in this area.
-    def length
-      self.indices.length
-    end
-
-    # Tries to have at most the given number of clients in this area. Areas to the right of this one serve as a buffer into which excess clients are evicted and from which deficit clients are imported.
+    # Ensures that this area has at most the given number of clients. Areas to the right of this one serve as a buffer into which excess clients are evicted and from which deficit clients are imported.
     def length= aMaxClients
       return if aMaxClients < 0
+      len = self.length
 
-      if length > aMaxClients
+      if len > aMaxClients
         self.next.unshift! clients[aMaxClients..-1]
 
-      elsif length < aMaxClients
+      elsif len < aMaxClients
         until (diff = aMaxClients - length) == 0
           immigrants = self.next.clients[0...diff]
           break if immigrants.empty?
@@ -392,6 +393,20 @@ module Wmii
 
     alias areas children
 
+    # Iterates over areas in this view such that destructive operations are supported. If specified, the iteration starts with the area which has the given index.
+    def each aStartIdx = 0 # :yields: area
+      return unless block_given?
+
+      if (i = aStartIdx.to_i) < 0
+        i = 0
+      end
+
+      until i >= (areaList = self.areas).length
+        yield areaList[i]
+        i += 1
+      end
+    end
+
     # Arranges the clients in this view, while maintaining their relative order, in the tiling fashion of LarsWM. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any subsequent columns are squeezed into the *bottom* of the secondary column.
     def tile!
       numAreas = self.indices.length
@@ -410,8 +425,8 @@ module Wmii
             end
           end
 
-        secCol.mode = 'default'
-        # priCol.mode = 'max'
+        secCol.mode = :default
+        # priCol.mode = :max
         priClient.focus!
       end
     end
@@ -420,10 +435,7 @@ module Wmii
     def grid! aMaxClientsPerColumn = nil
       # determine client distribution
         unless aMaxClientsPerColumn
-          numClients = self.areas[1..-1].inject(0) do |count, area|
-            count + area.clients.length
-          end
-
+          numClients = num_grounded_clients
           return unless numClients > 1
 
           numColumns = Math.sqrt(numClients)
@@ -440,17 +452,61 @@ module Wmii
             end
 
         else
-          i = 1 # skip the floating area
-
-          until i >= (areaList = self.areas).length
-            a = areaList[i]
+          each 1 do |a| # skip the floating area
             a.mode = :default
             a.length = aMaxClientsPerColumn
-
-            i += 1
           end
         end
     end
+
+    # Arranges the clients in this view, while maintaining their relative order, in a (at best) equilateral triangle. However, the resulting arrangement appears like a diamond or rhombus because no screen space is wasted by wmii.
+    def diamond!
+      numClients = num_grounded_clients
+      subtriArea = numClients / 2
+      crestArea = numClients % subtriArea
+
+      # build fist sub-triangle upwards
+        height = area = 0
+        lastCol = nil
+
+        each 1 do |col| # skip floating area
+          if area < subtriArea
+            height += 1
+            col.length = height
+            area += height
+
+            col.mode = :default
+            lastCol = col
+          else
+            break
+          end
+        end
+
+      # build crest of overall triangle
+        if crestArea > 0
+          lastCol.length = height + crestArea
+        end
+
+      # build second sub-triangle downwards
+        each(lastCol.index + 1) do |col|
+          if area > 0
+            col.length = height
+            area -= height
+
+            height -= 1
+          else
+            break
+          end
+        end
+    end
+
+    private
+      # Returns the number of clients in the non-floating areas of this view.
+      def num_grounded_clients
+        areas[1..-1].inject(0) do |count, area|
+          count + area.length
+        end
+      end
   end
 end
 
