@@ -328,6 +328,28 @@ module Wmii
       push! aArea.clients
     end
 
+    # Returns the number of clients in this area.
+    def length
+      self.indices.length
+    end
+
+    # Tries to have at most the given number of clients in this area. Areas to the right of this one serve as a buffer into which excess clients are evicted and from which deficit clients are imported.
+    def length= aMaxClients
+      return if aMaxClients < 0
+
+      if length > aMaxClients
+        self.next.unshift! clients[aMaxClients..-1]
+
+      elsif length < aMaxClients
+        until (diff = aMaxClients - length) == 0
+          immigrants = self.next.clients[0...diff]
+          break if immigrants.empty?
+
+          push! immigrants
+        end
+      end
+    end
+
     private
       # Updates the path of this area for proper insertion and inserts the given client.
       def setup_for_insertion! aFirstClient
@@ -422,26 +444,8 @@ module Wmii
 
           until i >= (areaList = self.areas).length
             a = areaList[i]
-
-
-            a.mode = 'default'
-            clientList = a.clients
-
-            if clientList.length > aMaxClientsPerColumn
-              # evict excess clients to next column
-                emigrants = clientList[aMaxClientsPerColumn..-1]
-                a.next.unshift! emigrants
-
-            elsif clientList.length < aMaxClientsPerColumn
-              # import clients from next column
-                until (diff = aMaxClientsPerColumn - a.clients.length) == 0
-                  immigrants = a.next.clients[0...diff]
-                  break if immigrants.empty?
-
-                  a.push! immigrants
-                end
-            end
-
+            a.mode = :default
+            a.length = aMaxClientsPerColumn
 
             i += 1
           end

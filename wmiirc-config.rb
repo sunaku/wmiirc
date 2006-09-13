@@ -389,7 +389,7 @@ begin
       case type
         when 'Start'
           if arg == __FILE__
-            LOG.info($$) {"exiting because another is starting"}
+            LOG.info($$) {"another config is starting"}
             exit
           end
 

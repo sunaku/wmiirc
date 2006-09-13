@@ -1,10 +1,9 @@
-= History
-
 This is a history of major changes to {my wmii configuration}[http://people.ucsc.edu/~skurapat/wmii.html].
 
 = 2006-09-12
 
 * Event loop now uses Ixp#read instead of wmiir.
+  * Already running configurations now correctly exit when another instance starts up.
 
 
 = 2006-09-11
@@ -12,7 +11,7 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 * Added exception logging and recovery mechanism.
   * wmiirc is now split into a loader file (wmiirc) and a configuration file (wmiirc-config.rb), just like in the ruby-wmii project.
 
-* +IXPException+s are no longer hidden away inside Ixp.
+* IXPException' are no longer hidden away inside Ixp.
 
 * Moved support for destructive area-operations from Wmii#with_selection into Array#each so that it is generally available.
 
