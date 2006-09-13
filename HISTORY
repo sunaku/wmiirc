@@ -1,0 +1,46 @@
+= History
+
+This is a history of major changes to {my wmii configuration}[http://people.ucsc.edu/~skurapat/wmii.html].
+
+= 2006-09-12
+
+* Event loop now uses Ixp#read instead of wmiir.
+
+
+= 2006-09-11
+
+* Added exception logging and recovery mechanism.
+  * wmiirc is now split into a loader file (wmiirc) and a configuration file (wmiirc-config.rb), just like in the ruby-wmii project.
+
+* +IXPException+s are no longer hidden away inside Ixp.
+
+* Moved support for destructive area-operations from Wmii#with_selection into Array#each so that it is generally available.
+
+
+= 2006-09-10
+
+* Added wmiish--an interactive Ruby shell for controlling wmii.
+
+* Lots of major refactoring in Ixp and Wmii.
+  * Moved utility methods from wmiirc into rc.rb.
+
+
+= 2006-09-09
+
+* Cleaned up IXP abstraction... now multiple levels of method_missing works, and so does self[sub_path]
+
+* Wmii#with_selection now supports destructive area-operations.
+
+* Update for compliance with new unique-client-id in filesystem patch.
+
+
+= 2006-08-31
+
+* Added facility which sends the selection to temporary view or switches back again.
+
+
+= 2006-08-30
+
+* Add Wmii#with_selection method for operating on all clients in selection.
+
+
