@@ -1,5 +1,13 @@
 This is a history of major changes to {my wmii configuration}[http://people.ucsc.edu/~skurapat/wmii.html].
 
+
+= 2006-09-13
+
+* Added View#diamond!, a diamond-shaped automated client arrangement.
+
+* Added Area#length= for setting number of clients in a column.
+
+
 = 2006-09-12
 
 * Event loop now uses Ixp#read instead of wmiir.

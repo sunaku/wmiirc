@@ -472,6 +472,7 @@ module Wmii
         each 1 do |col| # skip floating area
           if area < subtriArea
             height += 1
+
             col.length = height
             area += height
 
