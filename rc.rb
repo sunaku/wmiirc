@@ -53,7 +53,7 @@ end
 # Focuses the client chosen from a menu.
 def focus_client_from_menu
   choices = Wmii.clients.map do |c|
-    format "%d. [%s] %s", c.index, c.tags, c.name.downcase
+    format "%d. [%s] %s", c.index, c.tags.join(' '), c.name.downcase
   end
 
   target = show_menu(choices)

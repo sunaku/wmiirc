@@ -18,6 +18,8 @@
 =end
 
 $: << File.dirname(__FILE__)
+require 'fs'
+require 'wm'
 require 'rc'
 
 FS = Wmii.fs
@@ -380,8 +382,8 @@ end
 ## WM event loop
 
 begin
-  IO.popen('wmiir read /event') do |io|
-    while event = io.readline.chomp
+  Ixp.open '/event' do |io|
+    while event = io.read.chomp
       type, arg = event.split($;, 2)
 
       case type
