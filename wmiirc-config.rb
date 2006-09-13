@@ -20,11 +20,13 @@
 $: << File.dirname(__FILE__)
 require 'rc'
 
+FS = Wmii.fs
+
 
 ## WM startup
 
-FS = Wmii.fs
-FS.event = "Start wmiirc\n" # terminate existing wmiirc processes
+LOG.info "instance #{$$} starting up"
+FS.event = "Start #{__FILE__}\n"
 
 
 ## executable programs
@@ -402,8 +404,8 @@ begin
 
       case type
         when 'Start'
-          if arg == 'wmiirc'
-            LOG.info 'exiting because another instance has started'
+          if arg == __FILE__
+            LOG.info "instance #{$$} exiting because another is starting"
             exit
           end
 
@@ -439,6 +441,6 @@ begin
     end
   end
 rescue EOFError
-  LOG.info 'wmii has been terminated'
+  LOG.warn "instance #{$$} exiting because wmii has been terminated"
   exit 1
 end

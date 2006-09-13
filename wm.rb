@@ -80,13 +80,12 @@ module Wmii
 
       areas.each do |a|
         if a.indices.detect {|i| i == aClientId}
-          puts "found client #{a[aClientId].inspect}"
           return a[aClientId]
         end
       end
     end
 
-    puts "could not find #{aClientId} in area #{aArea.inspect} or view #{aView.inspect}"
+    puts "could not find client #{aClientId} in area #{aArea.inspect} or view #{aView.inspect}" if $DEBUG
 
     nil
   end
