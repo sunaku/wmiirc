@@ -25,7 +25,7 @@ FS = Wmii.fs
 
 ## WM startup
 
-LOG.info "instance #{$$} starting up"
+LOG.info "instance #{$$} is starting"
 FS.event = "Start #{__FILE__}\n"
 
 
@@ -73,201 +73,187 @@ FS.def.rules = <<EOS
 EOS
 
 
-## key configuration
+## key & shortcut configuration
 
-# Symbolic name of modifier key.
-MODKEY = 'Mod1'
+MOD_KEY = 'Mod1'
+UP_KEY = 't'
+DOWN_KEY = 'n'
+LEFT_KEY = 'h'
+RIGHT_KEY = 's'
 
-# Symbolic name for up direction key.
-UP = 't'
-
-# Symbolic name for down direction key.
-DOWN = 'n'
-
-# Symbolic name for left direction key.
-LEFT = 'h'
-
-# Symbolic name for right direction key.
-RIGHT = 's'
-
-# Keycode for the primary mouse button.
-PRIMARY = 1
-
-# Keycode for the middle mouse button.
-MIDDLE = 2
-
-# Keycode for the secondary mouse button.
-SECONDARY = 3
+PRIMARY_CLICK = 1
+MIDDLE_CLICK = 2
+SECONDARY_CLICK = 3
 
 
 # Initial key sequence used by all shortcuts.
-ACTION = "#{MODKEY}-Control-"
+ACTION_SEQ = "#{MOD_KEY}-Control-"
 
-FOCUS = ACTION
-SEND = "#{ACTION}m,"
-SWAP = "#{ACTION}w,"
-LAYOUT = "#{ACTION}z,"
-GROUP = "#{ACTION}g,"
-MENU = ACTION
-PROGRAM = ACTION
+FOCUS_SEQ = ACTION_SEQ
+SEND_SEQ = "#{ACTION_SEQ}m,"
+SWAP_SEQ = "#{ACTION_SEQ}w,"
+LAYOUT_SEQ = "#{ACTION_SEQ}z,"
+GROUP_SEQ = "#{ACTION_SEQ}g,"
+MENU_SEQ = ACTION_SEQ
+PROGRAM_SEQ = ACTION_SEQ
 
 
 # Shortcut key sequences and their associated logic.
 SHORTCUTS = {
   # focus previous view
-  "#{FOCUS}comma" => lambda do
+  "#{FOCUS_SEQ}comma" => lambda do
     cycle_view :left
   end,
 
   # focus next view
-  "#{FOCUS}period" => lambda do
+  "#{FOCUS_SEQ}period" => lambda do
     cycle_view :right
   end,
 
   # focus previous area
-  "#{FOCUS}#{LEFT}" => lambda do
+  "#{FOCUS_SEQ}#{LEFT_KEY}" => lambda do
     Wmii.current_view.ctl = 'select prev'
   end,
 
   # focus next area
-  "#{FOCUS}#{RIGHT}" => lambda do
+  "#{FOCUS_SEQ}#{RIGHT_KEY}" => lambda do
     Wmii.current_view.ctl = 'select next'
   end,
 
   # focus floating area
-  "#{FOCUS}space" => lambda do
+  "#{FOCUS_SEQ}space" => lambda do
     Wmii.current_view.ctl = 'select toggle'
   end,
 
   # focus previous client
-  "#{FOCUS}#{UP}" => lambda do
+  "#{FOCUS_SEQ}#{UP_KEY}" => lambda do
     Wmii.current_area.ctl = 'select prev'
   end,
 
   # focus next client
-  "#{FOCUS}#{DOWN}" => lambda do
+  "#{FOCUS_SEQ}#{DOWN_KEY}" => lambda do
     Wmii.current_area.ctl = 'select next'
   end,
 
 
   # apply equal spacing layout to currently focused column
-  "#{LAYOUT}w" => lambda do
+  "#{LAYOUT_SEQ}w" => lambda do
     Wmii.current_area.mode = 'default'
   end,
 
   # apply stacked layout to currently focused column
-  "#{LAYOUT}v" => lambda do
+  "#{LAYOUT_SEQ}v" => lambda do
     Wmii.current_area.mode = 'stack'
   end,
 
   # apply maximized layout to currently focused column
-  "#{LAYOUT}m" => lambda do
+  "#{LAYOUT_SEQ}m" => lambda do
     Wmii.current_area.mode = 'max'
   end,
 
   # maximize the floating area's focused client
-  "#{LAYOUT}z" => lambda do
+  "#{LAYOUT_SEQ}z" => lambda do
     Wmii.current_view[0].sel.geom = '0 0 east south'
   end,
 
 
   # apply tiling layout to the currently focused view
-  "#{LAYOUT}t" => lambda do
+  "#{LAYOUT_SEQ}t" => lambda do
     Wmii.current_view.tile!
   end,
 
   # apply gridding layout to the currently focused view
-  "#{LAYOUT}g" => lambda do
+  "#{LAYOUT_SEQ}g" => lambda do
     Wmii.current_view.grid!
   end,
 
 
   # add/remove the currently focused client from the selection
-  "#{GROUP}g" => lambda do
+  "#{GROUP_SEQ}g" => lambda do
     Wmii.current_client.invert_selection!
   end,
 
   # add all clients in the currently focused view to the selection
-  "#{GROUP}a" => lambda do
+  "#{GROUP_SEQ}a" => lambda do
     Wmii.current_view.select!
   end,
 
   # invert the selection in the currently focused view
-  "#{GROUP}i" => lambda do
+  "#{GROUP_SEQ}i" => lambda do
     Wmii.current_view.invert_selection!
   end,
 
   # nullify the selection
-  "#{GROUP}n" => lambda do
+  "#{GROUP_SEQ}n" => lambda do
     Wmii.select_none!
   end,
 
 
   # launch an internal action by choosing from a menu
-  "#{MENU}i" => lambda do
+  "#{MENU_SEQ}i" => lambda do
     action = show_menu(ACTION_MENU)
     system(action << '&') unless action.empty?
   end,
 
   # launch an external program by choosing from a menu
-  "#{MENU}e" => lambda do
+  "#{MENU_SEQ}e" => lambda do
     program = show_menu(PROGRAM_MENU)
     system(program << '&') unless program.empty?
   end,
 
   # focus any view by choosing from a menu
-  "#{MENU}Shift-v" => lambda do
+  "#{MENU_SEQ}Shift-v" => lambda do
     Wmii.focus_view(show_menu(Wmii.tags))
   end,
 
-  "#{MENU}a" => lambda do
+  "#{MENU_SEQ}a" => lambda do
     focus_client_from_menu
   end,
 
 
-  "#{PROGRAM}x" => lambda do
+  "#{PROGRAM_SEQ}x" => lambda do
     system 'terminal &'
   end,
 
-  "#{PROGRAM}k" => lambda do
+  "#{PROGRAM_SEQ}k" => lambda do
     system 'epiphany &'
   end,
 
-  "#{PROGRAM}j" => lambda do
+  "#{PROGRAM_SEQ}j" => lambda do
     system 'nautilus --no-desktop &'
   end,
 
 
-  "#{SEND}#{LEFT}" => lambda do
+  "#{SEND_SEQ}#{LEFT_KEY}" => lambda do
     Wmii.selected_clients.each do |c|
       c.ctl = 'sendto prev'
     end
   end,
 
-  "#{SEND}#{RIGHT}" => lambda do
+  "#{SEND_SEQ}#{RIGHT_KEY}" => lambda do
     Wmii.selected_clients.each do |c|
       c.ctl = 'sendto next'
     end
   end,
 
-  "#{SEND}space" => lambda do
+  "#{SEND_SEQ}space" => lambda do
     Wmii.selected_clients.each do |c|
       c.ctl = 'sendto toggle'
     end
   end,
 
-  "#{SEND}Delete" => lambda do
+  "#{SEND_SEQ}Delete" => lambda do
     Wmii.selected_clients.each do |c|
       c.ctl = 'kill'
     end
   end,
 
-  "#{SEND}t" => lambda do
+  "#{SEND_SEQ}t" => lambda do
     change_tag_from_menu
   end,
 
   # remove currently focused view from current selection's tags
-  "#{SEND}Shift-minus" => lambda do
+  "#{SEND_SEQ}Shift-minus" => lambda do
     curTag = Wmii.current_view.name
 
     Wmii.selected_clients.each do |c|
@@ -275,43 +261,43 @@ SHORTCUTS = {
     end
   end,
 
-  "#{ACTION}b" => lambda do
+  "#{ACTION_SEQ}b" => lambda do
     toggle_temp_view
   end,
 
   # wmii-2 style detaching
-  "#{ACTION}d" => lambda do
+  "#{ACTION_SEQ}d" => lambda do
     detach_selection
   end,
 
   # wmii-2 style detaching
-  "#{ACTION}Shift-d" => lambda do
+  "#{ACTION_SEQ}Shift-d" => lambda do
     attach_last_client
   end,
 
   # toggle maximizing the currently focused client to full screen
-  "#{SEND}m" => lambda do
-    SHORTCUTS["#{SEND}space"].call
-    SHORTCUTS["#{LAYOUT}z"].call
+  "#{SEND_SEQ}m" => lambda do
+    SHORTCUTS["#{SEND_SEQ}space"].call
+    SHORTCUTS["#{LAYOUT_SEQ}z"].call
   end,
 
   # swap the currently focused client with the one to its left
-  "#{SWAP}#{LEFT}" => lambda do
+  "#{SWAP_SEQ}#{LEFT_KEY}" => lambda do
     Wmii.current_client.ctl = 'swap prev'
   end,
 
   # swap the currently focused client with the one to its right
-  "#{SWAP}#{RIGHT}" => lambda do
+  "#{SWAP_SEQ}#{RIGHT_KEY}" => lambda do
     Wmii.current_client.ctl = 'swap next'
   end,
 
   # swap the currently focused client with the one below it
-  "#{SWAP}#{DOWN}" => lambda do
+  "#{SWAP_SEQ}#{DOWN_KEY}" => lambda do
     Wmii.current_client.ctl = 'swap down'
   end,
 
   # swap the currently focused client with the one above it
-  "#{SWAP}#{UP}" => lambda do
+  "#{SWAP_SEQ}#{UP_KEY}" => lambda do
     Wmii.current_client.ctl = 'swap up'
   end,
 }
@@ -320,19 +306,19 @@ SHORTCUTS = {
   k = (i - 1) % 10	# associate '1' with the leftmost label, instead of '0'
 
   # focus _i_th view
-  SHORTCUTS["#{FOCUS}#{i}"] = lambda do
+  SHORTCUTS["#{FOCUS_SEQ}#{i}"] = lambda do
     Wmii.focus_view Wmii.tags[k] || i
   end
 
   # send selection to _i_th view
-  SHORTCUTS["#{SEND}#{i}"] = lambda do
+  SHORTCUTS["#{SEND_SEQ}#{i}"] = lambda do
     Wmii.selected_clients.each do |c|
       c.tags = Wmii.tags[k] || i
     end
   end
 
   # send selection to _i_th area
-  SHORTCUTS["#{SEND}Shift-#{i}"] = lambda do
+  SHORTCUTS["#{SEND_SEQ}Shift-#{i}"] = lambda do
     dstCol = Wmii.current_view[i]
 
     Wmii.selected_clients.each do |c|
@@ -341,20 +327,20 @@ SHORTCUTS = {
   end
 
   # apply grid layout with _i_ clients per column
-  SHORTCUTS["#{LAYOUT}#{i}"] = lambda do
+  SHORTCUTS["#{LAYOUT_SEQ}#{i}"] = lambda do
     Wmii.current_view.grid! i
   end
 
   # add _i_th view to current selection's tags
-  SHORTCUTS["#{SEND}equal,#{i}"] =
-  SHORTCUTS["#{SEND}Shift-equal,#{i}"] = lambda do
+  SHORTCUTS["#{SEND_SEQ}equal,#{i}"] =
+  SHORTCUTS["#{SEND_SEQ}Shift-equal,#{i}"] = lambda do
     Wmii.selected_clients.each do |c|
       c.tag! Wmii.tags[k] || i
     end
   end
 
   # remove _i_th view from current selection's tags
-  SHORTCUTS["#{SEND}minus,#{i}"] = lambda do
+  SHORTCUTS["#{SEND_SEQ}minus,#{i}"] = lambda do
     Wmii.selected_clients.each do |c|
       c.untag! Wmii.tags[k] || i
     end
@@ -363,7 +349,7 @@ end
 
 # jump to view whose name begins with the pressed key
 ('a'..'z').each do |char|
-  SHORTCUTS["#{MENU}v,#{char}"] = lambda do
+  SHORTCUTS["#{MENU_SEQ}v,#{char}"] = lambda do
     choices = Wmii.tags
     choices.delete Wmii.current_view.name
 
@@ -373,7 +359,8 @@ end
   end
 end
 
-FS.def.grabmod = MODKEY
+
+FS.def.grabmod = MOD_KEY
 FS.def.keys = SHORTCUTS.keys.join("\n")
 
 
@@ -405,7 +392,7 @@ begin
       case type
         when 'Start'
           if arg == __FILE__
-            LOG.info "instance #{$$} exiting because another is starting"
+            LOG.info "instance #{$$} is exiting: another is starting"
             exit
           end
 
@@ -413,15 +400,15 @@ begin
           clickedView, clickedButton = arg.split
 
           case clickedButton.to_i
-            when PRIMARY
+            when PRIMARY_CLICK
               Wmii.focus_view clickedView
 
-            when MIDDLE
+            when MIDDLE_CLICK
               Wmii.selected_clients.each do |c|
                 c.tag! clickedView
               end
 
-            when SECONDARY
+            when SECONDARY_CLICK
               Wmii.selected_clients.each do |c|
                 c.untag! clickedView
               end
@@ -431,7 +418,7 @@ begin
           clickedClient, clickedButton = arg.split
 
           case clickedButton.to_i
-            when MIDDLE, SECONDARY
+            when MIDDLE_CLICK, SECONDARY_CLICK
               Wmii::Client.new("/client/#{clickedClient}").invert_selection!
           end
 
@@ -441,6 +428,6 @@ begin
     end
   end
 rescue EOFError
-  LOG.warn "instance #{$$} exiting because wmii has been terminated"
+  LOG.warn "instance #{$$} is exiting: wmii has been terminated"
   exit 1
 end
