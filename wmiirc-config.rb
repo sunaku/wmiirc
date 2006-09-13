@@ -25,16 +25,13 @@ FS = Wmii.fs
 
 ## WM startup
 
-LOG.info "instance #{$$} is starting"
+LOG.info($$) {"starting up"}
 FS.event = "Start #{__FILE__}\n"
 
 
 ## executable programs
 
-# names of external programs
 PROGRAM_MENU = find_programs( ENV['PATH'].squeeze(':').split(':') )
-
-# names of internal actions
 ACTION_MENU = find_programs('~/dry/apps/wmii/etc/wmii-3', File.dirname(__FILE__))
 
 
@@ -392,7 +389,7 @@ begin
       case type
         when 'Start'
           if arg == __FILE__
-            LOG.info "instance #{$$} is exiting: another is starting"
+            LOG.info($$) {"exiting because another is starting"}
             exit
           end
 
@@ -428,6 +425,6 @@ begin
     end
   end
 rescue EOFError
-  LOG.warn "instance #{$$} is exiting: wmii has been terminated"
+  LOG.warn($$) {"exiting because wmii has been terminated"}
   exit 1
 end

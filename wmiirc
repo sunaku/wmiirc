@@ -28,7 +28,7 @@ begin
 rescue => e
   LOG.error e
 
-  LOG.info "#{__FILE__}: resuming from error"
+  LOG.info(__FILE__) {"resuming from error"}
   retry
 
 rescue Exception => e
