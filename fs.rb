@@ -23,11 +23,7 @@ require 'ixp'
 
 # Encapsulates access to the IXP file system.
 module Ixp
-  begin
-    @@ixp = IXP::Client.new
-  rescue Errno::ECONNREFUSED
-    retry
-  end
+  @@ixp = IXP::Client.new
 
   # Creates a file at the given path.
   def self.create aPath

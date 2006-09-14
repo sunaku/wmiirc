@@ -27,9 +27,9 @@ FS = Wmii.fs
 
 ## WM startup
 
-at_exit do LOG.info($$) {"exiting"} end
+at_exit do LOG.info($$) {"exiting #{__FILE__}"} end
+LOG.info($$) {"starting #{__FILE__}"}
 
-LOG.info($$) {"starting"}
 FS.event = "Start #{__FILE__}\n"
 
 
@@ -311,6 +311,11 @@ SHORTCUTS = {
     Wmii.focus_view Wmii.tags[k] || i
   end
 
+  # focus _i_th area
+  SHORTCUTS["#{FOCUS_SEQ}Shift-#{i}"] = lambda do
+    Wmii.focus_area i
+  end
+
   # send selection to _i_th view
   SHORTCUTS["#{SEND_SEQ}#{i}"] = lambda do
     Wmii.selected_clients.each do |c|
@@ -372,10 +377,11 @@ Thread.new do
   sb.colors = ENV['WMII_NORMCOLORS']
 
   loop do
-    cpuLoad = `uptime`.scan(/\d+\.\d+/).join(' ')
     diskSpace = `df -h ~`.split[-3..-1].join(' ')
 
-    5.times do
+    10.times do
+      cpuLoad = File.read('/proc/loadavg').split[0..2].join(' ')
+
       sb.data = "#{Time.now.to_s} | #{cpuLoad} | #{diskSpace}"
       sleep 1
     end
@@ -386,18 +392,19 @@ end
 ## WM event loop
 
 begin
-  Ixp.open '/event' do |io|
-    while event = io.read.chomp
+  # IXP::Client.new.open('/event') do |io| #io.read.chomp
+  IO.popen 'wmiir read /event' do |io|
+    while event = io.readline.chomp
       type, arg = event.split($;, 2)
 
-      case type
-        when 'Start'
+      case type.to_sym
+        when :Start
           if arg == __FILE__
             LOG.info($$) {"another config is starting"}
             exit
           end
 
-        when 'BarClick'
+        when :BarClick
           clickedView, clickedButton = arg.split
 
           case clickedButton.to_i
@@ -415,14 +422,14 @@ begin
               end
           end
 
-        when 'ClientClick'
+        when :ClientClick
           clickedClient, clickedButton = arg.split
 
           if clickedButton.to_i != PRIMARY_CLICK
             Wmii::Client.new("/client/#{clickedClient}").invert_selection!
           end
 
-        when 'Key'
+        when :Key
           SHORTCUTS[arg].call
       end
     end

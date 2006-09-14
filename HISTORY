@@ -3,14 +3,16 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 = 2006-09-13
 
-* Added View#diamond!, a diamond-shaped automated client arrangement.
+* Added Wmii::View#diamond! -- a diamond-shaped automated client arrangement.
 
-* Added Area#length= for setting number of clients in a column.
+* Added Wmii::Area#length= for setting number of clients in a column.
+
+* Reverted to *wmiir* for event loop, because Ixp#read isn't internally buffered!
 
 
 = 2006-09-12
 
-* Event loop now uses Ixp#read instead of wmiir.
+* Event loop now uses Ixp#read instead of *wmiir*.
   * Already running configurations now correctly exit when another instance starts up.
 
 

@@ -98,6 +98,11 @@ module Wmii
     View.new("/#{aName}").focus!
   end
 
+  # Focuses the area with the given ID in the current view.
+  def Wmii.focus_area aAreaId
+    Wmii.current_view[aAreaId].focus!
+  end
+
   # Focuses the client which has the given ID.
   def Wmii.focus_client aClientId
     if c = find_client(aClientId)
@@ -459,7 +464,7 @@ module Wmii
         end
     end
 
-    # Arranges the clients in this view, while maintaining their relative order, in a (at best) equilateral triangle. However, the resulting arrangement appears like a diamond or rhombus because no screen space is wasted by wmii.
+    # Arranges the clients in this view, while maintaining their relative order, in a (at best) equilateral triangle. However, the resulting arrangement appears like a diamond because wmii does not waste screen space.
     def diamond!
       numClients = num_grounded_clients
       subtriArea = numClients / 2
