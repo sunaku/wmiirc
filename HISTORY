@@ -3,10 +3,6 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 = 2006-09-13
 
-* Added Wmii::View#diamond! -- a diamond-shaped automated client arrangement.
-
-* Added Wmii::Area#length= for setting number of clients in a column.
-
 * Reverted to *wmiir* for event loop, because Ixp#read isn't internally buffered!
 
 * Changed Wmii::View#each to Wmii::View#each_column because floating area isn't a column (it doesn't have /mode file).
@@ -15,11 +11,17 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 * Added shortcuts for selection of current column.
 
+* Fixed ability to terminate multiple clients.
+
 
 = 2006-09-12
 
 * Event loop now uses Ixp#read instead of *wmiir*.
   * Already running configurations now correctly exit when another instance starts up.
+
+* Added Wmii::View#diamond! -- a diamond-shaped automated client arrangement.
+
+* Added Wmii::Area#length= for setting number of clients in a column.
 
 
 = 2006-09-11
