@@ -354,6 +354,11 @@ SHORTCUTS = {
     Wmii.focus_area i
   end
 
+  # swap the currently focused client with the one in _i_th area
+  SHORTCUTS["#{SWAP_SEQ}#{i}"] = lambda do
+    Wmii.current_client.ctl = "swap #{i}"
+  end
+
   # send selection to _i_th view
   SHORTCUTS["#{SEND_SEQ}#{i}"] = lambda do
     Wmii.selected_clients.each do |c|
