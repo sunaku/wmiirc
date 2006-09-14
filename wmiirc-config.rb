@@ -356,11 +356,7 @@ SHORTCUTS = {
 
   # send selection to _i_th area
   SHORTCUTS["#{SEND_SEQ}Shift-#{i}"] = lambda do
-    dstCol = Wmii.current_view[i]
-
-    Wmii.selected_clients.each do |c|
-      dstCol.insert! c
-    end
+    Wmii.current_view[i].insert! Wmii.selected_clients
   end
 
   # apply grid layout with _i_ clients per column
