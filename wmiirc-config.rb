@@ -280,7 +280,9 @@ SHORTCUTS = {
     #     you delete the first client (index 1).
     #     now, wmii reorders the client indices: [1, 2]
     #     that is why we must go in reverse!
-    Wmii.selected_clients.sort {|a, b| a.index.to_i <=> b.index.to_i}.reverse.each do |c|
+    Wmii.selected_clients.sort_by do |c|
+      c.index.to_i
+    end.reverse.each do |c|
       c.ctl = 'kill'
     end
   end,
