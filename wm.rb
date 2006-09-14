@@ -398,12 +398,13 @@ module Wmii
 
     alias areas children
 
-    # Iterates over areas in this view such that destructive operations are supported. If specified, the iteration starts with the area which has the given index.
-    def each aStartIdx = 0 # :yields: area
+    # Iterates over columns in this view such that destructive operations are supported. If specified, the iteration starts with the column which has the given index.
+    # Note that the floating area is not considered to be a column.
+    def each_column aStartIdx = 1 # :yields: area
       return unless block_given?
 
-      if (i = aStartIdx.to_i) < 0
-        i = 0
+      if (i = aStartIdx.to_i) < 1
+        i = 1
       end
 
       until i >= (areaList = self.areas).length
@@ -457,7 +458,7 @@ module Wmii
             end
 
         else
-          each 1 do |a| # skip the floating area
+          each_column do |a|
             a.mode = :default
             a.length = aMaxClientsPerColumn
           end
@@ -474,7 +475,7 @@ module Wmii
         height = area = 0
         lastCol = nil
 
-        each 1 do |col| # skip floating area
+        each_column do |col|
           if area < subtriArea
             height += 1
 
@@ -494,7 +495,7 @@ module Wmii
         end
 
       # build second sub-triangle downwards
-        each(lastCol.index + 1) do |col|
+        each_column(lastCol.index + 1) do |col|
           if area > 0
             col.length = height
             area -= height

@@ -9,6 +9,12 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 * Reverted to *wmiir* for event loop, because Ixp#read isn't internally buffered!
 
+* Changed Wmii::View#each to Wmii::View#each_column because floating area isn't a column (it doesn't have /mode file).
+
+* Added shortcuts for setting layouts of all columns in current view.
+
+* Added shortcuts for selection of current column.
+
 
 = 2006-09-12
 

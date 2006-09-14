@@ -47,7 +47,7 @@ FS.def.font = ENV['WMII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-
 FS.def.selcolors = ENV['WMII_SELCOLORS'] = '#ffffff #285577 #4c7899'
 FS.def.normcolors = ENV['WMII_NORMCOLORS'] = '#222222 #eeeeee #666666'
 
-FS.def.colmode = 'default'
+FS.def.colmode = :default
 FS.def.colwidth = 0
 
 system %{xsetroot -solid '#333333'}
@@ -135,17 +135,38 @@ SHORTCUTS = {
 
   # apply equal spacing layout to currently focused column
   "#{LAYOUT_SEQ}w" => lambda do
-    Wmii.current_area.mode = 'default'
+    Wmii.current_area.mode = :default
+  end,
+
+  # apply equal spacing layout to all columns in current view
+  "#{LAYOUT_SEQ}Shift-w" => lambda do
+    Wmii.current_view.each_column do |a|
+      a.mode = :default
+    end
   end,
 
   # apply stacked layout to currently focused column
   "#{LAYOUT_SEQ}v" => lambda do
-    Wmii.current_area.mode = 'stack'
+    Wmii.current_area.mode = :stack
+  end,
+
+  # apply stacked layout to all columns in current view
+  "#{LAYOUT_SEQ}Shift-v" => lambda do
+    Wmii.current_view.each_column do |a|
+      a.mode = :stack
+    end
   end,
 
   # apply maximized layout to currently focused column
   "#{LAYOUT_SEQ}m" => lambda do
-    Wmii.current_area.mode = 'max'
+    Wmii.current_area.mode = :max
+  end,
+
+  # apply maximized layout to all columns in current view
+  "#{LAYOUT_SEQ}Shift-m" => lambda do
+    Wmii.current_view.each_column do |a|
+      a.mode = :max
+    end
   end,
 
   # maximize the floating area's focused client
@@ -169,14 +190,24 @@ SHORTCUTS = {
   end,
 
 
-  # add/remove the currently focused client from the selection
+  # include/exclude the currently focused client from the selection
   "#{GROUP_SEQ}g" => lambda do
     Wmii.current_client.invert_selection!
   end,
 
-  # add all clients in the currently focused view to the selection
+  # include all clients in the currently focused view in the selection
   "#{GROUP_SEQ}a" => lambda do
     Wmii.current_view.select!
+  end,
+
+  # include all clients in the currently focused column in the selection
+  "#{GROUP_SEQ}c" => lambda do
+    Wmii.current_area.select!
+  end,
+
+  # exclude all clients in the currently focused column from the selection
+  "#{GROUP_SEQ}Shift-c" => lambda do
+    Wmii.current_area.unselect!
   end,
 
   # invert the selection in the currently focused view
@@ -184,7 +215,7 @@ SHORTCUTS = {
     Wmii.current_view.invert_selection!
   end,
 
-  # nullify the selection
+  # exclude all clients everywhere from the selection
   "#{GROUP_SEQ}n" => lambda do
     Wmii.select_none!
   end,
