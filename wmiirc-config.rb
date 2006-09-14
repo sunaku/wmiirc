@@ -275,7 +275,12 @@ SHORTCUTS = {
   end,
 
   "#{SEND_SEQ}Delete" => lambda do
-    Wmii.selected_clients.each do |c|
+    # reverse b/c client indices are reassigned upon deletion.
+    # ex: imagine you have these clients: [1, 2, 3]
+    #     you delete the first client (index 1).
+    #     now, wmii reorders the client indices: [1, 2]
+    #     that is why we must go in reverse!
+    Wmii.selected_clients.reverse.each do |c|
       c.ctl = 'kill'
     end
   end,

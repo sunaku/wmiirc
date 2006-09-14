@@ -63,7 +63,7 @@ module Wmii
     Client.new("/client/#{aId}")
   end
 
-  # Searches for a client, which has the given ID, in the given places. If no places are specified, the current view is searched. If the client is not found, *nil* is returned.
+  # Searches for a client, which has the given ID, in the given places. If no places are specified, then all views are searched. If the client is not found, *nil* is returned.
   def Wmii.find_client aClientId, aArea = nil, aView = nil
     aClientId = aClientId.to_i
     needle = Wmii.client(aClientId)
@@ -228,7 +228,8 @@ module Wmii
       super Area, Ixp::Node, :select, *aArgs
     end
 
-    undef index
+    undef index # it prevents access to ./index file
+
 
     TAG_DELIMITER = "+"
 
@@ -437,7 +438,7 @@ module Wmii
           end
 
         secCol.mode = :default
-        # priCol.mode = :max
+        priCol.mode = :max
         priClient.focus!
       end
     end
@@ -464,8 +465,8 @@ module Wmii
 
         else
           each_column do |a|
-            a.mode = :default
             a.length = aMaxClientsPerColumn
+            a.mode = :default
           end
         end
     end
@@ -533,8 +534,12 @@ class Array
       if c.is_a? Wmii::Client
         # resolve stale paths caused by destructive operations
         unless c.exist?
+          puts "\n trying to resolve nonexistent client: #{c.inspect}" if $DEBUG
+
           c = Wmii.find_client(c.basename, nil, Wmii.current_view)
           next unless c
+
+          puts "resolution OK: #{c.inspect}" if $DEBUG
          end
       end
 
