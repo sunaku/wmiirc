@@ -453,7 +453,7 @@ begin
           clickedClient, clickedButton = arg.split
 
           if clickedButton.to_i != PRIMARY_CLICK
-            Wmii::Client.new("/client/#{clickedClient}").invert_selection!
+            Wmii.client(clickedClient).invert_selection!
           end
 
         when :Key

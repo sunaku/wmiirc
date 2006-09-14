@@ -58,10 +58,15 @@ module Wmii
     Area.new("/client").clients
   end
 
-  # Searches for the client with the given ID and returns it. If the client is not found, *nil* is returned. The search is performed within the given places if they are specified.
+  # Returns the client which has the given ID.
+  def Wmii.client aId
+    Client.new("/client/#{aId}")
+  end
+
+  # Searches for a client, which has the given ID, in the given places. If no places are specified, the current view is searched. If the client is not found, *nil* is returned.
   def Wmii.find_client aClientId, aArea = nil, aView = nil
     aClientId = aClientId.to_i
-    needle = Client.new("/client/#{aClientId}")
+    needle = Wmii.client(aClientId)
 
     if needle.exist?
       areas = []
@@ -99,13 +104,13 @@ module Wmii
   end
 
   # Focuses the area with the given ID in the current view.
-  def Wmii.focus_area aAreaId
-    Wmii.current_view[aAreaId].focus!
+  def Wmii.focus_area aId
+    Wmii.current_view[aId].focus!
   end
 
   # Focuses the client which has the given ID.
-  def Wmii.focus_client aClientId
-    if c = find_client(aClientId)
+  def Wmii.focus_client aId
+    if c = find_client(aId)
       v = (a = c.parent).parent
 
       v.focus!
