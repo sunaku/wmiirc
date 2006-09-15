@@ -145,7 +145,7 @@ end
 
 # Attach the most recently detached client
 def attach_last_client
-  if a = Wmii::View.new("/#{DETACHED_TAG}").areas.last
+  if a = Wmii.get_view(DETACHED_TAG).areas.last
     if c = a.clients.last
       c.tags = Wmii.current_view.name
     end

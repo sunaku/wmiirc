@@ -1,5 +1,14 @@
 This is a history of major changes to {my wmii configuration}[http://people.ucsc.edu/~skurapat/wmii.html].
 
+= 2006-09-15
+
+* Added Wmii.get_view and Wmii.get_client methods.
+
+
+= 2006-09-14
+
+* Added ability to swap current client with the currently focused client in any other column.
+
 
 = 2006-09-13
 

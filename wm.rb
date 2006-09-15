@@ -50,7 +50,7 @@ module Wmii
 
   # Returns the current set of views.
   def Wmii.views
-    tags.map {|v| View.new "/#{v}"}
+    tags.map {|v| get_view v}
   end
 
   # Returns the current set of clients.
@@ -59,14 +59,19 @@ module Wmii
   end
 
   # Returns the client which has the given ID.
-  def Wmii.client aId
+  def Wmii.get_client aId
     Client.new("/client/#{aId}")
+  end
+
+  # Returns the view which has the given name.
+  def Wmii.get_view aName
+    View.new("/#{aName}")
   end
 
   # Searches for a client, which has the given ID, in the given places. If no places are specified, then all views are searched. If the client is not found, *nil* is returned.
   def Wmii.find_client aClientId, aArea = nil, aView = nil
     aClientId = aClientId.to_i
-    needle = Wmii.client(aClientId)
+    needle = Wmii.get_client(aClientId)
 
     if needle.exist?
       areas = []
@@ -78,7 +83,7 @@ module Wmii
         areas.concat aView.areas
 
       else
-        needle.tags.map {|t| View.new("/#{t}")}.each do |v|
+        needle.tags.map {|t| get_view t}.each do |v|
           areas.concat v.areas
         end
       end
@@ -100,7 +105,7 @@ module Wmii
 
   # Focuses the view with the given name.
   def Wmii.focus_view aName
-    View.new("/#{aName}").focus!
+    get_view(aName).focus!
   end
 
   # Focuses the area with the given ID in the current view.
@@ -140,7 +145,7 @@ module Wmii
 
   # Un-selects all selected clients so that there is nothing selected.
   def Wmii.select_none!
-    View.new("/#{SELECTION_TAG}").unselect!
+    get_view(SELECTION_TAG).unselect!
   end
 
 
@@ -438,7 +443,7 @@ module Wmii
           end
 
         secCol.mode = :default
-        priCol.mode = :max
+        #priCol.mode = :max
         priClient.focus!
       end
     end
