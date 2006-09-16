@@ -18,8 +18,6 @@
 =end
 
 $: << File.dirname(__FILE__)
-require 'fs'
-require 'wm'
 require 'rc'
 
 FS = Wmii.fs
@@ -224,13 +222,13 @@ SHORTCUTS = {
   # launch an internal action by choosing from a menu
   "#{MENU_SEQ}i" => lambda do
     action = show_menu(ACTION_MENU)
-    fork {exec action} unless action.empty?
+    system(action << '&') unless action.empty?
   end,
 
   # launch an external program by choosing from a menu
   "#{MENU_SEQ}e" => lambda do
     program = show_menu(PROGRAM_MENU)
-    fork {exec program} unless program.empty?
+    system(program << '&') unless program.empty?
   end,
 
   # focus any view by choosing from a menu
