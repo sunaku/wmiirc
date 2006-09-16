@@ -55,7 +55,7 @@ module Ixp
         names
 
       else # read file contents
-        f.read_all
+        f.read
       end
     end
   end
