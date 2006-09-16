@@ -2,7 +2,9 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 = 2006-09-15
 
-* Added Wmii.get_view and Wmii.get_client methods.
+* Added Wmii.get_view and Wmii.get_client methods, to further minimize hard-coded IXP file system paths. This will make it easier to upgrade to wmii-4 later on.
+
+* Implemented Constantine Evans' idea to use fork/exec instead of system when launching programs.
 
 
 = 2006-09-14
