@@ -4,9 +4,6 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 * Added Wmii.get_view and Wmii.get_client methods, to further minimize hard-coded IXP file system paths. This will make it easier to upgrade to wmii-4 later on.
 
-* Implemented Constantine Evans' idea to use fork/exec instead of Kernel#system when launching programs.
-** Reverted back because not all programs in the $PATH were executable via Kernel#exec.
-
 
 = 2006-09-14
 
