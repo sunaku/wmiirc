@@ -429,10 +429,9 @@ end
 ## WM event loop
 
 begin
-  # IXP::Client.new.open('/event') do |io| #io.read.chomp
-  IO.popen 'wmiir read /event' do |io|
-    while event = io.readline.chomp
-      type, arg = event.split($;, 2)
+  IXP::Client.new.open('/event') do |io|
+    while event = io.read.chomp
+      type, arg = event.split(' ', 2)
 
       case type.to_sym
         when :Start
