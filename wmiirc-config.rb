@@ -25,9 +25,6 @@ FS = Wmii.fs
 
 ## WM startup
 
-at_exit do LOG.info($$) {"exiting #{__FILE__}"} end
-LOG.info($$) {"starting #{__FILE__}"}
-
 FS.event = "Start #{__FILE__}\n"
 
 
@@ -435,7 +432,7 @@ begin
       case type.to_sym
         when :Start
           if arg == __FILE__
-            LOG.info($$) {"another config is starting"}
+            LOG.info($$) {"another instance is starting"}
             exit
           end
 
@@ -470,6 +467,6 @@ begin
     end
   end
 rescue EOFError
-  LOG.warn "wmii has been terminated"
+  LOG.warn($$) {"wmii has been terminated"}
   exit 1
 end

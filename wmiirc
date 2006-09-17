@@ -22,15 +22,20 @@ require 'logger'
 
 LOG = Logger.new(__FILE__ + '.log', 5)
 
+
+LOG.info($$) {"starting"}
+
 begin
   load File.join(File.dirname(__FILE__), 'wmiirc-config.rb')
 
 rescue => e
   LOG.error e
 
-  LOG.info(__FILE__) {"resuming from error"}
+  LOG.info($$) {"recovering from error"}
   retry
 
 rescue Exception => e
   LOG.fatal e
 end
+
+LOG.info($$) {"stopping"}
