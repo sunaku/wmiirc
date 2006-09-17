@@ -131,6 +131,19 @@ def cycle_view aTarget
   Wmii.focus_view tags[newIndex]
 end
 
+# Toggles maximization of the currently focused client.
+def toggle_maximize
+  src = Wmii.current_client
+  srcId = src.index
+
+  src.ctl = 'sendto toggle'
+  dst = Wmii.current_view[0].sel
+
+  if dst.index == srcId
+    dst.geom = '0 0 east south'
+  end
+end
+
 
 ## wmii-2 style client detaching
 

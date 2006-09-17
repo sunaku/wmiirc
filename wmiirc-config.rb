@@ -314,8 +314,7 @@ SHORTCUTS = {
 
   # toggle maximizing the currently focused client to full screen
   "#{SEND_SEQ}m" => lambda do
-    SHORTCUTS["#{SEND_SEQ}space"].call
-    SHORTCUTS["#{LAYOUT_SEQ}z"].call
+    toggle_maximize
   end,
 
   # swap the currently focused client with the one to its left
