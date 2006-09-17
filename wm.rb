@@ -521,8 +521,12 @@ module Wmii
     private
       # Returns the number of clients in the non-floating areas of this view.
       def num_grounded_clients
-        areas[1..-1].inject(0) do |count, area|
-          count + area.length
+        if ground = areas[1..-1]
+          ground.inject(0) do |count, area|
+            count + area.length
+          end
+        else
+          0
         end
       end
   end
