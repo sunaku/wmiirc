@@ -69,16 +69,18 @@ def change_tag_from_menu
   choices = Wmii.tags.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
   target = show_menu(choices)
 
-  Wmii.selected_clients.each do |c|
-    case target
-      when /^\+/
-        c.tag! $'
+  unless target.empty?
+    Wmii.selected_clients.each do |c|
+      case target
+        when /^\+/
+          c.tag! $'
 
-      when /^\-/
-        c.untag! $'
+        when /^\-/
+          c.untag! $'
 
-      else
-        c.tags = target
+        else
+          c.tags = target
+      end
     end
   end
 end

@@ -229,8 +229,10 @@ SHORTCUTS = {
   end,
 
   # focus any view by choosing from a menu
-  "#{MENU_SEQ}Shift-v" => lambda do
-    Wmii.focus_view(show_menu(Wmii.tags))
+  "#{MENU_SEQ}u" => lambda do
+    unless (choice = show_menu(Wmii.tags)).empty?
+      Wmii.focus_view choice
+    end
   end,
 
   "#{MENU_SEQ}a" => lambda do
