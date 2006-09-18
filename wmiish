@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/ruby -w
 # This is an interactive Ruby shell for wmii.
 # - Press the TAB key for command completion.
 
@@ -30,7 +30,7 @@ require 'irb/completion'
 module IRB
   # Starts IRB within the context of the given object.
   def IRB.start_session aContextObj
-    IRB.setup __FILE__ unless $irb
+    IRB.setup __FILE__ unless defined? $irb
 
     ws = WorkSpace.new(aContextObj)
 

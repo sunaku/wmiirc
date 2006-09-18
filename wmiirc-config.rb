@@ -434,7 +434,7 @@ begin
       case type.to_sym
         when :Start
           if arg == __FILE__
-            LOG.info($$) {"another instance is starting"}
+            LOG.info "another instance is starting"
             exit
           end
 

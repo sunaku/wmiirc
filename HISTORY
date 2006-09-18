@@ -5,6 +5,7 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 * Added View#empty? and Area#empty? methods.
 * change_tag_from_menu now returns the chosen tag.
+* Included Ruby-IXP 1.0.1 release.
 
 
 = 2006-09-16
