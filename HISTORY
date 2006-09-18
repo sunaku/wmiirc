@@ -1,6 +1,12 @@
 This is a history of major changes to {my wmii configuration}[http://people.ucsc.edu/~skurapat/wmii.html].
 
 
+= 2006-09-17
+
+* Added View#empty? and Area#empty? methods.
+* change_tag_from_menu now returns the chosen tag.
+
+
 = 2006-09-16
 
 * Fixed toggling of maximization of currently focused client, via toggle_maximize in rc.rb.

@@ -63,7 +63,7 @@ def focus_client_from_menu
   end
 end
 
-# Changes the tag, chosen from a menu, of each selected client.
+# Changes the tag, chosen from a menu, of each selected client and returns the chosen tag.
 # The {+tag -tag idea}[http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby] is from Jonas Pfenniger.
 def change_tag_from_menu
   choices = Wmii.tags.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
@@ -82,6 +82,8 @@ def change_tag_from_menu
           c.tags = target
       end
     end
+
+    target
   end
 end
 

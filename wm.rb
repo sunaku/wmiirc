@@ -301,6 +301,11 @@ module Wmii
 
     alias clients children
 
+    # Tests if this area is empty (has no clients).
+    def empty?
+      length < 1
+    end
+
     # Inserts the given clients at the bottom of this area.
     def push! *aClients
       if target = clients.last
@@ -408,6 +413,13 @@ module Wmii
     end
 
     alias areas children
+
+    # Tests if this view is empty (has no clients).
+    def empty?
+      length < 3 &&
+      self[0].length < 1 &&
+      self[1].length < 1
+    end
 
     # Iterates over columns in this view such that destructive operations are supported. If specified, the iteration starts with the column which has the given index.
     # Note that the floating area is not considered to be a column.
