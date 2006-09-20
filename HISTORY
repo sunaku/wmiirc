@@ -1,6 +1,22 @@
 This is a history of major changes to {my wmii configuration}[http://people.ucsc.edu/~skurapat/wmii.html].
 
 
+= 2006-09-19
+
+* Included Ruby-IXP 1.0.3 release.
+
+* Added Ixp::Node#open method to reduce 9P traffic.
+
+* Added ability to fetch a sub-node via method_missing, while not dereferencing it (reading its contents if it is a file), by adding an exclamation to the file name. For example, consider the following output in *wmiish*.
+
+    >> Wmii.fs.bar.status.data
+    => "Tue Sep 19 10:50:41 PDT 2006 | 0.30 0.43 0.29 | 1.7G 98% /home"
+    >> Wmii.fs.bar.status.data!
+    => #<Ixp::Node:0xb7bf1f18 @path="/bar/status/data">
+
+* *wmiirc* no longer automatically resumes from error. Instead, it throws you a terminal and shows you the error details so you have a chance to fix it and restart *wmiirc* yourself.
+
+
 = 2006-09-18
 
 * Included Ruby-IXP 1.0.2 release.
