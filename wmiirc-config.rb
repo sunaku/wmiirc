@@ -36,11 +36,12 @@ ACTION_MENU = find_programs('~/dry/apps/wmii/etc/wmii-3', File.dirname(__FILE__)
 
 ## UI configuration
 
-FS.def.border = 2
-
+FS.def.border = 1
 FS.def.font = ENV['WMII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
+
+# color order: foreground, background, border
 FS.def.selcolors = ENV['WMII_SELCOLORS'] = '#ffffff #285577 #4c7899'
-FS.def.normcolors = ENV['WMII_NORMCOLORS'] = '#222222 #eeeeee #666666'
+FS.def.normcolors = ENV['WMII_NORMCOLORS'] = '#e0e0e0 #0a0a0a #202020' #'#222222 #eeeeee #666666'
 
 FS.def.colmode = :default
 FS.def.colwidth = 0
@@ -408,27 +409,28 @@ FS.def.keys = SHORTCUTS.keys.join("\n")
 ## status bar
 
 Thread.new do
-  sb = Ixp::Node.new('/bar/status', true)
+  sb = FS.bar.status
+  sb.create!
   sb.colors = ENV['WMII_NORMCOLORS']
+  sb.data!.open do |f|
+    loop do
+      diskSpace = `df -h ~`.split[-3..-1].join(' ')
 
-  loop do
-    diskSpace = `df -h ~`.split[-3..-1].join(' ')
+      10.times do
+        cpuLoad = File.read('/proc/loadavg').split[0..2].join(' ')
 
-    10.times do
-      cpuLoad = File.read('/proc/loadavg').split[0..2].join(' ')
-
-      sb.data = "#{Time.now.to_s} | #{cpuLoad} | #{diskSpace}"
-      sleep 1
+        f.write "#{Time.now.to_s} | #{cpuLoad} | #{diskSpace}"
+        sleep 1
+      end
     end
   end
 end
 
-
 ## WM event loop
 
 begin
-  IXP::Client.new.open('/event') do |io|
-    while event = io.read.chomp
+  IXP::Client.new.open('/event') do |f|
+    while event = f.read.chomp
       type, arg = event.split(' ', 2)
 
       case type.to_sym
@@ -469,6 +471,6 @@ begin
     end
   end
 rescue EOFError
-  LOG.warn($$) {"wmii has been terminated"}
+  LOG.warn {"wmii has been terminated"}
   exit 1
 end

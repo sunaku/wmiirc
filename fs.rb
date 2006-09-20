@@ -23,7 +23,7 @@ require 'ixp'
 
 # Encapsulates access to the IXP file system.
 module Ixp
-  @@ixp = IXP::Client.new
+  @@ixp = IXP::Client.new unless defined? @@ixp
 
   # Creates a file at the given path.
   def self.create aPath
@@ -90,6 +90,11 @@ module Ixp
       create! if aCreateIt && !exist?
     end
 
+    # Open this node for IO operation.
+    def open &aBlock # :yields: IO
+      Ixp.open @path, &aBlock
+    end
+
     # Creates this node.
     def create!
       Ixp.create @path
@@ -133,11 +138,11 @@ module Ixp
       File.dirname @path
     end
 
-    # Accesses the given sub-path. The contents of the sub-path are returned if it is a file. Otherwise, its node is returned if it is a directory.
-    def [] aSubPath
+    # Accesses the given sub-path. When aDeref is asserted, then the contents of the sub-path are returned if it is a file.
+    def [] aSubPath, aDeref = true
       child = Ixp::Node.new("#{@path}/#{aSubPath}")
 
-      if child.file?
+      if aDeref && child.file?
         child.read
       else
         child
@@ -151,10 +156,15 @@ module Ixp
 
     # Provides easy access to sub-nodes.
     def method_missing aMeth, *aArgs
-      if aMeth.to_s =~ /=$/
-        self[$`] = *aArgs
-      else
-        self[aMeth]
+      case aMeth.to_s
+        when /=$/
+          self[$`] = *aArgs
+
+        when /!$/
+          self[$`, false]
+
+        else
+          self[aMeth]
       end
     end
   end
