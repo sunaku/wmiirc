@@ -412,14 +412,15 @@ Thread.new do
   sb = FS.bar.status
   sb.create!
   sb.colors = ENV['WMII_NORMCOLORS']
-  sb.data!.open do |f|
+
+  loop do
     loop do
       diskSpace = `df -h ~`.split[-3..-1].join(' ')
 
       10.times do
         cpuLoad = File.read('/proc/loadavg').split[0..2].join(' ')
 
-        f.write "#{Time.now.to_s} | #{cpuLoad} | #{diskSpace}"
+        sb.data = "#{Time.now.to_s} | #{cpuLoad} | #{diskSpace}"
         sleep 1
       end
     end
@@ -429,45 +430,43 @@ end
 ## WM event loop
 
 begin
-  IXP::Client.new.open('/event') do |f|
-    while event = f.read.chomp
-      type, arg = event.split(' ', 2)
+  while event = FS.event.chomp
+    type, arg = event.split(' ', 2)
 
-      case type.to_sym
-        when :Start
-          if arg == __FILE__
-            LOG.info "another instance is starting"
-            exit
-          end
+    case type.to_sym
+      when :Start
+        if arg == __FILE__
+          LOG.info "another instance is starting"
+          exit
+        end
 
-        when :BarClick
-          clickedView, clickedButton = arg.split
+      when :BarClick
+        clickedView, clickedButton = arg.split
 
-          case clickedButton.to_i
-            when PRIMARY_CLICK
-              Wmii.focus_view clickedView
+        case clickedButton.to_i
+          when PRIMARY_CLICK
+            Wmii.focus_view clickedView
 
-            when MIDDLE_CLICK
-              Wmii.selected_clients.each do |c|
-                c.tag! clickedView
-              end
+          when MIDDLE_CLICK
+            Wmii.selected_clients.each do |c|
+              c.tag! clickedView
+            end
 
-            when SECONDARY_CLICK
-              Wmii.selected_clients.each do |c|
-                c.untag! clickedView
-              end
-          end
+          when SECONDARY_CLICK
+            Wmii.selected_clients.each do |c|
+              c.untag! clickedView
+            end
+        end
 
-        when :ClientClick
-          clickedClient, clickedButton = arg.split
+      when :ClientClick
+        clickedClient, clickedButton = arg.split
 
-          if clickedButton.to_i != PRIMARY_CLICK
-            Wmii.get_client(clickedClient).invert_selection!
-          end
+        if clickedButton.to_i != PRIMARY_CLICK
+          Wmii.get_client(clickedClient).invert_selection!
+        end
 
-        when :Key
-          SHORTCUTS[arg].call
-      end
+      when :Key
+        SHORTCUTS[arg].call
     end
   end
 rescue EOFError

@@ -160,9 +160,6 @@ module Ixp
         when /=$/
           self[$`] = *aArgs
 
-        when /!$/
-          self[$`, false]
-
         else
           self[aMeth]
       end
