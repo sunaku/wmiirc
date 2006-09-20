@@ -36,13 +36,16 @@ ACTION_MENU = find_programs('~/dry/apps/wmii/etc/wmii-3', File.dirname(__FILE__)
 
 ## UI configuration
 
+ENV['WMII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
+
+# foreground, background, border
+ENV['WMII_NORMCOLORS'] = '#e0e0e0 #0a0a0a #202020' #'#222222 #eeeeee #666666'
+ENV['WMII_SELCOLORS'] = '#ffffff #285577 #4c7899'
+
 FS.def.border = 1
-FS.def.font = ENV['WMII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
-
-# color order: foreground, background, border
-FS.def.selcolors = ENV['WMII_SELCOLORS'] = '#ffffff #285577 #4c7899'
-FS.def.normcolors = ENV['WMII_NORMCOLORS'] = '#e0e0e0 #0a0a0a #202020' #'#222222 #eeeeee #666666'
-
+FS.def.font = ENV['WMII_FONT']
+FS.def.normcolors = ENV['WMII_NORMCOLORS']
+FS.def.selcolors = ENV['WMII_SELCOLORS']
 FS.def.colmode = :default
 FS.def.colwidth = 0
 
