@@ -23,16 +23,6 @@ require 'logger'
 LOG = Logger.new(__FILE__ + '.log', 5)
 
 
-# Provide a means by which the user can rescue themselves.
-def throw_life_saver aError
-  system 'xterm &'
-
-  IO.popen('xmessage -file -', 'w') do |f|
-    f.puts aError.inspect, aError.backtrace
-  end
-end
-
-
 LOG.info "starting"
 
 begin
@@ -40,11 +30,12 @@ begin
 
 rescue => e
   LOG.error e
-  throw_life_saver e
+
+  LOG.info "recovering from above error"
+  retry
 
 rescue Exception => e
   LOG.fatal e
-  throw_life_saver e
 end
 
 LOG.info "stopping"
