@@ -23,11 +23,6 @@ require 'rc'
 FS = Wmii.fs
 
 
-## WM startup
-
-FS.event = "Start #{__FILE__}\n"
-
-
 ## executable programs
 
 PROGRAM_MENU = find_programs( ENV['PATH'].squeeze(':').split(':') )
@@ -440,12 +435,6 @@ begin
       type, arg = event.split(' ', 2)
 
       case type.to_sym
-        when :Start
-          if arg == __FILE__
-            LOG.info "another instance is starting"
-            exit
-          end
-
         when :BarClick
           clickedView, clickedButton = arg.split
 

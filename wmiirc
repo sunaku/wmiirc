@@ -23,6 +23,17 @@ require 'logger'
 LOG = Logger.new(__FILE__ + '.log', 5)
 
 
+# terminate existing instances
+  pidList = `ps -C #{File.basename $0} -o pid`.split.map! {|s| s.to_i}
+  pidList.shift # discard header
+  pidList.reject! {|pid| pid == $$}
+
+  pidList.each do |pid|
+    LOG.info "stopping instance #{pid}"
+    Process.kill :SIGTERM, pid
+  end
+
+
 LOG.info "starting"
 
 begin
