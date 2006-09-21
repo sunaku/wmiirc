@@ -9,8 +9,6 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 * show_menu now returns *nil* if nothing was chosen.
 
-* Reverted to silent logging & recovery from error... xmessage & terminal are annoying!
-
 * Updated event loop for {wmii-3.1's /event overload bug fix}[http://wmii.de/pipermail/wmii/2006-September/002718.html].
 
 * Added explicit termination of already running instances in *wmiirc* via Process.kill and `ps`, instead of using /event as a means of coordinating said task.

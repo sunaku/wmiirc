@@ -20,8 +20,18 @@
 
 require 'logger'
 
-LOG = Logger.new(__FILE__ + '.log', 5)
+# Provide a means by which the user can rescue themselves.
+def throw_life_saver aError
+  system 'xterm &'
 
+  IO.popen('xmessage -file -', 'w') do |f|
+    f.puts aError.inspect, aError.backtrace
+  end
+end
+
+
+LOG = Logger.new(__FILE__ + '.log', 5)
+LOG.info "starting"
 
 # terminate existing instances
   pidList = `ps -C #{File.basename $0} -o pid`.split.map! {|s| s.to_i}
@@ -29,24 +39,20 @@ LOG = Logger.new(__FILE__ + '.log', 5)
   pidList.reject! {|pid| pid == $$}
 
   pidList.each do |pid|
-    LOG.info "stopping instance #{pid}"
+    LOG.info "stopping loader #{pid}"
     Process.kill :SIGTERM, pid
   end
 
+# load the configuration
+  begin
+    load File.join(File.dirname(__FILE__), 'wmiirc-config.rb')
 
-LOG.info "starting"
+  rescue => e
+    LOG.error e
+    throw_life_saver e
 
-begin
-  load File.join(File.dirname(__FILE__), 'wmiirc-config.rb')
-
-rescue => e
-  LOG.error e
-
-  LOG.info "recovering from above error"
-  retry
-
-rescue Exception => e
-  LOG.fatal e
-end
+  rescue Exception => e
+    LOG.fatal e
+  end
 
 LOG.info "stopping"
