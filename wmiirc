@@ -20,13 +20,15 @@
 
 require 'logger'
 
-# Provide a means by which the user can rescue themselves.
+# Provide a means by which the user can rescue themselves after an exception.
 def throw_life_saver aError
   system 'xterm &'
 
-  IO.popen('xmessage -file -', 'w') do |f|
+  IO.popen('xmessage -file - -buttons recover:0,ignore:1', 'w') do |f|
     f.puts aError.inspect, aError.backtrace
   end
+
+  system($0 + ' &') if $?.exitstatus == 0
 end
 
 

@@ -219,14 +219,16 @@ SHORTCUTS = {
 
   # launch an internal action by choosing from a menu
   "#{MENU_SEQ}i" => lambda do
-    action = show_menu(ACTION_MENU)
-    system(action << '&') unless action.empty?
+    if action = show_menu(ACTION_MENU)
+      system(action << '&')
+    end
   end,
 
   # launch an external program by choosing from a menu
   "#{MENU_SEQ}e" => lambda do
-    program = show_menu(PROGRAM_MENU)
-    system(program << '&') unless program.empty?
+    if program = show_menu(PROGRAM_MENU)
+      system(program << '&')
+    end
   end,
 
   # focus any view by choosing from a menu
