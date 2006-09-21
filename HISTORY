@@ -1,6 +1,19 @@
 This is a history of major changes to {my wmii configuration}[http://people.ucsc.edu/~skurapat/wmii.html].
 
 
+= 2006-09-20
+
+* Included code from upcoming Ruby-IXP 1.1.0 release.
+
+* Changed syntax of Ixp::Node's method_missing facility to dereference a node only if the method is suffixed with an exclamation mark.
+
+* show_menu now returns *nil* if nothing was chosen.
+
+* Reverted to silent logging & recovery from error... xmessage & terminal are annoying!
+
+* Updated event loop for {wmii-3.1's /event overload bug fix}[http://wmii.de/pipermail/wmii/2006-September/002718.html].
+
+
 = 2006-09-19
 
 * Included Ruby-IXP 1.0.3 release.

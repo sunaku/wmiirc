@@ -416,16 +416,16 @@ FS.def.keys = SHORTCUTS.keys.join("\n")
 Thread.new do
   sb = FS.bar.status
   sb.create!
-  sb.colors = ENV['WMII_NORMCOLORS']
 
-  loop do
+  sb.colors = ENV['WMII_NORMCOLORS']
+  sb.data.open do |f|
     loop do
       diskSpace = `df -h ~`.split[-3..-1].join(' ')
 
       10.times do
         cpuLoad = File.read('/proc/loadavg').split[0..2].join(' ')
 
-        sb.data = "#{Time.now.to_s} | #{cpuLoad} | #{diskSpace}"
+        f.write "#{Time.now.to_s} | #{cpuLoad} | #{diskSpace}"
         sleep 1
       end
     end
