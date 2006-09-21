@@ -32,33 +32,32 @@ def find_programs *aPaths
     end
   end
 
-  list.uniq.sort
+  list.uniq!
+  list.sort!
+  list
 end
 
-# Shows a menu with the given items and returns the chosen item. If nothing was chosen, an empty string is returned.
+# Shows a menu with the given items and returns the chosen item. If nothing was chosen, *nil* is returned.
 def show_menu *aChoices
-  aChoices.flatten!
-  output = nil
-
   IO.popen('wmiimenu', 'r+') do |menu|
-    menu.write aChoices.join("\n")
+    menu.puts aChoices
     menu.close_write
 
-    output = menu.read
+    if (choice = menu.read).empty?
+      nil
+    else
+      choice
+    end
   end
-
-  output
 end
 
 # Focuses the client chosen from a menu.
 def focus_client_from_menu
   choices = Wmii.clients.map do |c|
-    format "%d. [%s] %s", c.index, c.tags.join(' '), c.name.downcase
+    format "%d. [%s] %s", c.index!, c.tags!, c.name!.downcase
   end
 
-  target = show_menu(choices)
-
-  unless target.empty?
+  if target = show_menu(choices)
     Wmii.focus_client target.scan(/\d+/).first
   end
 end
@@ -67,9 +66,8 @@ end
 # The {+tag -tag idea}[http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby] is from Jonas Pfenniger.
 def change_tag_from_menu
   choices = Wmii.tags.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
-  target = show_menu(choices)
 
-  unless target.empty?
+  if target = show_menu(choices)
     Wmii.selected_clients.each do |c|
       case target
         when /^\+/
@@ -89,7 +87,7 @@ end
 
 # Send selected clients to temporary view or switch back again.
 def toggle_temp_view
-  curTag = Wmii.current_view.name
+  curTag = Wmii.current_view.name!
 
   if curTag =~ /~\d+$/
     Wmii.selected_clients.each do |c|
@@ -116,7 +114,7 @@ end
 # Puts focus on an adjacent view (:left or :right).
 def cycle_view aTarget
   tags = Wmii.tags
-  curTag = Wmii.current_view.name
+  curTag = Wmii.current_view.name!
   curIndex = tags.index(curTag)
 
   newIndex =
@@ -138,12 +136,12 @@ end
 # Toggles maximization of the currently focused client.
 def toggle_maximize
   src = Wmii.current_client
-  srcId = src.index
+  srcId = src.index!
 
   src.ctl = 'sendto toggle'
   dst = Wmii.current_view[0].sel
 
-  if dst.index == srcId
+  if dst.index! == srcId
     dst.geom = '0 0 east south'
   end
 end

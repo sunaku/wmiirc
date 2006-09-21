@@ -23,142 +23,104 @@ require 'ixp'
 
 # Encapsulates access to the IXP file system.
 module Ixp
-  @@ixp = IXP::Client.new unless defined? @@ixp
-
-  # Creates a file at the given path.
-  def self.create aPath
-    @@ixp.create aPath
-  end
-
-  # Deletes the given path.
-  def self.remove aPath
-    @@ixp.remove aPath
-  end
-
-  # Writes the given content to the given path.
-  def self.write aPath, aContent
-    open(aPath) do |f|
-      f.write aContent.to_s
-    end
-  end
-
-  # Reads from the given path and returns the content. If the path is a directory, then the names of all files in that directory are returned.
-  def self.read aPath
-    open(aPath) do |f|
-      if f.is_a? IXP::Directory
-        names = []
-
-        while i = f.next
-          names << i.name
-        end
-
-        names
-
-      else # read file contents
-        f.read
-      end
-    end
-  end
-
-  # Tests if the given path is a file.
-  def self.file? aPath
-    open(aPath) {|f| f.instance_of? IXP::File} rescue false
-  end
-
-  # Tests if the given path is a directory.
-  def self.directory? aPath
-    open(aPath) {|f| f.instance_of? IXP::Directory} rescue false
-  end
-
-  # Tests if the given path exists.
-  def self.exist? aPath
-    open(aPath) {true} rescue false
-  end
-
-  # Opens the given path for reading and writing and passes it to the given block.
-  def self.open aPath, &aBlock # :yields: IO
-    @@ixp.open aPath, &aBlock
-  end
+  Client = IXP::Client.new
 
   # An entry in the IXP file system.
   class Node
     attr_reader :path
 
-    # Obtains the IXP node at the given path. If aCreateIt is asserted, then the given path is created unless it already exists.
+    # Obtains the IXP node at the given path. Unless it already exists, the given path is created when aCreateIt is asserted.
     def initialize aPath, aCreateIt = false
       @path = aPath.to_s.squeeze('/')
       create! if aCreateIt && !exist?
     end
 
     # Open this node for IO operation.
-    def open &aBlock # :yields: IO
-      Ixp.open @path, &aBlock
+    def open *aArgs, &aBlock # :yields: IO
+      Client.open @path, *aArgs, &aBlock
     end
 
     # Creates this node.
     def create!
-      Ixp.create @path
+      Client.create @path
     end
 
     # Deletes this node.
     def remove!
-      Ixp.remove @path
+      Client.remove @path
     end
 
     # Writes the given content to this node.
     def write! aContent
-      Ixp.write @path, aContent
+      Client.write @path, aContent
     end
 
-    # Returns the contents of this node or the names of all sub-nodes if this is a directory.
+    # Returns the contents of this node or the names of all entries if this is a directory.
     def read
-      Ixp.read @path
+      cont = Client.read(@path)
+
+      if cont.respond_to? :to_ary
+        cont.map {|stat| stat.name}
+      else
+        cont
+      end
     end
 
     # Tests if this node is a file.
     def file?
-      Ixp.file? @path
+      Client.file? @path
     end
 
     # Tests if this node is a directory.
     def directory?
-      Ixp.directory? @path
+      Client.directory? @path
     end
 
     # Tests if this node exists in the file system.
     def exist?
-      Ixp.exist? @path
+      Client.exist? @path
     end
 
+    # Returns the basename of this file's path.
     def basename
       File.basename @path
     end
 
+    # Returns the dirname of this file's path.
     def dirname
       File.dirname @path
     end
 
-    # Accesses the given sub-path. When aDeref is asserted, then the contents of the sub-path are returned if it is a file.
-    def [] aSubPath, aDeref = true
-      child = Ixp::Node.new("#{@path}/#{aSubPath}")
+    # Accesses the given sub-path and dereferences it (reads its contents) if specified.
+    def [] aSubPath, aDeref = false
+      child = Node.new("#{@path}/#{aSubPath}")
 
-      if aDeref && child.file?
+      if aDeref
         child.read
       else
         child
       end
     end
 
-    # Writes to the given sub-path.
+    # Writes the given content to the given sub-path.
     def []= aSubPath, aContent
-      Ixp::Node.new("#{@path}/#{aSubPath}").write! aContent
+      self[aSubPath].write! aContent
     end
 
-    # Provides easy access to sub-nodes.
+    # Provides access to sub-nodes through method calls.
+    #
+    # :call-seq:
+    #   node.child = value  -> value
+    #   node.child          -> Node
+    #   node.child!         -> child.read
+    #
     def method_missing aMeth, *aArgs
       case aMeth.to_s
         when /=$/
           self[$`] = *aArgs
+
+        when /!$/
+          self[$`, true]
 
         else
           self[aMeth]

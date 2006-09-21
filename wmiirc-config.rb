@@ -170,7 +170,9 @@ SHORTCUTS = {
 
   # maximize the floating area's focused client
   "#{LAYOUT_SEQ}z" => lambda do
-    Wmii.current_view[0].sel.geom = '0 0 east south'
+    if (client = Wmii.current_view[0].sel).exist?
+      client.geom = '0 0 east south'
+    end
   end,
 
 
@@ -234,7 +236,7 @@ SHORTCUTS = {
 
   # focus any view by choosing from a menu
   "#{MENU_SEQ}u" => lambda do
-    unless (choice = show_menu(Wmii.tags)).empty?
+    if choice = show_menu(Wmii.tags)
       Wmii.focus_view choice
     end
   end,
@@ -278,11 +280,11 @@ SHORTCUTS = {
   "#{SEND_SEQ}Delete" => lambda do
     # reverse b/c client indices are reassigned upon deletion.
     # ex: imagine you have these clients: [1, 2, 3]
-    #     you delete the first client (index 1).
-    #     now, wmii reorders the client indices: [1, 2]
+    #     you delete the second client (id 2).
+    #     now, wmii reorders the remaining clients [1, 3] as: [1, 2]
     #     that is why we must go in reverse!
     Wmii.selected_clients.sort_by do |c|
-      c.index.to_i
+      c.index!.to_i
     end.reverse.each do |c|
       c.ctl = 'kill'
     end
@@ -294,7 +296,7 @@ SHORTCUTS = {
 
   # remove currently focused view from current selection's tags
   "#{SEND_SEQ}Shift-minus" => lambda do
-    curTag = Wmii.current_view.name
+    curTag = Wmii.current_view.name!
 
     Wmii.selected_clients.each do |c|
       c.untag! curTag
@@ -393,12 +395,12 @@ SHORTCUTS = {
 end
 
 # jump to view whose name begins with the pressed key
-('a'..'z').each do |char|
-  SHORTCUTS["#{MENU_SEQ}v,#{char}"] = lambda do
+('a'..'z').each do |key|
+  SHORTCUTS["#{MENU_SEQ}v,#{key}"] = lambda do
     choices = Wmii.tags
-    choices.delete Wmii.current_view.name
+    choices.delete Wmii.current_view.name!
 
-    if view = choices.select {|t| t =~ /^#{char}/i}.first
+    if view = choices.select {|t| t =~ /^#{key}/i}.first
       Wmii.focus_view view
     end
   end

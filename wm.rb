@@ -45,7 +45,7 @@ module Wmii
 
   # Returns the current set of tags.
   def Wmii.tags
-    Ixp.read('/tags').split
+    Ixp::Client.read('/tags').split
   end
 
   # Returns the current set of views.
@@ -74,21 +74,21 @@ module Wmii
     needle = Wmii.get_client(aClientId)
 
     if needle.exist?
-      areas = []
+      haystack = []
 
       if aArea && aArea.exist?
-        areas << aArea
+        haystack << aArea
 
       elsif aView && aView.exist?
-        areas.concat aView.areas
+        haystack.concat aView.areas
 
       else
         needle.tags.map {|t| get_view t}.each do |v|
-          areas.concat v.areas
+          haystack.concat v.areas
         end
       end
 
-      areas.each do |a|
+      haystack.each do |a|
         if a.indices.detect {|i| i == aClientId}
           return a[aClientId]
         end
@@ -233,14 +233,11 @@ module Wmii
       super Area, Ixp::Node, :select, *aArgs
     end
 
-    undef index # it prevents access to ./index file
-
-
     TAG_DELIMITER = "+"
 
     # Returns the tags associated with this client.
     def tags
-      self[:tags].split(TAG_DELIMITER)
+      self[:tags, true].split(TAG_DELIMITER)
     end
 
     # Modifies the tags associated with this client.
@@ -372,39 +369,41 @@ module Wmii
       end
     end
 
+
     private
-      # Updates the path of this area for proper insertion and inserts the given client.
-      def setup_for_insertion! aFirstClient
-        raise ArgumentError, 'nonexistent client' unless aFirstClient.exist?
 
-        dstIdx = self.index
-        maxIdx = parent.indices.last
+    # Updates the path of this area for proper insertion and inserts the given client.
+    def setup_for_insertion! aFirstClient
+      raise ArgumentError, 'nonexistent client' unless aFirstClient.exist?
 
-        if dstIdx > maxIdx
-          # move *near* final destination
-            clientId = aFirstClient.index
-            aFirstClient.ctl = "sendto #{maxIdx}"
+      dstIdx = self.index
+      maxIdx = parent.indices.last
 
-            # recalculate b/c sendto can be destructive
-              maxIdx = parent.indices.last
-              maxCol = parent[maxIdx]
+      if dstIdx > maxIdx
+        # move *near* final destination
+          clientId = aFirstClient.index!
+          aFirstClient.ctl = "sendto #{maxIdx}"
 
-              aFirstClient = Wmii.find_client(clientId, maxCol)
+          # recalculate b/c sendto can be destructive
+            maxIdx = parent.indices.last
+            maxCol = parent[maxIdx]
 
-          # move *into* final destination
-            if maxCol.indices.length > 1
-              aFirstClient.ctl = "sendto next"
-              dstIdx = maxIdx + 1
-            else
-              dstIdx = maxIdx
-            end
+            aFirstClient = Wmii.find_client(clientId, maxCol)
 
-          @path = "#{dirname}/#{dstIdx}"
+        # move *into* final destination
+          if maxCol.indices.length > 1
+            aFirstClient.ctl = "sendto next"
+            dstIdx = maxIdx + 1
+          else
+            dstIdx = maxIdx
+          end
 
-        else
-          aFirstClient.ctl = "sendto #{dstIdx}"
-        end
+        @path = "#{dirname}/#{dstIdx}"
+
+      else
+        aFirstClient.ctl = "sendto #{dstIdx}"
       end
+    end
   end
 
   class View < Node
@@ -530,17 +529,19 @@ module Wmii
         end
     end
 
+
     private
-      # Returns the number of clients in the non-floating areas of this view.
-      def num_grounded_clients
-        if ground = areas[1..-1]
-          ground.inject(0) do |count, area|
-            count + area.length
-          end
-        else
-          0
+
+    # Returns the number of clients in the non-floating areas of this view.
+    def num_grounded_clients
+      if ground = areas[1..-1]
+        ground.inject(0) do |count, area|
+          count + area.length
         end
+      else
+        0
       end
+    end
   end
 end
 
@@ -549,22 +550,20 @@ class Array
 
   # Supports destructive operations on each client in this array.
   def each
-    return unless block_given?
-
-    original_each do |c|
-      if c.is_a? Wmii::Client
+    if block_given?
+      original_each do |c|
         # resolve stale paths caused by destructive operations
-        unless c.exist?
-          puts "\n trying to resolve nonexistent client: #{c.inspect}" if $DEBUG
+        if c.is_a?(Wmii::Client) && !c.exist?
+          puts "\n trying to resolve nonexistent client: #{c.path}" if $DEBUG
 
           c = Wmii.find_client(c.basename, nil, Wmii.current_view)
           next unless c
 
-          puts "resolution OK: #{c.inspect}" if $DEBUG
-         end
-      end
+          puts "resolution OK: #{c.path}" if $DEBUG
+        end
 
-      yield c
+        yield c
+      end
     end
   end
 end
