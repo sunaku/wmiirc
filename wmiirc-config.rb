@@ -30,11 +30,10 @@ ACTION_MENU = find_programs('~/dry/apps/wmii/etc/wmii-3', File.dirname(__FILE__)
 
 
 ## UI configuration
+# colors: #foreground #background #border
 
 ENV['WMII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
-
-# foreground, background, border
-ENV['WMII_NORMCOLORS'] = '#e0e0e0 #0a0a0a #202020' #'#222222 #eeeeee #666666'
+ENV['WMII_NORMCOLORS'] = '#e0e0e0 #0a0a0a #202020'
 ENV['WMII_SELCOLORS'] = '#ffffff #285577 #4c7899'
 
 FS.def.border = 1
@@ -413,7 +412,6 @@ FS.def.keys = SHORTCUTS.keys.join("\n")
 Thread.new do
   sb = FS.bar.status
   sb.create!
-
   sb.colors = ENV['WMII_NORMCOLORS']
   sb.data.open do |f|
     loop do
@@ -431,43 +429,38 @@ end
 
 ## WM event loop
 
-begin
-  FS.event.open do |f|
-    while event = f.read.chomp
-      type, arg = event.split(' ', 2)
+FS.event.open do |f|
+  while event = f.read.chomp
+    type, arg = event.split(' ', 2)
 
-      case type.to_sym
-        when :BarClick
-          clickedView, clickedButton = arg.split
+    case type.to_sym
+      when :BarClick
+        clickedView, clickedButton = arg.split
 
-          case clickedButton.to_i
-            when PRIMARY_CLICK
-              Wmii.focus_view clickedView
+        case clickedButton.to_i
+          when PRIMARY_CLICK
+            Wmii.focus_view clickedView
 
-            when MIDDLE_CLICK
-              Wmii.selected_clients.each do |c|
-                c.tag! clickedView
-              end
+          when MIDDLE_CLICK
+            Wmii.selected_clients.each do |c|
+              c.tag! clickedView
+            end
 
-            when SECONDARY_CLICK
-              Wmii.selected_clients.each do |c|
-                c.untag! clickedView
-              end
-          end
+          when SECONDARY_CLICK
+            Wmii.selected_clients.each do |c|
+              c.untag! clickedView
+            end
+        end
 
-        when :ClientClick
-          clickedClient, clickedButton = arg.split
+      when :ClientClick
+        clickedClient, clickedButton = arg.split
 
-          if clickedButton.to_i != PRIMARY_CLICK
-            Wmii.get_client(clickedClient).invert_selection!
-          end
+        if clickedButton.to_i != PRIMARY_CLICK
+          Wmii.get_client(clickedClient).invert_selection!
+        end
 
-        when :Key
-          SHORTCUTS[arg].call
-      end
+      when :Key
+        SHORTCUTS[arg].call
     end
   end
-rescue EOFError
-  LOG.warn {"wmii has been terminated"}
-  exit 1
 end
