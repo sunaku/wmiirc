@@ -432,7 +432,7 @@ end
 ## WM event loop
 
 begin
-  IXP::Client.new.open('/event') do |f|
+  FS.event.open do |f|
     while event = f.read.chomp
       type, arg = event.split(' ', 2)
 

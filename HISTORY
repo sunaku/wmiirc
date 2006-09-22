@@ -1,6 +1,15 @@
 This is a history of major changes to {my wmii configuration}[http://people.ucsc.edu/~skurapat/wmii.html].
 
 
+= 2006-09-21
+
+* Fix some forgotten changes from show_menu() returning *nil*.
+
+* Exception error message (xmessage) now lets you restart *wmiirc*.
+
+* Updated event loop to generate less 9P traffic.
+
+
 = 2006-09-20
 
 * Included code from upcoming Ruby-IXP 1.1.0 release.
