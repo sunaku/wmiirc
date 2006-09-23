@@ -111,19 +111,20 @@ module Ixp
     #
     # :call-seq:
     #   node.child = value  -> value
-    #   node.child          -> Node
-    #   node.child!         -> child.read
+    #   node.child (tree)   -> Node
+    #   node.child (leaf)   -> child.read
     #
     def method_missing aMeth, *aArgs
       case aMeth.to_s
         when /=$/
           self[$`] = *aArgs
 
-        when /!$/
-          self[$`, true]
-
         else
-          self[aMeth]
+          if (n = self[aMeth]).file?
+            n.read
+          else
+            n
+          end
       end
     end
   end

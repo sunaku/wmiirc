@@ -381,7 +381,7 @@ module Wmii
 
       if dstIdx > maxIdx
         # move *near* final destination
-          clientId = aFirstClient.index!
+          clientId = aFirstClient.index
           aFirstClient.ctl = "sendto #{maxIdx}"
 
           # recalculate b/c sendto can be destructive

@@ -280,7 +280,7 @@ SHORTCUTS = {
     #     now, wmii reorders the remaining clients [1, 3] as: [1, 2]
     #     that is why we must go in reverse!
     Wmii.selected_clients.sort_by do |c|
-      c.index!.to_i
+      c.index.to_i
     end.reverse.each do |c|
       c.ctl = 'kill'
     end
@@ -292,7 +292,7 @@ SHORTCUTS = {
 
   # remove currently focused view from current selection's tags
   "#{SEND_SEQ}Shift-minus" => lambda do
-    curTag = Wmii.current_view.name!
+    curTag = Wmii.current_view.name
 
     Wmii.selected_clients.each do |c|
       c.untag! curTag
@@ -394,7 +394,7 @@ end
 ('a'..'z').each do |key|
   SHORTCUTS["#{MENU_SEQ}v,#{key}"] = lambda do
     choices = Wmii.tags
-    choices.delete Wmii.current_view.name!
+    choices.delete Wmii.current_view.name
 
     if view = choices.select {|t| t =~ /^#{key}/i}.first
       Wmii.focus_view view
@@ -413,13 +413,13 @@ Thread.new do
   sb = FS.bar.status
   sb.create!
   sb.colors = ENV['WMII_NORMCOLORS']
+
   sb.data.open do |f|
     loop do
       diskSpace = `df -h ~`.split[-3..-1].join(' ')
+      cpuLoad = File.read('/proc/loadavg').split[0..2].join(' ')
 
-      10.times do
-        cpuLoad = File.read('/proc/loadavg').split[0..2].join(' ')
-
+      5.times do
         f.write "#{Time.now.to_s} | #{cpuLoad} | #{diskSpace}"
         sleep 1
       end

@@ -54,7 +54,7 @@ end
 # Focuses the client chosen from a menu.
 def focus_client_from_menu
   choices = Wmii.clients.map do |c|
-    format "%d. [%s] %s", c.index!, c.tags!, c.name!.downcase
+    format "%d. [%s] %s", c.index, c.tags, c.name.downcase
   end
 
   if target = show_menu(choices)
@@ -87,7 +87,7 @@ end
 
 # Send selected clients to temporary view or switch back again.
 def toggle_temp_view
-  curTag = Wmii.current_view.name!
+  curTag = Wmii.current_view.name
 
   if curTag =~ /~\d+$/
     Wmii.selected_clients.each do |c|
@@ -114,7 +114,7 @@ end
 # Puts focus on an adjacent view (:left or :right).
 def cycle_view aTarget
   tags = Wmii.tags
-  curTag = Wmii.current_view.name!
+  curTag = Wmii.current_view.name
   curIndex = tags.index(curTag)
 
   newIndex =
@@ -136,12 +136,12 @@ end
 # Toggles maximization of the currently focused client.
 def toggle_maximize
   src = Wmii.current_client
-  srcId = src.index!
+  srcId = src.index
 
   src.ctl = 'sendto toggle'
   dst = Wmii.current_view[0].sel
 
-  if dst.index! == srcId
+  if dst.index == srcId
     dst.geom = '0 0 east south'
   end
 end
@@ -162,7 +162,7 @@ end
 def attach_last_client
   if a = Wmii.get_view(DETACHED_TAG).areas.last
     if c = a.clients.last
-      c.tags = Wmii.current_view.name!
+      c.tags = Wmii.current_view.name
     end
   end
 end
