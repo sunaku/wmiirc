@@ -1,6 +1,20 @@
 This is a history of major changes to {my wmii configuration}[http://people.ucsc.edu/~skurapat/wmii.html].
 
 
+= 2006-09-22
+
+* Ixp::Node#method_missing now only dereferences files. Also, the ! notation has been removed, as you can see below.
+
+    >> Wmii.fs.bar.status
+    => #<Ixp::Node:0xb7b5940c @path="/bar/status">
+    >> Wmii.fs.bar.status.read
+    => ["colors", "data"]
+    >> Wmii.fs.bar.status.data
+    => "Fri Sep 22 18:46:11 PDT 2006 | 0.06 0.10 0.08 | 531M 100% /home"
+    >> Wmii.fs.bar.status.data!
+    => #<Ixp::Node:0xb7b377e4 @path="/bar/status/data!">
+
+
 = 2006-09-21
 
 * Fix some forgotten changes from show_menu() returning *nil*.
