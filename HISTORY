@@ -6,6 +6,8 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 * Fixed event & status bar loop. It was forgotten when I transitioned to the new Ixp::Node#method_missing behavior on 2006-09-22.
   * Thanks to Fredrik Ternerot for reporting this bug.
 
+* When selecting views based on their first letter: if more than one view matches, then they are cycled (adapted from Fredrik Ternerot).
+
 
 = 2006-09-22
 

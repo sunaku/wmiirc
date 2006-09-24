@@ -24,7 +24,7 @@ require 'logger'
 def throw_life_saver aError
   system 'xterm &'
 
-  IO.popen('xmessage -file - -buttons recover:0,ignore:1', 'w') do |f|
+  IO.popen('xmessage -file - -buttons "recover from error:0,ignore this message:1"', 'w') do |f|
     f.puts aError.inspect, aError.backtrace
   end
 

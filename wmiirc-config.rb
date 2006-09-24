@@ -274,11 +274,13 @@ SHORTCUTS = {
   end,
 
   "#{SEND_SEQ}Delete" => lambda do
-    # reverse b/c client indices are reassigned upon deletion.
+    # reverse because client indices are reassigned upon deletion.
     # ex: imagine you have these clients: [1, 2, 3]
     #     you delete the second client (id 2).
     #     now, wmii reorders the remaining clients [1, 3] as: [1, 2]
-    #     that is why we must go in reverse!
+    #     you delete the third client (id 3)
+    #     and, due to reordering, nothing happens!
+    #     that is why we must go in reverse.
     Wmii.selected_clients.sort_by do |c|
       c.index.to_i
     end.reverse.each do |c|
@@ -390,14 +392,19 @@ SHORTCUTS = {
   end
 end
 
-# jump to view whose name begins with the pressed key
+# jump to view whose name begins with the pressed key.
+# if more than one view matches, then they are cycled (adapted from Fredrik Ternerot).
 ('a'..'z').each do |key|
   SHORTCUTS["#{MENU_SEQ}v,#{key}"] = lambda do
-    choices = Wmii.tags
-    choices.delete Wmii.current_view.name
+    choices = Wmii.tags.select {|t| t =~ /^#{key}/i}
 
-    if view = choices.select {|t| t =~ /^#{key}/i}.first
-      Wmii.focus_view view
+    unless choices.empty?
+      if curIdx = choices.index(Wmii.current_view.name)
+        maxIdx = choices.length
+        Wmii.focus_view choices[(curIdx + 1) % maxIdx]
+      else
+        Wmii.focus_view choices.first
+      end
     end
   end
 end
