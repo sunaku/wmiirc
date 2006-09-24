@@ -146,6 +146,20 @@ def toggle_maximize
   end
 end
 
+# Focuses the view whose name matches the given pattern. If more than one view matches, then they are cycled (adapted from Fredrik Ternerot).
+def focus_view_matching aPattern
+  choices = Wmii.tags.grep(aPattern)
+
+  unless choices.empty?
+    curIdx = choices.index(Wmii.current_view.name)
+    maxIdx = choices.length
+
+    idx = curIdx.next % maxIdx rescue 0
+
+    Wmii.focus_view choices[idx]
+  end
+end
+
 
 ## wmii-2 style client detaching
 

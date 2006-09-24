@@ -393,18 +393,9 @@ SHORTCUTS = {
 end
 
 # jump to view whose name begins with the pressed key.
-# if more than one view matches, then they are cycled (adapted from Fredrik Ternerot).
 ('a'..'z').each do |key|
   SHORTCUTS["#{MENU_SEQ}v,#{key}"] = lambda do
-    choices = Wmii.tags.select {|t| t =~ /^#{key}/i}
-
-    unless choices.empty?
-      curIdx = choices.index(Wmii.current_view.name)
-      maxIdx = choices.length
-      idx = curIdx.next % maxIdx rescue 0
-
-      Wmii.focus_view choices[idx]
-    end
+    focus_view_matching(/^#{key}/i)
   end
 end
 
