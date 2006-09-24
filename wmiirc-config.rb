@@ -399,12 +399,11 @@ end
     choices = Wmii.tags.select {|t| t =~ /^#{key}/i}
 
     unless choices.empty?
-      if curIdx = choices.index(Wmii.current_view.name)
-        maxIdx = choices.length
-        Wmii.focus_view choices[(curIdx + 1) % maxIdx]
-      else
-        Wmii.focus_view choices.first
-      end
+      curIdx = choices.index(Wmii.current_view.name)
+      maxIdx = choices.length
+      idx = curIdx.next % maxIdx rescue 0
+
+      Wmii.focus_view choices[idx]
     end
   end
 end
