@@ -429,7 +429,7 @@ end
 
 ## WM event loop
 
-FS.event.open do |f|
+FS['event'].open do |f|
   while event = f.read.chomp
     type, arg = event.split(' ', 2)
 

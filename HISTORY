@@ -1,6 +1,12 @@
 This is a history of major changes to {my wmii configuration}[http://people.ucsc.edu/~skurapat/wmii.html].
 
 
+= 2006-09-23
+
+* Fixed event loop. It was forgotten when I transitioned to the new Ixp::Node#method_missing behavior on 2006-09-22.
+  * Thanks to Fredrik for reporting this bug.
+
+
 = 2006-09-22
 
 * Ixp::Node#method_missing now only dereferences files. Also, the ! notation has been removed, as you can see below.
@@ -28,7 +34,7 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 * Included code from upcoming Ruby-IXP 1.1.0 release.
 
-* Changed syntax of Ixp::Node's method_missing facility to dereference a node only if the method is suffixed with an exclamation mark.
+* Ixp::Node#method_missing now only dereferences a node if the method is suffixed with an exclamation mark.
 
 * show_menu now returns *nil* if nothing was chosen.
 
@@ -43,7 +49,7 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 * Added Ixp::Node#open method to reduce 9P traffic.
 
-* Added ability to fetch a sub-node via method_missing, while not dereferencing it (reading its contents if it is a file), by adding an exclamation to the file name. For example, consider the following output in *wmiish*.
+* Added ability to fetch a sub-node via Ixp::Node#method_missing, while not dereferencing it (reading its contents if it is a file), by adding an exclamation to the file name. For example, consider the following output in *wmiish*.
 
     >> Wmii.fs.bar.status.data
     => "Tue Sep 19 10:50:41 PDT 2006 | 0.30 0.43 0.29 | 1.7G 98% /home"
