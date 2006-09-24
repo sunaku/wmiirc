@@ -427,38 +427,47 @@ end
 
 ## WM event loop
 
-FS['event'].open do |f|
-  while event = f.read.chomp
-    type, arg = event.split(' ', 2)
+require 'thread'
+events = Queue.new
 
-    case type.to_sym
-      when :BarClick
-        clickedView, clickedButton = arg.split
-
-        case clickedButton.to_i
-          when PRIMARY_CLICK
-            Wmii.focus_view clickedView
-
-          when MIDDLE_CLICK
-            Wmii.selected_clients.each do |c|
-              c.tag! clickedView
-            end
-
-          when SECONDARY_CLICK
-            Wmii.selected_clients.each do |c|
-              c.untag! clickedView
-            end
-        end
-
-      when :ClientClick
-        clickedClient, clickedButton = arg.split
-
-        if clickedButton.to_i != PRIMARY_CLICK
-          Wmii.get_client(clickedClient).invert_selection!
-        end
-
-      when :Key
-        SHORTCUTS[arg].call
+Thread.new do
+  FS['event'].open do |f|
+    loop do
+      events.enq f.read.chomp
     end
+  end
+end
+
+while evt = events.deq
+  type, arg = evt.split(' ', 2)
+
+  case type.to_sym
+    when :BarClick
+      clickedView, clickedButton = arg.split
+
+      case clickedButton.to_i
+        when PRIMARY_CLICK
+          Wmii.focus_view clickedView
+
+        when MIDDLE_CLICK
+          Wmii.selected_clients.each do |c|
+            c.tag! clickedView
+          end
+
+        when SECONDARY_CLICK
+          Wmii.selected_clients.each do |c|
+            c.untag! clickedView
+          end
+      end
+
+    when :ClientClick
+      clickedClient, clickedButton = arg.split
+
+      if clickedButton.to_i != PRIMARY_CLICK
+        Wmii.get_client(clickedClient).invert_selection!
+      end
+
+    when :Key
+      SHORTCUTS[arg].call
   end
 end

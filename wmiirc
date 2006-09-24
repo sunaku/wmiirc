@@ -46,6 +46,8 @@ LOG.info "starting"
   end
 
 # load the configuration
+  Thread.abort_on_exception = true
+
   begin
     load File.join(File.dirname(__FILE__), 'wmiirc-config.rb')
 
