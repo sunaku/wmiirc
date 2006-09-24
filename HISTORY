@@ -4,7 +4,7 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 = 2006-09-23
 
 * Fixed event loop. It was forgotten when I transitioned to the new Ixp::Node#method_missing behavior on 2006-09-22.
-  * Thanks to Fredrik for reporting this bug.
+  * Thanks to Fredrik Ternerot for reporting this bug.
 
 
 = 2006-09-22
@@ -74,7 +74,7 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 = 2006-09-16
 
 * Fixed toggling of maximization of currently focused client, via toggle_maximize in rc.rb.
-  * Thanks to Fredrik for reporting this bug.
+  * Thanks to Fredrik Ternerot for reporting this bug.
 
 
 = 2006-09-15
