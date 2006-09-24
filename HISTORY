@@ -8,6 +8,10 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 * When selecting views based on their first letter: if more than one view matches, then they are cycled (adapted from Fredrik Ternerot).
 
+* Added focus_view_matching method in rc.rb.
+
+* Fixed errors that occurred when the tile and diamond arrangements were applied to empty views.
+
 
 = 2006-09-22
 

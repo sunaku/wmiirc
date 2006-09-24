@@ -437,17 +437,15 @@ module Wmii
 
     # Arranges the clients in this view, while maintaining their relative order, in the tiling fashion of LarsWM. Only the first client in the primary column is kept; all others are evicted to the *top* of the secondary column. Any subsequent columns are squeezed into the *bottom* of the secondary column.
     def tile!
-      numAreas = self.indices.length
+      priCol, secCol, extCol = self[1], self[2], self[3]
 
-      if numAreas > 1
-        priCol, secCol, extCol = self[1], self[2], self[3]
-
+      unless priCol.empty?
         # keep only the first client in primary column
           priClient, *rest = priCol.clients
           secCol.unshift! rest
 
         # squeeze extra columns into secondary column
-          if numAreas > 3
+          if (numAreas = self.indices.length) > 3
             (numAreas - 2).times do
               secCol.concat! extCol
             end
@@ -489,44 +487,45 @@ module Wmii
 
     # Arranges the clients in this view, while maintaining their relative order, in a (at best) equilateral triangle. However, the resulting arrangement appears like a diamond because wmii does not waste screen space.
     def diamond!
-      numClients = num_grounded_clients
-      subtriArea = numClients / 2
-      crestArea = numClients % subtriArea
+      if (numClients = num_grounded_clients) > 0
+        subtriArea = numClients / 2
+        crestArea = numClients % subtriArea
 
-      # build fist sub-triangle upwards
-        height = area = 0
-        lastCol = nil
+        # build fist sub-triangle upwards
+          height = area = 0
+          lastCol = nil
 
-        each_column do |col|
-          if area < subtriArea
-            height += 1
+          each_column do |col|
+            if area < subtriArea
+              height += 1
 
-            col.length = height
-            area += height
+              col.length = height
+              area += height
 
-            col.mode = :default
-            lastCol = col
-          else
-            break
+              col.mode = :default
+              lastCol = col
+            else
+              break
+            end
           end
-        end
 
-      # build crest of overall triangle
-        if crestArea > 0
-          lastCol.length = height + crestArea
-        end
-
-      # build second sub-triangle downwards
-        each_column(lastCol.index + 1) do |col|
-          if area > 0
-            col.length = height
-            area -= height
-
-            height -= 1
-          else
-            break
+        # build crest of overall triangle
+          if crestArea > 0
+            lastCol.length = height + crestArea
           end
-        end
+
+        # build second sub-triangle downwards
+          each_column(lastCol.index + 1) do |col|
+            if area > 0
+              col.length = height
+              area -= height
+
+              height -= 1
+            else
+              break
+            end
+          end
+      end
     end
 
 
