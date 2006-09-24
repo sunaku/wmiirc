@@ -414,7 +414,7 @@ Thread.new do
   sb.create!
   sb.colors = ENV['WMII_NORMCOLORS']
 
-  sb.data.open do |f|
+  sb['data'].open('w') do |f|
     loop do
       diskSpace = `df -h ~`.split[-3..-1].join(' ')
       cpuLoad = File.read('/proc/loadavg').split[0..2].join(' ')
@@ -426,6 +426,7 @@ Thread.new do
     end
   end
 end
+
 
 ## WM event loop
 
