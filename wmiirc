@@ -36,9 +36,10 @@ LOG = Logger.new(__FILE__ + '.log', 5)
 LOG.info "starting"
 
 # terminate existing instances
-  pidList = `ps -C #{File.basename $0} -o pid`.split.map! {|s| s.to_i}
-  pidList.shift # discard header
-  pidList.reject! {|pid| pid == $$}
+  pidList = `ps -C #{File.basename $0} -o pid`.
+    split[1..-1]. # discard header from `ps` output
+    map! {|s| s.to_i}.
+    reject! {|pid| pid == $$}
 
   pidList.each do |pid|
     LOG.info "stopping loader #{pid}"
