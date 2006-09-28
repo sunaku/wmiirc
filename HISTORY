@@ -1,6 +1,16 @@
 This is a history of major changes to {my wmii configuration}[http://people.ucsc.edu/~skurapat/wmii.html].
 
 
+= 2006-09-28
+
+* Added number_view_buttons method, in rc.rb, which numbers the view buttons displayed on the bar, from left to right.
+
+
+= 2006-09-27
+
+* Included two main concurrency fixes for Ruby-IXP.
+
+
 = 2006-09-24
 
 * Added two-stage event handling, to minimize the number of events missed while processing an event.
