@@ -141,7 +141,7 @@ def toggle_maximize
   src.ctl = 'sendto toggle'
   dst = Wmii.current_view[0].sel
 
-  if dst.index == srcId
+  if dst.exist? && dst.index == srcId
     dst.geom = '0 0 east south'
   end
 end

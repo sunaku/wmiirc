@@ -1,9 +1,15 @@
 This is a history of major changes to {my wmii configuration}[http://people.ucsc.edu/~skurapat/wmii.html].
 
 
+= 2006-09-29
+
+* Fixed bug in toggle_maximize method (in rc.rb) due to accessing a nonexistent file in IXP file system.
+  * Thanks to Christian von Mueffling for reporting this bug.
+
+
 = 2006-09-28
 
-* Added number_view_buttons method, in rc.rb, which numbers the view buttons displayed on the bar, from left to right.
+* Added number_view_buttons method (in rc.rb) which numbers the view buttons displayed on the bar, from left to right.
 
 
 = 2006-09-27

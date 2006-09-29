@@ -1,7 +1,6 @@
 # Abstractions for wmii's {IXP file system}[http://wmii.de/contrib/guide/wmii-3/guide-en/guide_en/node9.html] interface.
 =begin
   Copyright 2006 Suraj N. Kurapati
-  Copyright 2006 Stephan Maka
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
