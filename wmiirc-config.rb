@@ -301,6 +301,7 @@ SHORTCUTS = {
     end
   end,
 
+  # toggle sending the currently selected clients to a temporary view/workspace
   "#{SEQ_PREFIX}b" => lambda do
     toggle_temp_view
   end,

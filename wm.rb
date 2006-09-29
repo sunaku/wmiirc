@@ -69,24 +69,29 @@ module Wmii
   end
 
   # Searches for a client, which has the given ID, in the given places. If no places are specified, then all views are searched. If the client is not found, *nil* is returned.
-  def Wmii.find_client aClientId, aArea = nil, aView = nil
+  def Wmii.find_client aClientId, *aPlaces
     aClientId = aClientId.to_i
     needle = Wmii.get_client(aClientId)
 
     if needle.exist?
       haystack = []
 
-      if aArea && aArea.exist?
-        haystack << aArea
+      # populate the haystack (places to be searched)
+        aPlaces.select {|p| p.exist?}.each do |place|
+          if place.respond_to? :clients
+            haystack << place
+          end
 
-      elsif aView && aView.exist?
-        haystack.concat aView.areas
-
-      else
-        needle.tags.map {|t| get_view t}.each do |v|
-          haystack.concat v.areas
+          if place.respond_to? :areas
+            haystack.concat place.areas
+          end
         end
-      end
+
+        if haystack.empty?
+          needle.tags.map {|t| get_view t}.each do |v|
+            haystack.concat v.areas
+          end
+        end
 
       haystack.each do |a|
         if a.indices.detect {|i| i == aClientId}
@@ -231,6 +236,10 @@ module Wmii
   class Client < Node
     def initialize *aArgs
       super Area, Ixp::Node, :select, *aArgs
+    end
+
+    def index
+      self[:index].read.to_i
     end
 
     TAG_DELIMITER = "+"
@@ -555,7 +564,7 @@ class Array
         if c.is_a?(Wmii::Client) && !c.exist?
           puts "\n trying to resolve nonexistent client: #{c.path}" if $DEBUG
 
-          c = Wmii.find_client(c.basename, nil, Wmii.current_view)
+          c = Wmii.find_client(c.basename, Wmii.current_view)
           next unless c
 
           puts "resolution OK: #{c.path}" if $DEBUG

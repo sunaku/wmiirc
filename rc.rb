@@ -162,8 +162,10 @@ end
 
 # Numbers the view buttons displayed on the bar, from left to right.
 def number_view_buttons
-  Wmii.fs.bar.read.each_with_index do |b, i|
-    Wmii.fs.bar[b].data = "#{i + 1}:#{b}"
+  bar = Wmii.fs.bar
+
+  bar.read.each_with_index do |b, i|
+    bar[b].data = "#{i + 1}:#{b}"
   end
 end
 

@@ -6,6 +6,10 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 * Fixed bug in toggle_maximize method (in rc.rb) due to accessing a nonexistent file in IXP file system.
   * Thanks to Christian von Mueffling for reporting this bug.
 
+* Fixed problem with reading index (Wmii::Client#index) of currently selected client.
+
+* Wmii.find_client now accepts a variable number of places to be searched.
+
 
 = 2006-09-28
 
