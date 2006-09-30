@@ -239,7 +239,7 @@ module Wmii
     end
 
     def index
-      self[:index].read.to_i
+      self[:index, true].to_i
     end
 
     TAG_DELIMITER = "+"

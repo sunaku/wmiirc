@@ -1,6 +1,11 @@
 This is a history of major changes to {my wmii configuration}[http://people.ucsc.edu/~skurapat/wmii.html].
 
 
+= 2006-09-30
+
+* Included 1.1.0 release of Ruby-IXP.
+
+
 = 2006-09-29
 
 * Fixed bug in toggle_maximize method (in rc.rb) due to accessing a nonexistent file in IXP file system.
