@@ -265,14 +265,16 @@ module Wmii
     # Adds the given tags to this client.
     def tag! *aTags
       with_tags do
-        push(*aTags)
+        push(*aTags.flatten.map {|t| t.to_s})
       end
     end
 
     # Removes the given tags from this client.
     def untag! *aTags
       with_tags do
-        delete(*aTags)
+        aTags.flatten.each do |tag|
+          delete tag.to_s
+        end
       end
     end
 
