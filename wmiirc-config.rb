@@ -609,7 +609,9 @@ end
 # jump to view whose name begins with the pressed key.
 ('a'..'z').each do |key|
   SHORTCUTS["#{MOD_MENU}v,#{key}"] = lambda do
-    focus_view_matching(/^#{key}/i)
+    if t = tags.grep(/^#{key}/i).first
+      focus_view t
+    end
   end
 end
 
