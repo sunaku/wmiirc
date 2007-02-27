@@ -147,8 +147,46 @@ end
 # MISC
 ############################################################################
 
-PROGRAM_MENU = find_programs ENV['PATH'].squeeze(':').split(':')
-ACTION_MENU = find_programs File.dirname(__FILE__)
+ACTIONS = {
+  :rehash => lambda do
+    @programMenu = find_programs(ENV['PATH'].squeeze(':').split(':'))
+    @actionMenu = find_programs(File.dirname(__FILE__))
+  end,
+
+  :quit => lambda do
+    Wmii.fs.ctl << 'quit'
+  end,
+
+  :status => lambda do
+    if defined? @status
+      @status.kill
+    end
+
+    @status = Thread.new do
+      bar = Wmii.fs.rbar.status
+      bar.create unless bar.exist?
+
+      loop do
+        diskSpace = `df -h ~`.split[-3..-1].join(' ')
+        cpuLoad = File.read('/proc/loadavg').split[0..2].join(' ')
+
+        5.times do
+          bar.write [
+            WMII_NORMCOLORS,
+            Time.now,
+            cpuLoad,
+            diskSpace,
+          ].join(' | ')
+
+          sleep 1
+        end
+      end
+    end
+  end,
+}
+
+ACTIONS[:rehash].call
+ACTIONS[:status].call
 
 system 'xsetroot -solid $WMII_BACKGROUND &'
 
@@ -251,14 +289,18 @@ SHORTCUTS = {
 
   # launch an internal action by choosing from a menu
   MOD_MENU + 'i' => lambda do
-    if choice = show_menu(ACTION_MENU)
-      system choice << '&'
+    if choice = show_menu(@actionMenu + ACTIONS.keys)
+      if action = ACTIONS[choice.to_sym]
+        action.call
+      else
+        system choice << '&'
+      end
     end
   end,
 
   # launch an external program by choosing from a menu
   MOD_MENU + 'e' => lambda do
-    if choice = show_menu(PROGRAM_MENU)
+    if choice = show_menu(@programMenu)
       system choice << '&'
     end
   end,
@@ -592,31 +634,6 @@ tags.each do |tag|
   end
 
   bar.write "#{color} #{tag}"
-end
-
-
-############################################################################
-# SETUP STATUS BAR
-############################################################################
-
-Thread.new do
-  bar = fs.rbar.status
-  bar.create unless bar.exist?
-    loop do
-      diskSpace = `df -h ~`.split[-3..-1].join(' ')
-      cpuLoad = File.read('/proc/loadavg').split[0..2].join(' ')
-
-      5.times do
-        bar.write [
-          WMII_NORMCOLORS,
-          Time.now,
-          cpuLoad,
-          diskSpace,
-        ].join(' | ')
-
-        sleep 1
-      end
-    end
 end
 
 
