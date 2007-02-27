@@ -1,6 +1,6 @@
 # Ruby-based configuration file for wmii.
 =begin
-  Copyright 2006 Suraj N. Kurapati
+  Copyright 2006, 2007 Suraj N. Kurapati
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -17,458 +17,675 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =end
 
-$: << File.dirname(__FILE__)
-require 'rc'
+$: << File.join(File.dirname(__FILE__), 'wmii-irb')
+require 'wm'
+include Wmii
 
-FS = Wmii.fs
-
-
-## executable programs
-
-PROGRAM_MENU = find_programs( ENV['PATH'].squeeze(':').split(':') )
-ACTION_MENU = find_programs('~/dry/apps/wmii/etc/wmii-3', File.dirname(__FILE__))
+require 'find'
 
 
-## UI configuration
-# colors: #foreground #background #border
+############################################################################
+# CONFIGURATION VARIABLES
+############################################################################
 
-ENV['WMII_FONT'] = '-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1'
-ENV['WMII_NORMCOLORS'] = '#e0e0e0 #0a0a0a #202020'
-ENV['WMII_SELCOLORS'] = '#ffffff #285577 #4c7899'
+MODKEY            = 'Mod1'
+UP_KEY            = 't'
+DOWN_KEY          = 'n'
+LEFT_KEY          = 'h'
+RIGHT_KEY         = 's'
 
-FS.def.border = 1
-FS.def.font = ENV['WMII_FONT']
-FS.def.normcolors = ENV['WMII_NORMCOLORS']
-FS.def.selcolors = ENV['WMII_SELCOLORS']
-FS.def.colmode = :default
-FS.def.colwidth = 0
+MOD_PREFIX        = MODKEY + '-Control-'
+MOD_FOCUS         = MOD_PREFIX
+MOD_SEND          = MOD_PREFIX + 'm,'
+MOD_SWAP          = MOD_PREFIX + 'w,'
+MOD_ARRANGE       = MOD_PREFIX + 'z,'
+MOD_GROUP         = MOD_PREFIX + 'g,'
+MOD_MENU          = MOD_PREFIX
+MOD_PROGRAM       = MOD_PREFIX
 
-system %{xsetroot -solid '#333333'}
+PRIMARY_CLICK     = 1
+MIDDLE_CLICK      = 2
+SECONDARY_CLICK   = 3
+
+# Colors tuples are "<text> <background> <border>"
+WMII_NORMCOLORS   = '#e0e0e0 #0a0a0a #202020'
+WMII_FOCUSCOLORS  = '#ffffff #285577 #4c7899'
+WMII_BACKGROUND   = '#333333'
+WMII_FONT         = '-*-fixed-medium-r-normal-*-18-*-*-*-*-*-*-*'
+
+WMII_MENU         = "dmenu -b -fn #{WMII_FONT.inspect} #{
+                      %w[-nf -nb -sf -sb].zip(
+                        WMII_NORMCOLORS.split[0,2] +
+                        WMII_FOCUSCOLORS.split[0,2]
+                      ).flatten!.map! {|s| s.inspect}.join(' ')
+                    }"
+WMII_TERM         = 'gnome-terminal'
+
+# export WMII_* constants as environment variables
+  self.class.constants.grep(/^WMII_/).each do |c|
+    ENV[c] = self.class.const_get c
+  end
 
 
-## tagging rules
+############################################################################
+# WM CONFIGURATION
+############################################################################
 
-FS.def.rules = <<EOS
+fs.ctl << <<EOF
+font #{WMII_FONT}
+focuscolors #{WMII_FOCUSCOLORS}
+normcolors #{WMII_NORMCOLORS}
+grabmod #{MODKEY}
+border 1
+EOF
+
+
+############################################################################
+# COLUMN RULES
+############################################################################
+
+fs.colrules = <<EOF
+/.*/ -> 58+42
+EOF
+
+
+############################################################################
+# TAGGING RULES
+############################################################################
+
+fs.tagrules = <<EOF
 /jEdit.*/ -> code
 /Buddy List.*/ -> chat
 /XChat.*/ -> chat
 /.*thunderbird.*/ -> mail
-/Gimp.*/ -> gimp
-/QEMU.*/ -> ~
-/MPlayer.*/ -> ~
 /xconsole.*/ -> ~
 /alsamixer.*/ -> ~
+/QEMU.*/ -> ~
+/XMMS.*/ -> ~
+/Gimp.*/ -> gimp
+/MPlayer.*/ -> ~
 /.*/ -> !
 /.*/ -> 1
-EOS
+EOF
 
 
-## key & shortcut configuration
+############################################################################
+# FUNCTIONS
+############################################################################
 
-MOD_KEY = 'Mod1'
-UP_KEY = 't'
-DOWN_KEY = 'n'
-LEFT_KEY = 'h'
-RIGHT_KEY = 's'
+# Shows a menu with the given items and returns the chosen item.
+# If nothing was chosen, then *nil* is returned.
+def show_menu *aChoices
+  IO.popen(WMII_MENU, 'r+') do |menu|
+    menu.puts aChoices
+    menu.close_write
 
-PRIMARY_CLICK = 1
-MIDDLE_CLICK = 2
-SECONDARY_CLICK = 3
+    choice = menu.read
+    choice unless choice.empty?
+  end
+end
+
+# Returns the names of programs present in the given directories.
+def find_programs *aPaths
+  aPaths.flatten!
+  aPaths.map! {|p| File.expand_path p}
+  list = []
+
+  Find.find(*aPaths) do |f|
+    if File.file? f and File.executable? f
+      list << File.basename(f)
+    end
+  end
+
+  list.uniq!
+  list.sort!
+  list
+end
 
 
-# key sequence prefixed to all shortcuts
-SEQ_PREFIX = "#{MOD_KEY}-Control-"
+############################################################################
+# MISC
+############################################################################
 
-FOCUS_SEQ = SEQ_PREFIX
-SEND_SEQ = "#{SEQ_PREFIX}m,"
-SWAP_SEQ = "#{SEQ_PREFIX}w,"
-LAYOUT_SEQ = "#{SEQ_PREFIX}z,"
-GROUP_SEQ = "#{SEQ_PREFIX}g,"
-MENU_SEQ = SEQ_PREFIX
-PROGRAM_SEQ = SEQ_PREFIX
+PROGRAM_MENU = find_programs ENV['PATH'].squeeze(':').split(':')
+ACTION_MENU = find_programs File.dirname(__FILE__)
+
+system 'xsetroot -solid $WMII_BACKGROUND &'
 
 
-# Shortcut key sequences and their associated logic.
+############################################################################
+# KEY BINDINGS
+############################################################################
+
+# Tag used for wmii-2 style client detaching.
+DETACHED_TAG = '^'
+
 SHORTCUTS = {
-  # focus previous view
-  "#{FOCUS_SEQ}comma" => lambda do
-    cycle_view :left
+
+  ##########################################################################
+  ## focusing / showing
+  ##########################################################################
+
+  # focus client at left
+  MOD_FOCUS + LEFT_KEY => lambda do
+    current_view.ctl << 'select left'
   end,
 
-  # focus next view
-  "#{FOCUS_SEQ}period" => lambda do
-    cycle_view :right
+  # focus client at right
+  MOD_FOCUS + RIGHT_KEY => lambda do
+    current_view.ctl << 'select right'
   end,
 
-  # focus previous area
-  "#{FOCUS_SEQ}#{LEFT_KEY}" => lambda do
-    Wmii.current_view.ctl = 'select prev'
+  # focus client below
+  MOD_FOCUS + DOWN_KEY => lambda do
+    current_view.ctl << 'select down'
   end,
 
-  # focus next area
-  "#{FOCUS_SEQ}#{RIGHT_KEY}" => lambda do
-    Wmii.current_view.ctl = 'select next'
+  # focus client above
+  MOD_FOCUS + UP_KEY => lambda do
+    current_view.ctl << 'select up'
   end,
 
-  # focus floating area
-  "#{FOCUS_SEQ}space" => lambda do
-    Wmii.current_view.ctl = 'select toggle'
+  # toggle focus between floating area and the columns
+  MOD_FOCUS + 'space' => lambda do
+    current_view.ctl << 'select toggle'
   end,
 
-  # focus previous client
-  "#{FOCUS_SEQ}#{UP_KEY}" => lambda do
-    Wmii.current_area.ctl = 'select prev'
+  # apply equal-spacing layout to current column
+  MOD_ARRANGE + 'w' => lambda do
+    current_area.layout = :default
   end,
 
-  # focus next client
-  "#{FOCUS_SEQ}#{DOWN_KEY}" => lambda do
-    Wmii.current_area.ctl = 'select next'
-  end,
-
-
-  # apply equal spacing layout to currently focused column
-  "#{LAYOUT_SEQ}w" => lambda do
-    Wmii.current_area.mode = :default
-  end,
-
-  # apply equal spacing layout to all columns in current view
-  "#{LAYOUT_SEQ}Shift-w" => lambda do
-    Wmii.current_view.each_column do |a|
-      a.mode = :default
+  # apply equal-spacing layout to all columns
+  MOD_ARRANGE + 'Shift-w' => lambda do
+    current_view.columns.each do |a|
+      a.layout = :default
     end
   end,
 
   # apply stacked layout to currently focused column
-  "#{LAYOUT_SEQ}v" => lambda do
-    Wmii.current_area.mode = :stack
+  MOD_ARRANGE + 'v' => lambda do
+    current_area.layout = :stack
   end,
 
   # apply stacked layout to all columns in current view
-  "#{LAYOUT_SEQ}Shift-v" => lambda do
-    Wmii.current_view.each_column do |a|
-      a.mode = :stack
+  MOD_ARRANGE + 'Shift-v' => lambda do
+    current_view.columns.each do |a|
+      a.layout = :stack
     end
   end,
 
   # apply maximized layout to currently focused column
-  "#{LAYOUT_SEQ}m" => lambda do
-    Wmii.current_area.mode = :max
+  MOD_ARRANGE + 'm' => lambda do
+    current_area.layout = :max
   end,
 
   # apply maximized layout to all columns in current view
-  "#{LAYOUT_SEQ}Shift-m" => lambda do
-    Wmii.current_view.each_column do |a|
-      a.mode = :max
+  MOD_ARRANGE + 'Shift-m' => lambda do
+    current_view.columns.each do |a|
+      a.layout = :max
     end
   end,
 
   # maximize the floating area's focused client
-  "#{LAYOUT_SEQ}z" => lambda do
-    if (client = Wmii.current_view[0].sel).exist?
-      client.geom = '0 0 east south'
-    end
+  # "#{MOD_ARRANGE}z" => lambda do
+  #   if (client = current_view[0].sel).exist?
+  #     client.geom = '0 0 east south'
+  #   end
+  # end,
+
+  # focus the previous view
+  MOD_FOCUS + 'comma' => lambda do
+    prev_view.focus
+  end,
+
+  # focus the next view
+  MOD_FOCUS + 'period' => lambda do
+    next_view.focus
   end,
 
 
-  # apply tiling layout to the currently focused view
-  "#{LAYOUT_SEQ}t" => lambda do
-    Wmii.current_view.tile!
-  end,
-
-  # apply gridding layout to the currently focused view
-  "#{LAYOUT_SEQ}g" => lambda do
-    Wmii.current_view.grid!
-  end,
-
-  "#{LAYOUT_SEQ}d" => lambda do
-    Wmii.current_view.diamond!
-  end,
-
-
-  # include/exclude the currently focused client from the selection
-  "#{GROUP_SEQ}g" => lambda do
-    Wmii.current_client.invert_selection!
-  end,
-
-  # include all clients in the currently focused view in the selection
-  "#{GROUP_SEQ}a" => lambda do
-    Wmii.current_view.select!
-  end,
-
-  # include all clients in the currently focused column in the selection
-  "#{GROUP_SEQ}c" => lambda do
-    Wmii.current_area.select!
-  end,
-
-  # exclude all clients in the currently focused column from the selection
-  "#{GROUP_SEQ}Shift-c" => lambda do
-    Wmii.current_area.unselect!
-  end,
-
-  # invert the selection in the currently focused view
-  "#{GROUP_SEQ}i" => lambda do
-    Wmii.current_view.invert_selection!
-  end,
-
-  # exclude all clients everywhere from the selection
-  "#{GROUP_SEQ}n" => lambda do
-    Wmii.select_none!
-  end,
-
+  ##########################################################################
+  ## interactive menu
+  ##########################################################################
 
   # launch an internal action by choosing from a menu
-  "#{MENU_SEQ}i" => lambda do
-    if action = show_menu(ACTION_MENU)
-      system(action << '&')
+  MOD_MENU + 'i' => lambda do
+    if choice = show_menu(ACTION_MENU)
+      system choice << '&'
     end
   end,
 
   # launch an external program by choosing from a menu
-  "#{MENU_SEQ}e" => lambda do
-    if program = show_menu(PROGRAM_MENU)
-      system(program << '&')
+  MOD_MENU + 'e' => lambda do
+    if choice = show_menu(PROGRAM_MENU)
+      system choice << '&'
     end
   end,
 
   # focus any view by choosing from a menu
-  "#{MENU_SEQ}u" => lambda do
-    if choice = show_menu(Wmii.tags)
-      Wmii.focus_view choice
+  MOD_MENU + 'u' => lambda do
+    if choice = show_menu(tags)
+      focus_view choice
     end
   end,
 
-  "#{MENU_SEQ}a" => lambda do
-    focus_client_from_menu
+  # focus any client by choosing from a menu
+  MOD_MENU + 'a' => lambda do
+    list = Wmii.clients
+
+    i = -1
+    choices = list.map do |c|
+      i += 1
+      format "%d. [%s] %s", i, c[:tags].read, c[:props].read.downcase
+    end
+
+    if target = show_menu(choices)
+      pos = target.scan(/\d+/).first.to_i
+      list[pos].focus
+    end
   end,
 
 
-  "#{PROGRAM_SEQ}x" => lambda do
-    system 'terminal &'
+  ##########################################################################
+  ## sending / moving
+  ##########################################################################
+
+  MOD_SEND + LEFT_KEY => lambda do
+    grouped_clients.each do |c|
+      c.send :left
+    end
   end,
 
-  "#{PROGRAM_SEQ}k" => lambda do
-    system 'epiphany &'
+  MOD_SEND + RIGHT_KEY => lambda do
+    grouped_clients.each do |c|
+      c.send :right
+    end
   end,
 
-  "#{PROGRAM_SEQ}j" => lambda do
+  MOD_SEND + DOWN_KEY => lambda do
+    grouped_clients.each do |c|
+      c.send :down
+    end
+  end,
+
+  MOD_SEND + UP_KEY => lambda do
+    grouped_clients.each do |c|
+      c.send :up
+    end
+  end,
+
+  MOD_SEND + 'space' => lambda do
+    grouped_clients.each do |c|
+      c.send :toggle
+    end
+  end,
+
+  MOD_SEND + 'Delete' => lambda do
+    grouped_clients.each do |c|
+      c.ctl << 'kill'
+    end
+  end,
+
+  # Changes the tag (according to a menu choice) of each grouped client and
+  # returns the chosen tag. The +tag -tag idea is from Jonas Pfenniger:
+  # <http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby>
+  MOD_SEND + 't' => lambda do
+    choices = tags.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
+
+    if target = show_menu(choices)
+      grouped_clients.each do |c|
+        case target
+          when /^\+/
+            c.tag $'
+
+          when /^\-/
+            c.untag $'
+
+          else
+            c.tags = target
+        end
+      end
+
+      target
+    end
+  end,
+
+  # remove currently focused view from current grouping's tags
+  # "#{MOD_SEND}Shift-minus" => lambda do
+  #   curTag = current_view.name
+
+  #   grouped_clients.each do |c|
+  #     c.untag curTag
+  #   end
+  # end,
+
+
+  ##########################################################################
+  ## visual arrangement
+  ##########################################################################
+
+  MOD_ARRANGE + 't' => lambda do
+    current_view.arrange_as_larswm
+  end,
+
+  MOD_ARRANGE + 'g' => lambda do
+    current_view.arrange_in_grid
+  end,
+
+  MOD_ARRANGE + 'd' => lambda do
+    current_view.arrange_in_diamond
+  end,
+
+
+  ##########################################################################
+  ## client grouping
+  ##########################################################################
+
+  # include/exclude the currently focused client from the grouping
+  MOD_GROUP + 'g' => lambda do
+    current_client.toggle_grouping
+  end,
+
+  # include all clients in the currently focused view in the grouping
+  MOD_GROUP + 'v' => lambda do
+    current_view.group
+  end,
+
+  # exclude all clients in the currently focused view from the grouping
+  MOD_GROUP + 'Shift-v' => lambda do
+    current_view.ungroup
+  end,
+
+  # include all clients in the currently focused column in the grouping
+  MOD_GROUP + 'c' => lambda do
+    current_area.group
+  end,
+
+  # exclude all clients in the currently focused column from the grouping
+  MOD_GROUP + 'Shift-c' => lambda do
+    current_area.ungroup
+  end,
+
+  # invert the grouping in the currently focused view
+  MOD_GROUP + 'i' => lambda do
+    current_view.toggle_grouping
+  end,
+
+  # exclude all clients everywhere from the grouping
+  MOD_GROUP + 'n' => lambda do
+    ungroup_all
+  end,
+
+
+  ##########################################################################
+  ## external programs
+  ##########################################################################
+
+  MOD_PROGRAM + 'x' => lambda do
+    system WMII_TERM + ' &'
+  end,
+
+  MOD_PROGRAM + 'k' => lambda do
+    system 'firefox &'
+  end,
+
+  MOD_PROGRAM + 'j' => lambda do
     system 'nautilus --no-desktop &'
   end,
 
 
-  "#{SEND_SEQ}#{LEFT_KEY}" => lambda do
-    Wmii.selected_clients.each do |c|
-      c.ctl = 'sendto prev'
+  ##########################################################################
+  ## detaching (wmii-2 style)
+  ##########################################################################
+
+  # Detach the current grouping to a separate tag.
+  MOD_PREFIX + 'd' => lambda do
+    grouped_clients.each do |c|
+      c.tags = DETACHED_TAG
     end
   end,
 
-  "#{SEND_SEQ}#{RIGHT_KEY}" => lambda do
-    Wmii.selected_clients.each do |c|
-      c.ctl = 'sendto next'
+  # Attach the most recently detached client.
+  MOD_PREFIX + 'Shift-d' => lambda do
+    v = View.new DETACHED_TAG
+
+    if v.exist? and c = v.clients.last
+      c.tags = current_tag
     end
   end,
 
-  "#{SEND_SEQ}space" => lambda do
-    Wmii.selected_clients.each do |c|
-      c.ctl = 'sendto toggle'
-    end
-  end,
 
-  "#{SEND_SEQ}Delete" => lambda do
-    # reverse because client indices are reassigned upon deletion.
-    # ex: imagine you have these clients: [1, 2, 3]
-    #     you delete the second client (id 2).
-    #     now, wmii reorders the remaining clients [1, 3] as: [1, 2]
-    #     you delete the third client (id 3)
-    #     and, due to reordering, nothing happens!
-    #     that is why we must go in reverse.
-    Wmii.selected_clients.sort_by do |c|
-      c.index.to_i
-    end.reverse.each do |c|
-      c.ctl = 'kill'
-    end
-  end,
-
-  "#{SEND_SEQ}t" => lambda do
-    change_tag_from_menu
-  end,
-
-  # remove currently focused view from current selection's tags
-  "#{SEND_SEQ}Shift-minus" => lambda do
-    curTag = Wmii.current_view.name
-
-    Wmii.selected_clients.each do |c|
-      c.untag! curTag
-    end
-  end,
-
-  # toggle sending the currently selected clients to a temporary view/workspace
-  "#{SEQ_PREFIX}b" => lambda do
-    toggle_temp_view
-  end,
-
-  # wmii-2 style detaching
-  "#{SEQ_PREFIX}d" => lambda do
-    detach_selection
-  end,
-
-  # wmii-2 style detaching
-  "#{SEQ_PREFIX}Shift-d" => lambda do
-    attach_last_client
-  end,
-
-  # toggle maximizing the currently focused client to full screen
-  "#{SEND_SEQ}m" => lambda do
-    toggle_maximize
-  end,
+  ##########################################################################
+  ## zooming / sizing
+  ##########################################################################
 
   # swap the currently focused client with the one to its left
-  "#{SWAP_SEQ}#{LEFT_KEY}" => lambda do
-    Wmii.current_client.ctl = 'swap prev'
+  MOD_SWAP + LEFT_KEY => lambda do
+    current_client.swap :left
   end,
 
   # swap the currently focused client with the one to its right
-  "#{SWAP_SEQ}#{RIGHT_KEY}" => lambda do
-    Wmii.current_client.ctl = 'swap next'
+  MOD_SWAP + RIGHT_KEY => lambda do
+    current_client.swap :right
   end,
 
   # swap the currently focused client with the one below it
-  "#{SWAP_SEQ}#{DOWN_KEY}" => lambda do
-    Wmii.current_client.ctl = 'swap down'
+  MOD_SWAP + DOWN_KEY => lambda do
+    current_client.swap :down
   end,
 
   # swap the currently focused client with the one above it
-  "#{SWAP_SEQ}#{UP_KEY}" => lambda do
-    Wmii.current_client.ctl = 'swap up'
+  MOD_SWAP + UP_KEY => lambda do
+    current_client.swap :up
+  end,
+
+  # Sends grouped clients to temporary view.
+  MOD_PREFIX + 'b' => lambda do
+    src = current_tag
+    dst = src + '~'
+
+    grouped_clients.each do |c|
+      c.tag dst
+    end
+
+    v = View.new dst
+    v.focus
+    v.arrange_in_grid
+  end,
+
+  # Sends grouped clients back to their original view.
+  MOD_PREFIX + 'Shift-b' => lambda do
+    t = current_tag
+
+    if t =~ /~$/
+      grouped_clients.each do |c|
+        c.with_tags do
+          delete t
+          push $` if empty?
+        end
+      end
+
+      focus_view $`
+    end
   end,
 }
 
+# access to views through the number keys
 10.times do |i|
-  k = (i - 1) % 10	# associate '1' with the leftmost label, instead of '0'
+  # associate '1' with the leftmost label, instead of '0'
+  k = (i - 1) % 10
 
   # focus _i_th view
-  SHORTCUTS["#{FOCUS_SEQ}#{i}"] = lambda do
-    Wmii.focus_view Wmii.tags[k] || i
+  SHORTCUTS["#{MOD_FOCUS}#{i}"] = lambda do
+    focus_view tags[k] || i
   end
 
   # focus _i_th area
-  SHORTCUTS["#{FOCUS_SEQ}Shift-#{i}"] = lambda do
-    Wmii.focus_area i
-  end
+  # SHORTCUTS["#{MOD_FOCUS}Shift-#{i}"] = lambda do
+  #   focus_area i
+  # end
 
   # swap the currently focused client with the one in _i_th area
-  SHORTCUTS["#{SWAP_SEQ}#{i}"] = lambda do
-    Wmii.current_client.ctl = "swap #{i}"
-  end
+  # SHORTCUTS["#{MOD_SWAP}#{i}"] = lambda do
+  #   current_client.ctl << "swap #{i}"
+  # end
 
-  # send selection to _i_th view
-  SHORTCUTS["#{SEND_SEQ}#{i}"] = lambda do
-    Wmii.selected_clients.each do |c|
-      c.tags = Wmii.tags[k] || i
+  # send grouping to _i_th view
+  SHORTCUTS["#{MOD_SEND}#{i}"] = lambda do
+    grouped_clients.each do |c|
+      c.tags = tags[k] || i
     end
   end
 
-  # send selection to _i_th area
-  SHORTCUTS["#{SEND_SEQ}Shift-#{i}"] = lambda do
-    Wmii.current_view[i].insert! Wmii.selected_clients
-  end
+  # send grouping to _i_th area
+  # SHORTCUTS["#{MOD_SEND}Shift-#{i}"] = lambda do
+  #   current_view[i].insert grouped_clients
+  # end
 
   # apply grid layout with _i_ clients per column
-  SHORTCUTS["#{LAYOUT_SEQ}#{i}"] = lambda do
-    Wmii.current_view.grid! i
-  end
+  # SHORTCUTS["#{MOD_ARRANGE}#{i}"] = lambda do
+  #   current_view.arrange_in_grid i
+  # end
 
-  # add _i_th view to current selection's tags
-  SHORTCUTS["#{SEND_SEQ}equal,#{i}"] =
-  SHORTCUTS["#{SEND_SEQ}Shift-equal,#{i}"] = lambda do
-    Wmii.selected_clients.each do |c|
-      c.tag! Wmii.tags[k] || i
-    end
-  end
+  # add _i_th view to current grouping's tags
+  # SHORTCUTS["#{MOD_SEND}equal,#{i}"] =
+  # SHORTCUTS["#{MOD_SEND}Shift-equal,#{i}"] = lambda do
+  #   grouped_clients.each do |c|
+  #     c.tag tags[k] || i
+  #   end
+  # end
 
-  # remove _i_th view from current selection's tags
-  SHORTCUTS["#{SEND_SEQ}minus,#{i}"] = lambda do
-    Wmii.selected_clients.each do |c|
-      c.untag! Wmii.tags[k] || i
-    end
-  end
+  # remove _i_th view from current grouping's tags
+  # SHORTCUTS["#{MOD_SEND}minus,#{i}"] = lambda do
+  #   grouped_clients.each do |c|
+  #     c.untag tags[k] || i
+  #   end
+  # end
 end
 
 # jump to view whose name begins with the pressed key.
 ('a'..'z').each do |key|
-  SHORTCUTS["#{MENU_SEQ}v,#{key}"] = lambda do
+  SHORTCUTS["#{MOD_MENU}v,#{key}"] = lambda do
     focus_view_matching(/^#{key}/i)
   end
 end
 
-
-FS.def.grabmod = MOD_KEY
-FS.def.keys = SHORTCUTS.keys.join("\n")
+fs.keys = SHORTCUTS.keys.join("\n")
 
 
-## status bar
+############################################################################
+# SETUP TAG BAR
+############################################################################
+
+fs.lbar.clear
+
+sel = current_tag
+tags.each do |tag|
+  bar = fs.lbar[tag]
+  bar.create
+
+  color = if tag == sel
+    WMII_FOCUSCOLORS
+  else
+    WMII_NORMCOLORS
+  end
+
+  bar.write "#{color} #{tag}"
+end
+
+
+############################################################################
+# SETUP STATUS BAR
+############################################################################
 
 Thread.new do
-  sb = FS.bar.status
-  sb.create!
-  sb.colors = ENV['WMII_NORMCOLORS']
-
-  sb['data'].open('w') do |f|
+  bar = fs.rbar.status
+  bar.create unless bar.exist?
     loop do
       diskSpace = `df -h ~`.split[-3..-1].join(' ')
       cpuLoad = File.read('/proc/loadavg').split[0..2].join(' ')
 
       5.times do
-        f.write "#{Time.now.to_s} | #{cpuLoad} | #{diskSpace}"
+        bar.write [
+          WMII_NORMCOLORS,
+          Time.now,
+          cpuLoad,
+          diskSpace,
+        ].join(' | ')
+
         sleep 1
       end
     end
-  end
 end
 
 
-## WM event loop
+############################################################################
+# EVENT LOOP
+############################################################################
 
-require 'thread'
-events = Queue.new
+fs.event.open do |bus|
+  loop do
+    bus.read.split("\n").each do |event|
+      type, parms = event.split(' ', 2)
 
-Thread.new do
-  FS['event'].open do |f|
-    loop do
-      events.enq f.read.chomp
+      case type.to_sym
+        when :Start
+          exit if parms == 'wmiirc'
+
+        when :CreateTag
+          bar = fs.lbar[parms]
+          bar.create
+          bar.write "#{WMII_NORMCOLORS} #{parms}"
+
+        when :DestroyTag
+          bar = fs.lbar[parms]
+          bar.remove
+
+        when :FocusTag
+          bar = fs.lbar[parms]
+          bar.write "#{WMII_FOCUSCOLORS} #{parms}"
+
+        when :UnfocusTag
+          bar = fs.lbar[parms]
+          bar.write "#{WMII_NORMCOLORS} #{parms}"
+
+        when :UrgentTag
+          bar = fs.lbar[parms]
+          bar.write "*#{parms}"
+
+        when :NotUrgentTag
+          bar = fs.lbar[parms]
+          bar.write parms
+
+        when :LeftBarClick
+          button, viewId = parms.split
+
+          case button.to_i
+            when PRIMARY_CLICK
+              focus_view viewId
+
+            when MIDDLE_CLICK
+              grouped_clients.each do |c|
+                c.tag viewId
+              end
+
+            when SECONDARY_CLICK
+              grouped_clients.each do |c|
+                c.untag viewId
+              end
+          end
+
+        when :ClientClick
+          clientId, button = parms.split
+
+          if button.to_i == SECONDARY_CLICK
+            Client.new(clientId).toggle_grouping
+          end
+
+        when :Key
+          SHORTCUTS[parms].call
+      end
     end
-  end
-end
-
-while evt = events.deq
-  type, arg = evt.split(' ', 2)
-
-  case type.to_sym
-    when :BarClick
-      clickedView, clickedButton = arg.split
-
-      case clickedButton.to_i
-        when PRIMARY_CLICK
-          Wmii.focus_view clickedView
-
-        when MIDDLE_CLICK
-          Wmii.selected_clients.each do |c|
-            c.tag! clickedView
-          end
-
-        when SECONDARY_CLICK
-          Wmii.selected_clients.each do |c|
-            c.untag! clickedView
-          end
-      end
-
-    when :ClientClick
-      clickedClient, clickedButton = arg.split
-
-      if clickedButton.to_i != PRIMARY_CLICK
-        Wmii.get_client(clickedClient).invert_selection!
-      end
-
-    when :Key
-      SHORTCUTS[arg].call
   end
 end
