@@ -115,8 +115,11 @@ EOF
 
 # Shows a menu with the given items and returns the chosen item.
 # If nothing was chosen, then *nil* is returned.
-def show_menu *aChoices
-  IO.popen(WMII_MENU, 'r+') do |menu|
+def show_menu aChoices, aPrompt = nil
+  cmd = WMII_MENU
+  cmd += ' -p ' << aPrompt.to_s.inspect if aPrompt
+
+  IO.popen cmd, 'r+' do |menu|
     menu.puts aChoices
     menu.close_write
 
@@ -289,7 +292,7 @@ SHORTCUTS = {
 
   # launch an internal action by choosing from a menu
   MOD_MENU + 'i' => lambda do
-    if choice = show_menu(@actionMenu + ACTIONS.keys)
+    if choice = show_menu(@actionMenu + ACTIONS.keys, 'run action:')
       if action = ACTIONS[choice.to_sym]
         action.call
       else
@@ -300,14 +303,14 @@ SHORTCUTS = {
 
   # launch an external program by choosing from a menu
   MOD_MENU + 'e' => lambda do
-    if choice = show_menu(@programMenu)
+    if choice = show_menu(@programMenu, 'run program:')
       system choice << '&'
     end
   end,
 
   # focus any view by choosing from a menu
   MOD_MENU + 'u' => lambda do
-    if choice = show_menu(tags)
+    if choice = show_menu(tags, 'show view:')
       focus_view choice
     end
   end,
@@ -322,7 +325,7 @@ SHORTCUTS = {
       format "%d. [%s] %s", i, c[:tags].read, c[:props].read.downcase
     end
 
-    if target = show_menu(choices)
+    if target = show_menu(choices, 'show client:')
       pos = target.scan(/\d+/).first.to_i
       list[pos].focus
     end
@@ -375,7 +378,7 @@ SHORTCUTS = {
   MOD_SEND + 't' => lambda do
     choices = tags.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
 
-    if target = show_menu(choices)
+    if target = show_menu(choices, 'tag as:')
       grouped_clients.each do |c|
         case target
           when /^\+/
