@@ -544,55 +544,22 @@ SHORTCUTS = {
   ##########################################################################
 
   10.times do |i|
-    # associate '1' with the leftmost label, instead of '0'
-    k = (i - 1) % 10
-
     # focus {i}'th view
-    SHORTCUTS["#{MOD_FOCUS}#{i}"] = lambda do
-      focus_view tags[k] || i
+    SHORTCUTS[MOD_FOCUS + i.to_s] = lambda do
+      focus_view tags[i - 1]
     end
 
-    # focus {i}'th area
-    # SHORTCUTS["#{MOD_FOCUS}Shift-#{i}"] = lambda do
-    #   focus_area i
-    # end
-
-    # swap the currently focused client with the one in {i}'th area
-    # SHORTCUTS["#{MOD_SWAP}#{i}"] = lambda do
-    #   current_client.ctl = "swap #{i}"
-    # end
-
-    # send grouping to {i}'th view
-    SHORTCUTS["#{MOD_SEND}#{i}"] = lambda do
+    # send current grouping to {i}'th view
+    SHORTCUTS[MOD_SEND + i.to_s] = lambda do
       grouped_clients.each do |c|
-        c.tags = tags[k] || i
+        c.tags = tags[i - 1]
       end
     end
 
-    # send grouping to {i}'th area
-    # SHORTCUTS["#{MOD_SEND}Shift-#{i}"] = lambda do
-    #   current_view[i].insert grouped_clients
-    # end
-
     # apply grid layout with {i} clients per column
-    # SHORTCUTS["#{MOD_ARRANGE}#{i}"] = lambda do
-    #   current_view.arrange_in_grid i
-    # end
-
-    # add {i}'th view to current grouping's tags
-    # SHORTCUTS["#{MOD_SEND}equal,#{i}"] =
-    # SHORTCUTS["#{MOD_SEND}Shift-equal,#{i}"] = lambda do
-    #   grouped_clients.each do |c|
-    #     c.tag tags[k] || i
-    #   end
-    # end
-
-    # remove {i}'th view from current grouping's tags
-    # SHORTCUTS["#{MOD_SEND}minus,#{i}"] = lambda do
-    #   grouped_clients.each do |c|
-    #     c.untag tags[k] || i
-    #   end
-    # end
+    SHORTCUTS[MOD_ARRANGE + i.to_s] = lambda do
+      current_view.arrange_in_grid i
+    end
   end
 
   ##########################################################################
