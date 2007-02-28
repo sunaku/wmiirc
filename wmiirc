@@ -33,14 +33,15 @@ end
 
 
 LOG = Logger.new(__FILE__ + '.log', 5)
-LOG.info "starting"
+LOG.info "birth"
 
 # terminate existing instances of this program
-  `ps -C #{File.basename $0} -o pid h`.split.
+  `ps -C #{File.basename $0} -o pid h`.
+    split.
     map! {|s| s.to_i}.
     reject! {|pid| pid == $$}.
   each do |pid|
-    LOG.info "stopping loader #{pid}"
+    LOG.info "slaying ##{pid}"
     Process.kill :SIGTERM, pid
   end
 
@@ -58,4 +59,4 @@ LOG.info "starting"
     LOG.fatal e
   end
 
-LOG.info "stopping"
+LOG.info "death"

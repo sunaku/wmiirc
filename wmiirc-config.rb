@@ -41,11 +41,14 @@ MOD_SWAP          = MOD_PREFIX + 'w,'
 MOD_ARRANGE       = MOD_PREFIX + 'z,'
 MOD_GROUP         = MOD_PREFIX + 'g,'
 MOD_MENU          = MOD_PREFIX
-MOD_PROGRAM       = MOD_PREFIX
+MOD_EXEC          = MOD_PREFIX
 
 PRIMARY_CLICK     = 1
 MIDDLE_CLICK      = 2
 SECONDARY_CLICK   = 3
+
+# Tag used for wmii-2 style client detaching.
+DETACHED_TAG      = '|'
 
 # Colors tuples are "<text> <background> <border>"
 WMII_NORMCOLORS   = '#e0e0e0 #0a0a0a #202020'
@@ -62,8 +65,9 @@ WMII_MENU         = "dmenu -b -fn #{WMII_FONT.inspect} #{
 WMII_TERM         = 'gnome-terminal'
 
 # export WMII_* constants as environment variables
-  self.class.constants.grep(/^WMII_/).each do |c|
-    ENV[c] = self.class.const_get c
+  k = self.class
+  k.constants.grep(/^WMII_/).each do |c|
+    ENV[c] = k.const_get c
   end
 
 
@@ -71,7 +75,7 @@ WMII_TERM         = 'gnome-terminal'
 # WM CONFIGURATION
 ############################################################################
 
-fs.ctl << <<EOF
+fs.ctl = <<EOF
 font #{WMII_FONT}
 focuscolors #{WMII_FOCUSCOLORS}
 normcolors #{WMII_NORMCOLORS}
@@ -147,7 +151,7 @@ end
 
 
 ############################################################################
-# MISC
+# INTERNAL ACTIONS
 ############################################################################
 
 ACTIONS = {
@@ -157,7 +161,7 @@ ACTIONS = {
   end,
 
   :quit => lambda do
-    Wmii.fs.ctl << 'quit'
+    Wmii.fs.ctl = 'quit'
   end,
 
   :status => lambda do
@@ -191,15 +195,10 @@ ACTIONS = {
 ACTIONS[:rehash].call
 ACTIONS[:status].call
 
-system 'xsetroot -solid $WMII_BACKGROUND &'
-
 
 ############################################################################
 # KEY BINDINGS
 ############################################################################
-
-# Tag used for wmii-2 style client detaching.
-DETACHED_TAG = '^'
 
 SHORTCUTS = {
 
@@ -209,27 +208,27 @@ SHORTCUTS = {
 
   # focus client at left
   MOD_FOCUS + LEFT_KEY => lambda do
-    current_view.ctl << 'select left' rescue nil
+    current_view.ctl = 'select left' rescue nil
   end,
 
   # focus client at right
   MOD_FOCUS + RIGHT_KEY => lambda do
-    current_view.ctl << 'select right' rescue nil
+    current_view.ctl = 'select right' rescue nil
   end,
 
   # focus client below
   MOD_FOCUS + DOWN_KEY => lambda do
-    current_view.ctl << 'select down' rescue nil
+    current_view.ctl = 'select down' rescue nil
   end,
 
   # focus client above
   MOD_FOCUS + UP_KEY => lambda do
-    current_view.ctl << 'select up' rescue nil
+    current_view.ctl = 'select up' rescue nil
   end,
 
   # toggle focus between floating area and the columns
   MOD_FOCUS + 'space' => lambda do
-    current_view.ctl << 'select toggle'
+    current_view.ctl = 'select toggle'
   end,
 
   # apply equal-spacing layout to current column
@@ -267,13 +266,6 @@ SHORTCUTS = {
       a.layout = :max
     end
   end,
-
-  # maximize the floating area's focused client
-  # "#{MOD_ARRANGE}z" => lambda do
-  #   if (client = current_view[0].sel).exist?
-  #     client.geom = '0 0 east south'
-  #   end
-  # end,
 
   # focus the previous view
   MOD_FOCUS + 'comma' => lambda do
@@ -368,8 +360,28 @@ SHORTCUTS = {
 
   MOD_SEND + 'Delete' => lambda do
     grouped_clients.each do |c|
-      c.ctl << 'kill'
+      c.ctl = 'kill'
     end
+  end,
+
+  # swap the currently focused client with the one to its left
+  MOD_SWAP + LEFT_KEY => lambda do
+    current_client.swap :left
+  end,
+
+  # swap the currently focused client with the one to its right
+  MOD_SWAP + RIGHT_KEY => lambda do
+    current_client.swap :right
+  end,
+
+  # swap the currently focused client with the one below it
+  MOD_SWAP + DOWN_KEY => lambda do
+    current_client.swap :down
+  end,
+
+  # swap the currently focused client with the one above it
+  MOD_SWAP + UP_KEY => lambda do
+    current_client.swap :up
   end,
 
   # Changes the tag (according to a menu choice) of each grouped client and
@@ -395,15 +407,6 @@ SHORTCUTS = {
       target
     end
   end,
-
-  # remove currently focused view from current grouping's tags
-  # "#{MOD_SEND}Shift-minus" => lambda do
-  #   curTag = current_view.name
-
-  #   grouped_clients.each do |c|
-  #     c.untag curTag
-  #   end
-  # end,
 
 
   ##########################################################################
@@ -467,15 +470,15 @@ SHORTCUTS = {
   ## external programs
   ##########################################################################
 
-  MOD_PROGRAM + 'x' => lambda do
+  MOD_EXEC + 'x' => lambda do
     system WMII_TERM + ' &'
   end,
 
-  MOD_PROGRAM + 'k' => lambda do
+  MOD_EXEC + 'k' => lambda do
     system 'firefox &'
   end,
 
-  MOD_PROGRAM + 'j' => lambda do
+  MOD_EXEC + 'j' => lambda do
     system 'nautilus --no-desktop &'
   end,
 
@@ -504,26 +507,6 @@ SHORTCUTS = {
   ##########################################################################
   ## zooming / sizing
   ##########################################################################
-
-  # swap the currently focused client with the one to its left
-  MOD_SWAP + LEFT_KEY => lambda do
-    current_client.swap :left
-  end,
-
-  # swap the currently focused client with the one to its right
-  MOD_SWAP + RIGHT_KEY => lambda do
-    current_client.swap :right
-  end,
-
-  # swap the currently focused client with the one below it
-  MOD_SWAP + DOWN_KEY => lambda do
-    current_client.swap :down
-  end,
-
-  # swap the currently focused client with the one above it
-  MOD_SWAP + UP_KEY => lambda do
-    current_client.swap :up
-  end,
 
   # Sends grouped clients to temporary view.
   MOD_PREFIX + 'b' => lambda do
@@ -556,90 +539,100 @@ SHORTCUTS = {
   end,
 }
 
-# access to views through the number keys
-10.times do |i|
-  # associate '1' with the leftmost label, instead of '0'
-  k = (i - 1) % 10
+  ##########################################################################
+  ## number keys
+  ##########################################################################
 
-  # focus _i_th view
-  SHORTCUTS["#{MOD_FOCUS}#{i}"] = lambda do
-    focus_view tags[k] || i
+  10.times do |i|
+    # associate '1' with the leftmost label, instead of '0'
+    k = (i - 1) % 10
+
+    # focus {i}'th view
+    SHORTCUTS["#{MOD_FOCUS}#{i}"] = lambda do
+      focus_view tags[k] || i
+    end
+
+    # focus {i}'th area
+    # SHORTCUTS["#{MOD_FOCUS}Shift-#{i}"] = lambda do
+    #   focus_area i
+    # end
+
+    # swap the currently focused client with the one in {i}'th area
+    # SHORTCUTS["#{MOD_SWAP}#{i}"] = lambda do
+    #   current_client.ctl = "swap #{i}"
+    # end
+
+    # send grouping to {i}'th view
+    SHORTCUTS["#{MOD_SEND}#{i}"] = lambda do
+      grouped_clients.each do |c|
+        c.tags = tags[k] || i
+      end
+    end
+
+    # send grouping to {i}'th area
+    # SHORTCUTS["#{MOD_SEND}Shift-#{i}"] = lambda do
+    #   current_view[i].insert grouped_clients
+    # end
+
+    # apply grid layout with {i} clients per column
+    # SHORTCUTS["#{MOD_ARRANGE}#{i}"] = lambda do
+    #   current_view.arrange_in_grid i
+    # end
+
+    # add {i}'th view to current grouping's tags
+    # SHORTCUTS["#{MOD_SEND}equal,#{i}"] =
+    # SHORTCUTS["#{MOD_SEND}Shift-equal,#{i}"] = lambda do
+    #   grouped_clients.each do |c|
+    #     c.tag tags[k] || i
+    #   end
+    # end
+
+    # remove {i}'th view from current grouping's tags
+    # SHORTCUTS["#{MOD_SEND}minus,#{i}"] = lambda do
+    #   grouped_clients.each do |c|
+    #     c.untag tags[k] || i
+    #   end
+    # end
   end
 
-  # focus _i_th area
-  # SHORTCUTS["#{MOD_FOCUS}Shift-#{i}"] = lambda do
-  #   focus_area i
-  # end
+  ##########################################################################
+  ## alphabet keys
+  ##########################################################################
 
-  # swap the currently focused client with the one in _i_th area
-  # SHORTCUTS["#{MOD_SWAP}#{i}"] = lambda do
-  #   current_client.ctl << "swap #{i}"
-  # end
-
-  # send grouping to _i_th view
-  SHORTCUTS["#{MOD_SEND}#{i}"] = lambda do
-    grouped_clients.each do |c|
-      c.tags = tags[k] || i
+  # focus the view whose name begins with an alphabet key
+  ('a'..'z').each do |key|
+    SHORTCUTS[MOD_FOCUS + 'v,' + key] = lambda do
+      if t = tags.grep(/^#{key}/i).first
+        focus_view t
+      end
     end
   end
-
-  # send grouping to _i_th area
-  # SHORTCUTS["#{MOD_SEND}Shift-#{i}"] = lambda do
-  #   current_view[i].insert grouped_clients
-  # end
-
-  # apply grid layout with _i_ clients per column
-  # SHORTCUTS["#{MOD_ARRANGE}#{i}"] = lambda do
-  #   current_view.arrange_in_grid i
-  # end
-
-  # add _i_th view to current grouping's tags
-  # SHORTCUTS["#{MOD_SEND}equal,#{i}"] =
-  # SHORTCUTS["#{MOD_SEND}Shift-equal,#{i}"] = lambda do
-  #   grouped_clients.each do |c|
-  #     c.tag tags[k] || i
-  #   end
-  # end
-
-  # remove _i_th view from current grouping's tags
-  # SHORTCUTS["#{MOD_SEND}minus,#{i}"] = lambda do
-  #   grouped_clients.each do |c|
-  #     c.untag tags[k] || i
-  #   end
-  # end
-end
-
-# jump to view whose name begins with the pressed key.
-('a'..'z').each do |key|
-  SHORTCUTS["#{MOD_MENU}v,#{key}"] = lambda do
-    if t = tags.grep(/^#{key}/i).first
-      focus_view t
-    end
-  end
-end
 
 fs.keys = SHORTCUTS.keys.join("\n")
 
 
 ############################################################################
-# SETUP TAG BAR
+# START UP
 ############################################################################
 
-fs.lbar.clear
+system 'xsetroot -solid $WMII_BACKGROUND &'
 
-sel = current_tag
-tags.each do |tag|
-  bar = fs.lbar[tag]
-  bar.create
+# initialize the tag bar
+  fs.lbar.clear
 
-  color = if tag == sel
-    WMII_FOCUSCOLORS
-  else
-    WMII_NORMCOLORS
+  sel = current_tag
+  tags.each do |tag|
+    bar = fs.lbar[tag]
+    bar.create
+
+    color = if tag == sel
+      WMII_FOCUSCOLORS
+    else
+      WMII_NORMCOLORS
+    end
+
+    bar.write "#{color} #{tag}"
   end
-
-  bar.write "#{color} #{tag}"
-end
 
 
 ############################################################################
@@ -661,24 +654,19 @@ fs.event.open do |bus|
           bar.write "#{WMII_NORMCOLORS} #{parms}"
 
         when :DestroyTag
-          bar = fs.lbar[parms]
-          bar.remove
+          fs.lbar[parms].remove
 
         when :FocusTag
-          bar = fs.lbar[parms]
-          bar.write "#{WMII_FOCUSCOLORS} #{parms}"
+          fs.lbar[parms] << "#{WMII_FOCUSCOLORS} #{parms}"
 
         when :UnfocusTag
-          bar = fs.lbar[parms]
-          bar.write "#{WMII_NORMCOLORS} #{parms}"
+          fs.lbar[parms] << "#{WMII_NORMCOLORS} #{parms}"
 
         when :UrgentTag
-          bar = fs.lbar[parms]
-          bar.write "*#{parms}"
+          fs.lbar[parms] << "*#{parms}"
 
         when :NotUrgentTag
-          bar = fs.lbar[parms]
-          bar.write parms
+          fs.lbar[parms] << parms
 
         when :LeftBarClick
           button, viewId = parms.split
@@ -702,7 +690,7 @@ fs.event.open do |bus|
           clientId, button = parms.split
 
           if button.to_i == SECONDARY_CLICK
-            Client.new(clientId).toggle_grouping
+            Client.toggle_grouping clientId
           end
 
         when :Key
