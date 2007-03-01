@@ -208,22 +208,22 @@ SHORTCUTS = {
 
   # focus client at left
   MOD_FOCUS + LEFT_KEY => lambda do
-    current_view.ctl = 'select left' rescue nil
+    current_view.ctl = 'select left' unless current_area.floating?
   end,
 
   # focus client at right
   MOD_FOCUS + RIGHT_KEY => lambda do
-    current_view.ctl = 'select right' rescue nil
+    current_view.ctl = 'select right' unless current_area.floating?
   end,
 
   # focus client below
   MOD_FOCUS + DOWN_KEY => lambda do
-    current_view.ctl = 'select down' rescue nil
+    current_view.ctl = 'select down'
   end,
 
   # focus client above
   MOD_FOCUS + UP_KEY => lambda do
-    current_view.ctl = 'select up' rescue nil
+    current_view.ctl = 'select up'
   end,
 
   # toggle focus between floating area and the columns
