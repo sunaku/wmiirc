@@ -98,7 +98,6 @@ EOF
 ############################################################################
 
 fs.tagrules = <<EOF
-/jEdit.*/ -> code
 /Buddy List.*/ -> chat
 /XChat.*/ -> chat
 /.*thunderbird.*/ -> mail
