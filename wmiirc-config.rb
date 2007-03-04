@@ -546,13 +546,13 @@ SHORTCUTS = {
   10.times do |i|
     # focus {i}'th view
     SHORTCUTS[MOD_FOCUS + i.to_s] = lambda do
-      focus_view tags[i - 1]
+      focus_view tags[i - 1] || i
     end
 
     # send current grouping to {i}'th view
     SHORTCUTS[MOD_SEND + i.to_s] = lambda do
       grouped_clients.each do |c|
-        c.tags = tags[i - 1]
+        c.tags = tags[i - 1] || i
       end
     end
 
