@@ -207,12 +207,12 @@ SHORTCUTS = {
 
   # focus client at left
   MOD_FOCUS + LEFT_KEY => lambda do
-    current_view.ctl = 'select left' unless current_area.floating?
+    current_view.ctl = 'select left'
   end,
 
   # focus client at right
   MOD_FOCUS + RIGHT_KEY => lambda do
-    current_view.ctl = 'select right' unless current_area.floating?
+    current_view.ctl = 'select right'
   end,
 
   # focus client below
@@ -232,7 +232,9 @@ SHORTCUTS = {
 
   # apply equal-spacing layout to current column
   MOD_ARRANGE + 'w' => lambda do
-    current_area.layout = :default
+    if a = current_area
+      a.layout = :default
+    end
   end,
 
   # apply equal-spacing layout to all columns
@@ -244,7 +246,9 @@ SHORTCUTS = {
 
   # apply stacked layout to currently focused column
   MOD_ARRANGE + 'v' => lambda do
-    current_area.layout = :stack
+    if a = current_area
+      a.layout = :stack
+    end
   end,
 
   # apply stacked layout to all columns in current view
@@ -256,7 +260,9 @@ SHORTCUTS = {
 
   # apply maximized layout to currently focused column
   MOD_ARRANGE + 'm' => lambda do
-    current_area.layout = :max
+    if a = current_area
+      a.layout = :max
+    end
   end,
 
   # apply maximized layout to all columns in current view
@@ -268,12 +274,16 @@ SHORTCUTS = {
 
   # focus the previous view
   MOD_FOCUS + 'comma' => lambda do
-    prev_view.focus
+    if v = prev_view
+      v.focus
+    end
   end,
 
   # focus the next view
   MOD_FOCUS + 'period' => lambda do
-    next_view.focus
+    if v = next_view
+      v.focus
+    end
   end,
 
 
