@@ -520,7 +520,7 @@ SHORTCUTS = {
   # Sends grouped clients to temporary view.
   MOD_PREFIX + 'b' => lambda do
     src = current_tag
-    dst = src + '~'
+    dst = src + '~' + Time.now.to_i.to_s
 
     grouped_clients.each do |c|
       c.tag dst
@@ -535,7 +535,7 @@ SHORTCUTS = {
   MOD_PREFIX + 'Shift-b' => lambda do
     t = current_tag
 
-    if t =~ /~$/
+    if t =~ /~\d+$/
       grouped_clients.each do |c|
         c.with_tags do
           delete t
