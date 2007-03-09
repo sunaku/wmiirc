@@ -33,6 +33,10 @@ end
 
 
 LOG = Logger.new(__FILE__ + '.log', 5)
+class << LOG
+  alias write <<
+end
+
 LOG.info "birth"
 
 # terminate existing instances of this program
@@ -49,6 +53,7 @@ LOG.info "birth"
   Thread.abort_on_exception = true
 
   begin
+    $stdout = $stderr = LOG
     load File.join(File.dirname(__FILE__), 'wmiirc-config.rb')
 
   rescue => e
