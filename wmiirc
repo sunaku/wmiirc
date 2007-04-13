@@ -26,13 +26,13 @@ end
 LOG.info "birth"
 
 # terminate existing instances of this program
-  `ps -C #{File.basename $0} -o pid h`.
-    split.
-    map! {|s| s.to_i}.
-    reject! {|pid| pid == $$}.
-  each do |pid|
+
+  instances = `ps -C #{File.basename $0} -o pid h`.split.map! {|s| s.to_i}
+  instances.delete $$ # do not kill self!
+
+  instances.each do |pid|
     LOG.info "slaying ##{pid}"
-    Process.kill :SIGTERM, pid
+    Process.kill :SIGKILL, pid
   end
 
 # load the configuration
