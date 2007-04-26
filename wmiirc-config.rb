@@ -234,7 +234,7 @@ EOF
   end
 
   action :quit do
-    Wmii.fs.ctl = 'quit'
+    fs.ctl = 'quit'
   end
 
   action :status do
@@ -243,7 +243,7 @@ EOF
     end
 
     @status = Thread.new do
-      bar = Wmii.fs.rbar.status
+      bar = fs.rbar.status
       bar.create unless bar.exist?
 
       loop do
@@ -454,17 +454,19 @@ EOF
 
     # Sends grouped clients back to their original view.
     shortcut Key::PREFIX + 'Shift-b' do
-      t = current_tag
+      src = current_tag
 
-      if t =~ /~$/
+      if src =~ /~$/
+        dst = $`
+
         grouped_clients.each do |c|
           c.with_tags do
-            delete t
-            push $` if empty?
+            delete src
+            push dst if empty?
           end
         end
 
-      focus_view $`
+        focus_view dst
       end
     end
 
@@ -549,17 +551,14 @@ EOF
 
     # focus any client by choosing from a menu
     shortcut Key::MENU + 'a' do
-      list = Wmii.clients
-
-      i = -1
-      choices = list.map do |c|
-        i += 1
-        format "%d. [%s] %s", i, c[:tags].read, c[:props].read.downcase
+      choices = []
+      clients.each_with_index do |c, i|
+        choices << "%d. [%s] %s" % [i, c[:tags].read, c[:props].read.downcase]
       end
 
       if target = show_menu(choices, 'show client:')
-        pos = target.scan(/\d+/).first.to_i
-        list[pos].focus
+        i = target.scan(/\d+/).first.to_i
+        clients[i].focus
       end
     end
 
