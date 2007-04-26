@@ -23,6 +23,7 @@ class << LOG
   alias write <<
 end
 
+
 LOG.info "birth"
 
 # terminate existing instances of this program
