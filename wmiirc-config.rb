@@ -587,7 +587,8 @@ EOF
     shortcut Key::PREFIX + 'd' do
       grouped_clients.each do |c|
         c.with_tags do
-          c.tags = DETACHED_TAG
+          delete current_tag
+          push DETACHED_TAG
         end
       end
     end
@@ -598,7 +599,8 @@ EOF
 
       if v.exist? and c = v.clients.last
         c.with_tags do
-          c.tags = current_tag
+          delete DETACHED_TAG
+          push current_tag
         end
       end
     end
