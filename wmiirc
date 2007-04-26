@@ -26,6 +26,7 @@ end
 LOG.info "birth"
 
 # terminate existing instances of this program
+  system 'wmiir xwrite /event Start wmiirc' # terminate them nicely
 
   instances = `ps -C #{File.basename $0} -o pid h`.split.map! {|s| s.to_i}
   instances.delete $$ # do not kill self!
