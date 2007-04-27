@@ -31,11 +31,16 @@ begin
   # Miniature DSL to ease configuration.
 
     class Handler < Hash
+      # When a block is given, registers a handler for the given key.
+      # Otherwise, executes all registered handlers for the given key.
       def handle aKey, *aArgs, &aBlock
         if block_given?
-          self[aKey] = aBlock
+          (self[aKey] ||= []) << aBlock
+
         elsif key? aKey
-          self[aKey].call(*aArgs)
+          self[aKey].each do |block|
+            block.call(*aArgs)
+          end
         end
       end
     end
