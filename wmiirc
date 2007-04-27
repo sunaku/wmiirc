@@ -1,55 +1,154 @@
 #!/usr/bin/ruby -w
 # Loader for ruby-based wmii configuration.
 #--
-# Copyright 2006 Suraj N. Kurapati
+# Copyright 2006-2007 Suraj N. Kurapati
+# Copyright 2007      Nick Stenning
 # See the file named LICENSE for details.
 
-require 'logger'
+# load the wmii-irb library
+  $: << File.join(File.dirname(__FILE__), 'wmii-irb')
+  require 'wm'
 
-# Provide a means by which the user can rescue themselves after an exception.
-def throw_life_saver aError
-  system 'xterm &'
+  include Wmii
 
-  IO.popen('xmessage -file - -buttons "recover from error:0,ignore this message:1"', 'w') do |f|
-    f.puts aError.inspect, aError.backtrace
-  end
+# create a logger to aid debugging
+  require 'logger'
 
-  system($0 + ' &') if $?.exitstatus == 0
-end
+  LOG = Logger.new(__FILE__ + '.log', 5)
 
+  # capture standard output in logger
+    class << LOG
+      alias write <<  # emulate IO.write
+    end
 
-LOG = Logger.new(__FILE__ + '.log', 5)
-class << LOG
-  alias write <<
-end
-
+    $stdout = $stderr = LOG
 
 LOG.info "birth"
 
-# terminate existing instances of this program
-  system 'wmiir xwrite /event Start wmiirc' # terminate them nicely
+begin
+  # Miniature DSL to ease configuration.
 
-  instances = `ps -C #{File.basename $0} -o pid h`.split.map! {|s| s.to_i}
-  instances.delete $$ # do not kill self!
+    class Handler < Hash
+      def handle aKey, *aArgs, &aBlock
+        if block_given?
+          self[aKey] = aBlock
+        elsif key? aKey
+          self[aKey].call(*aArgs)
+        end
+      end
+    end
 
-  instances.each do |pid|
-    LOG.info "slaying ##{pid}"
-    Process.kill :SIGKILL, pid
-  end
+    EVENTS  = Handler.new
+    ACTIONS = Handler.new
+    KEYS    = Handler.new
 
-# load the configuration
-  Thread.abort_on_exception = true
+    def event *a, &b
+      EVENTS.handle(*a, &b)
+    end
 
-  begin
-    $stdout = $stderr = LOG
+    def action *a, &b
+      ACTIONS.handle(*a, &b)
+    end
+
+    def key *a, &b
+      a.map! { |x| x.respond_to?(:flatten) ? x.flatten.join('-') : x }
+      KEYS.handle a.join(','), &b
+    end
+
+  # Utility functions
+
+    # Shows a menu with the given items and returns the chosen item.
+    # If nothing was chosen, then *nil* is returned.
+    def show_menu aChoices, aPrompt = nil
+      cmd = "dmenu -b -fn #{WMII_FONT.inspect} " <<
+            %w[-nf -nb -sf -sb].zip(
+              Color::NORMAL.split[0,2] + Color::FOCUSED.split[0,2]
+            ).flatten!.map! {|s| s.inspect}.join(' ')
+
+      cmd << " -p #{aPrompt.to_s.inspect}" if aPrompt
+
+      IO.popen cmd, 'r+' do |menu|
+        menu.puts aChoices
+        menu.close_write
+
+        choice = menu.read
+        choice unless choice.empty?
+      end
+    end
+
+
+    require 'find'
+
+    # Returns the names of programs present in the given directories.
+    def find_programs aDirs
+      aDirs = aDirs.map {|p| File.expand_path p}
+      names = []
+
+      Find.find(*aDirs) do |f|
+        if File.file? f and File.executable? f
+          names << File.basename(f)
+        end
+      end
+
+      names.uniq.sort
+    end
+
+  # terminate existing instances of this program
+    fs.event << 'Start wmiirc'
+
+    event :Start do |arg|
+      exit if arg == 'wmiirc'
+    end
+
+  # load user's configuration file
     load File.join(File.dirname(__FILE__), 'wmiirc-config.rb')
 
-  rescue => e
-    LOG.error e
-    throw_life_saver e
+    # Tag bar setup
+      fs.lbar.clear
 
-  rescue Exception => e
-    LOG.fatal e
-  end
+      tags.each do |tag|
+        color = (tag == current_tag) ? Color::FOCUSED : Color::NORMAL
+
+        bar = fs.lbar[tag]
+        bar.create
+        bar.write "#{color} #{tag}"
+      end
+
+    # Keygrab setup
+      fs.keys = KEYS.keys.join("\n")
+
+      event :Key do |*args|
+        key(*args)
+      end
+
+    # Event loop
+      fs.event.open do |bus|
+        loop do
+          bus.read.split("\n").each do |event|
+            type, parms = event.split(' ', 2)
+
+            args = parms.split(' ') rescue []
+            event type.to_sym, *args
+          end
+        end
+      end
+
+rescue => e
+  LOG.error e
+
+  # allow the user to rescue themselves
+    system 'xterm &'
+
+    IO.popen('xmessage -file - -buttons recover:0,ignore:1', 'w') do |f|
+      f.puts e.inspect, e.backtrace
+    end
+
+    if $?.exitstatus == 0
+      system $0 + ' &'
+    end
+
+rescue Exception => e
+  LOG.fatal e
+end
 
 LOG.info "death"
