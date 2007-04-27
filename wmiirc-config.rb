@@ -296,9 +296,7 @@ EOF
 
     # apply equal-spacing layout to current column
     shortcut Key::ARRANGE + 'w' do
-      if a = current_area
-        a.layout = :default
-      end
+      current_area.layout = :default
     end
 
     # apply equal-spacing layout to all columns
@@ -310,9 +308,7 @@ EOF
 
     # apply stacked layout to currently focused column
     shortcut Key::ARRANGE + 'v' do
-      if a = current_area
-        a.layout = :stack
-      end
+      current_area.layout = :stack
     end
 
     # apply stacked layout to all columns in current view
@@ -324,9 +320,7 @@ EOF
 
     # apply maximized layout to currently focused column
     shortcut Key::ARRANGE + 'm' do
-      if a = current_area
-        a.layout = :max
-      end
+      current_area.layout = :max
     end
 
     # apply maximized layout to all columns in current view
@@ -338,16 +332,12 @@ EOF
 
     # focus the previous view
     shortcut Key::FOCUS + 'comma' do
-      if v = prev_view
-        v.focus
-      end
+      prev_view.focus
     end
 
     # focus the next view
     shortcut Key::FOCUS + 'period' do
-      if v = next_view
-        v.focus
-      end
+      next_view.focus
     end
 
 
