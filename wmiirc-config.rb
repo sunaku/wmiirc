@@ -431,7 +431,7 @@ EOF
     # Sends grouped clients to temporary view.
     shortcut Key::PREFIX + 'b' do
       src = current_tag
-      dst = src + '~'
+      dst = src + '~' + src.object_id.abs.to_s
 
       grouped_clients.each do |c|
         c.tag dst
@@ -446,7 +446,7 @@ EOF
     shortcut Key::PREFIX + 'Shift-b' do
       src = current_tag
 
-      if src =~ /~$/
+      if src =~ /~\d+$/
         dst = $`
 
         grouped_clients.each do |c|
