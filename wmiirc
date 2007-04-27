@@ -17,11 +17,13 @@
   LOG = Logger.new(__FILE__ + '.log', 5)
 
   # capture standard output in logger
+  unless $DEBUG
     class << LOG
       alias write <<  # emulate IO.write
     end
 
     $stdout = $stderr = LOG
+  end
 
 LOG.info "birth"
 
