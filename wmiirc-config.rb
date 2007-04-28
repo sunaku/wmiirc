@@ -519,6 +519,11 @@ EOF
         end
       end
 
+      # swap current client with the primary client in {i}'th column
+      key Key::SWAP + i.to_s do
+        current_view.ctl = "swap sel #{i}"
+      end
+
       # apply grid layout with {i} clients per column
       key Key::ARRANGE + i.to_s do
         current_view.arrange_in_grid i
