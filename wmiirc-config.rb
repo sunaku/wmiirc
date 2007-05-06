@@ -313,7 +313,7 @@ EOF
     # Changes the tag (according to a menu choice) of each grouped client and
     # returns the chosen tag. The +tag -tag idea is from Jonas Pfenniger:
     # <http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby>
-    key Key::SEND + 't' do
+    key Key::SEND + 'v' do
       choices = tags.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
 
       if target = show_menu(choices, 'tag as:')
@@ -329,8 +329,6 @@ EOF
             c.tags = target
           end
         end
-
-        target
       end
     end
 
