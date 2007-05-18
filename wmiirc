@@ -84,20 +84,15 @@ begin
     end
 
 
-    require 'find'
+    require 'pathname'
 
     # Returns the names of programs present in the given directories.
-    def find_programs aDirs
-      aDirs = aDirs.map {|p| File.expand_path p}
-      names = []
-
-      Find.find(*aDirs) do |f|
-        if File.file? f and File.executable? f
-          names << File.basename(f)
-        end
-      end
-
-      names.uniq.sort
+    def find_programs *aDirs
+      aDirs.flatten.map do |d|
+        Pathname.new(d).expand_path.children rescue []
+      end.flatten.map do |f|
+        f.basename.to_s if f.file? and f.executable?
+      end.compact.uniq.sort
     end
 
   # terminate existing instances of this program
