@@ -143,7 +143,28 @@ EOF
   end
 
   action :quit do
+    action :clear
     fs.ctl = 'quit'
+  end
+
+  action :clear do
+    # firefox's restore session feature doesn't
+    # work unless the whole process is killed.
+    system 'killall firefox-bin'
+
+    # gnome-panel refuses to die by other means
+    system 'killall -s TERM gnome-panel'
+
+    fs.event.open do |f|
+      clients.each do |c|
+        c.focus
+        c.ctl = :kill
+
+        # wait until the client is dead
+        until f.read =~ /DestroyClient #{c.id}/
+        end
+      end
+    end
   end
 
   action :status do
