@@ -507,8 +507,18 @@ EOF
 
   # external programs
 
+    require 'fileutils'
+
+    # Open a new terminal and set its working directory
+    # to be the same as the currently focused terminal.
     key Key::EXECUTE + 'x' do
-      system 'gnome-terminal &'
+      c = current_client
+      d = File.expand_path(c.label.read.sub(/^.*?:\s+/, '')) if c.exist?
+      d = ENV['HOME'] unless File.directory? d.to_s
+
+      FileUtils.cd d do
+        system 'terminal &'
+      end
     end
 
     key Key::EXECUTE + 'k' do
