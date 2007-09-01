@@ -8,21 +8,21 @@
 ################################################################################
 
 module Key
-  MOD       = 'Mod1'
-  UP        = 't'
-  DOWN      = 'n'
-  LEFT      = 'h'
-  RIGHT     = 's'
+  MOD         = 'Mod1'
+  UP          = 't'
+  DOWN        = 'n'
+  LEFT        = 'h'
+  RIGHT       = 's'
 
-  PREFIX    = MOD + '-Control-'
-  FOCUS     = PREFIX
-  SEND      = PREFIX + 'm,'
-  SWAP      = PREFIX + 'w,'
-  ARRANGE   = PREFIX + 'z,'
-  GROUP     = PREFIX + 'g,'
-  VIEW      = PREFIX + 'v,'
-  MENU      = PREFIX
-  EXECUTE   = PREFIX
+  PREFIX      = MOD + '-Control-'
+  FOCUS       = PREFIX
+  SEND        = PREFIX + 'm,'
+  SWAP        = PREFIX + 'w,'
+  ARRANGE     = PREFIX + 'z,'
+  GROUP       = PREFIX + 'g,'
+  VIEW        = PREFIX + 'v,'
+  MENU        = PREFIX
+  EXECUTE     = PREFIX
 end
 
 module Mouse
@@ -43,7 +43,7 @@ module Color
   end
 end
 
-WMII_FONT = '*-fixed-medium-r-normal-*-18-*-*-*-*-*-*-*'
+WMII_FONT = '-*-bitstream vera sans mono-medium-r-*-*-16-*-*-*-*-*-*-*'
 
 
 ################################################################################
@@ -61,7 +61,7 @@ EOF
 
 # Column Rules
 fs.colrules = <<EOF
-/./ -> 60+40
+/./ -> 50+50
 EOF
 
 # Tagging Rules
@@ -142,9 +142,13 @@ EOF
     @actionMenu   = find_programs File.dirname(__FILE__)
   end
 
+  action :kill do
+    fs.ctl = 'quit'
+  end
+
   action :quit do
     action :clear
-    fs.ctl = 'quit'
+    action :kill
   end
 
   action :clear do
@@ -157,11 +161,13 @@ EOF
 
     fs.event.open do |f|
       clients.each do |c|
-        c.focus
-        c.ctl = :kill
+        if c.exist?
+          c.focus
+          c.ctl = :kill
 
-        # wait until the client is dead
-        until f.read =~ /DestroyClient #{c.id}/
+          # wait until the client is dead
+          until f.read =~ /DestroyClient #{c.id}/
+          end
         end
       end
     end

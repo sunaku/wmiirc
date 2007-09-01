@@ -64,8 +64,8 @@ begin
 
   # Utility functions
 
-    # Shows a menu with the given items and returns the chosen item.
-    # If nothing was chosen, then *nil* is returned.
+    # Shows a menu with the given items and returns the chosen
+    # item. If nothing was chosen, then *nil* is returned.
     def show_menu aChoices, aPrompt = nil
       cmd = "dmenu -b -fn #{WMII_FONT.inspect} " <<
             %w[-nf -nb -sf -sb].zip(
