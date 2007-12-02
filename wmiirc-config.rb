@@ -582,7 +582,7 @@ EOF
 
       # swap current client with the primary client in {i}'th column
       key Key::SWAP + i.to_s do
-        current_view.ctl = "swap sel #{i}"
+        current_view.ctl = "swap sel #{i+1}" # XXX: +1 b/c floating area is column 1: until John-Galt fixes this!
       end
 
       # apply grid layout with {i} clients per column
