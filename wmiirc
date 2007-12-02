@@ -70,7 +70,7 @@ begin
       cmd = "dmenu -b -fn #{WMII_FONT.inspect} " <<
             %w[-nf -nb -sf -sb].zip(
               Color::NORMAL.split[0,2] + Color::FOCUSED.split[0,2]
-            ).flatten!.map! {|s| s.inspect}.join(' ')
+            ).flatten.map {|s| s.inspect}.join(' ')
 
       cmd << " -p #{aPrompt.to_s.inspect}" if aPrompt
 
@@ -94,6 +94,7 @@ begin
         f.basename.to_s if f.file? and f.executable?
       end.compact.uniq.sort
     end
+
 
   # terminate existing instances of this program
     fs.event << 'Start wmiirc'

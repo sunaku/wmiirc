@@ -66,9 +66,11 @@ EOF
 
 # Tagging Rules
 fs.tagrules = <<EOF
+/.*notes.*/ -> note
 /Buddy List.*/ -> chat
 /XChat.*/ -> chat
-/.*thunderbird.*/ -> mail
+/Thunderbird.*/ -> mail
+/Liferea.*/ -> mail
 /Gimp.*/ -> gimp
 /xconsole.*/ -> ~
 /alsamixer.*/ -> ~
@@ -519,10 +521,10 @@ EOF
     # to be the same as the currently focused terminal.
     key Key::EXECUTE + 'x' do
       c = current_client
-      d = File.expand_path(c.label.read.sub(/^.*?:\s+/, '')) if c.exist?
+      d = File.expand_path(c.label.read.sub(/^.*?:\s+/, '')) rescue nil
       d = ENV['HOME'] unless File.directory? d.to_s
 
-      FileUtils.cd d do
+      FileUtils.cd(d) do
         system 'terminal &'
       end
     end
