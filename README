@@ -1,0 +1,43 @@
+wmiirc: wmii configuration in Ruby
+==================================
+
+This is my wmii configuration in Ruby [1]. It currently only works with
+wmii-snap20070516, and I will work on upgrading it to wmii-3.6 soon.
+
+If you have any questions or suggestions, e-mail me at <SNK at GNA dot ORG>.
+
+Cheers.
+
+[1] http://rassmalog.rubyforge.org/blog/2006-07-01-wmii-3-1-configuration-in-ruby.html
+
+
+Setup instructions
+------------------
+
+# obtain my wmii configuration
+
+  darcs get http://rassmalog.rubyforge.org/blog/pub/code/wmiirc/
+  chmod +x wmiirc
+
+# obtain wmii-irb (which is a requirement for my wmii configuration)
+
+  darcs get http://rassmalog.rubyforge.org/blog/pub/code/wmii-irb/
+  cd wmii-irb
+
+# satisfy dependencies for wmii-irb
+
+  svn co svn://svn.gna.org/svn/rubyixp/trunk ruby-ixp
+
+# view API reference for wmii-irb
+
+  rdoc *.rb
+  firefox doc/index.html &
+
+# customize my wmii configuration
+
+  cd ..
+  vim wmiirc-config.rb
+
+# apply the new configuration
+
+  wmiirc
