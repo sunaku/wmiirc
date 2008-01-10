@@ -537,6 +537,34 @@ EOF
       system 'nautilus --no-desktop &'
     end
 
+    key(Key::PREFIX + 'Prior')  {system 'mpc prev'}
+    key(Key::PREFIX + 'Next')   {system 'mpc next'}
+    key(Key::PREFIX + 'Return') {system 'mpc toggle'}
+
+    key(Key::PREFIX + 'Shift-Prior')  {system 'amixer set Master 3dB+'}
+    key(Key::PREFIX + 'Shift-Next')   {system 'amixer set Master 3dB-'}
+    key(Key::PREFIX + 'Shift-Return') {system 'amixer set Master toggle'} # FIXME: doesn't work...
+
+    # load an MPD playlist
+    key(Key::PREFIX + 'Home') do
+      choices = `mpc lsplaylists`.split(/\n/)
+
+      if target = show_menu(choices, 'load MPD playlist:')
+        system 'mpc clear'
+        system 'mpc', 'load', target
+        system 'mpc play'
+      end
+    end
+
+    # add current song to an MPD playlist
+    key(Key::PREFIX + 'End') do
+      choices = `mpc lsplaylists`.split(/\n/)
+
+      if target = show_menu(choices, 'add current song to MPD playlist:')
+        system 'add-to-mpd-playlist', target
+      end
+    end
+
 
   # wmii-2 style client detaching
 
