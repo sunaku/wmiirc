@@ -400,7 +400,7 @@ EOF
   # client grouping
 
     # include/exclude the currently focused client from the grouping
-    key Key::GROUP + 'c' do
+    key Key::GROUP + 'g' do
       current_client.toggle_grouping
     end
 
@@ -415,12 +415,12 @@ EOF
     end
 
     # include all clients in the currently focused area into the grouping
-    key Key::GROUP + 'a' do
+    key Key::GROUP + 'c' do
       current_area.group
     end
 
     # exclude all clients in the currently focused column from the grouping
-    key Key::GROUP + 'Shift-a' do
+    key Key::GROUP + 'Shift-c' do
       current_area.ungroup
     end
 
@@ -435,14 +435,14 @@ EOF
     end
 
     # include all clients in the managed areas into the grouping
-    key Key::GROUP + 'm' do
+    key Key::GROUP + 'a' do
       current_view.columns.each do |c|
         c.group
       end
     end
 
     # exclude all clients in the managed areas from the grouping
-    key Key::GROUP + 'Shift-m' do
+    key Key::GROUP + 'Shift-a' do
       current_view.columns.each do |c|
         c.ungroup
       end

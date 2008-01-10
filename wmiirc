@@ -95,7 +95,6 @@ begin
       end.compact.uniq.sort
     end
 
-
   # terminate existing instances of this program
     fs.event << 'Start wmiirc'
 
