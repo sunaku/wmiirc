@@ -6,148 +6,162 @@
 # See the file named LICENSE for details.
 
 # load the wmii-irb library
-  $: << File.join(File.dirname(__FILE__), 'wmii-irb')
-  require 'wm'
+$: << '/home/sun/src/rumai/lib'
+require 'rumai'
+include Rumai
 
-  include Wmii
 
 # create a logger to aid debugging
-  require 'logger'
+require 'logger'
+LOG = Logger.new(__FILE__ + '.log', 5)
 
-  LOG = Logger.new(__FILE__ + '.log', 5)
+unless $DEBUG
+  class << LOG
+    alias write <<  # emulate IO.write
+  end
 
   # capture standard output in logger
-  unless $DEBUG
-    class << LOG
-      alias write <<  # emulate IO.write
-    end
+  $stdout = $stderr = LOG
+end
 
-    $stdout = $stderr = LOG
-  end
 
 LOG.info "birth"
 
 begin
+  ##
+  #
   # Miniature DSL to ease configuration.
+  #
+  ##
 
-    class Handler < Hash
-      # When a block is given, registers a handler for the given key.
-      # Otherwise, executes all registered handlers for the given key.
-      def handle aKey, *aArgs, &aBlock
-        if block_given?
-          (self[aKey] ||= []) << aBlock
+  class Handler < Hash
+    def initialize
+      super {|h,k| h[k] = [] }
+    end
 
-        elsif key? aKey
-          self[aKey].each do |block|
-            block.call(*aArgs)
-          end
+    # When a block is given, registers a handler for the given key.
+    # Otherwise, executes all registered handlers for the given key.
+    def handle aKey, *aArgs, &aBlock
+      if block_given?
+        self[aKey] << aBlock
+
+      elsif key? aKey
+        self[aKey].each do |block|
+          block.call(*aArgs)
         end
       end
     end
+  end
 
-    EVENTS  = Handler.new
-    ACTIONS = Handler.new
-    KEYS    = Handler.new
+  EVENTS  = Handler.new
+  ACTIONS = Handler.new
+  KEYS    = Handler.new
 
-    def event *a, &b
-      EVENTS.handle(*a, &b)
-    end
+  def event *a, &b
+    EVENTS.handle(*a, &b)
+  end
 
-    def action *a, &b
-      ACTIONS.handle(*a, &b)
-    end
+  def action *a, &b
+    ACTIONS.handle(*a, &b)
+  end
 
-    def key *a, &b
-      a.map! { |x| x.respond_to?(:flatten) ? x.flatten.join('-') : x }
-      KEYS.handle a.join(','), &b
-    end
+  def key *a, &b
+    KEYS.handle a.map {|k| k.flatten.join('-') rescue k }.join(','), &b
+  end
 
+
+  ##
+  #
   # Utility functions
+  #
+  ##
 
-    # Shows a menu with the given items and returns the chosen
-    # item. If nothing was chosen, then *nil* is returned.
-    def show_menu aChoices, aPrompt = nil
-      cmd = "dmenu -b -fn #{WMII_FONT.inspect} " <<
-            %w[-nf -nb -sf -sb].zip(
-              Color::NORMAL.split[0,2] + Color::FOCUSED.split[0,2]
-            ).flatten.map {|s| s.inspect}.join(' ')
+  # Shows a menu with the given items and returns the chosen
+  # item. If nothing was chosen, then *nil* is returned.
+  def show_menu aChoices, aPrompt = nil
+    cmd = "dmenu -b -fn #{WMII_FONT.inspect} " <<
+          %w[-nf -nb -sf -sb].zip(
+            Color::NORMAL.split[0,2] + Color::FOCUSED.split[0,2]
+          ).flatten.map {|s| s.inspect}.join(' ')
 
-      cmd << " -p #{aPrompt.to_s.inspect}" if aPrompt
+    cmd << " -p #{aPrompt.to_s.inspect}" if aPrompt
 
-      IO.popen cmd, 'r+' do |menu|
-        menu.puts aChoices
-        menu.close_write
+    IO.popen cmd, 'r+' do |menu|
+      menu.puts aChoices
+      menu.close_write
 
-        choice = menu.read
-        choice unless choice.empty?
-      end
+      choice = menu.read
+      choice unless choice.empty?
     end
+  end
 
 
-    require 'pathname'
+  require 'pathname'
 
-    # Returns the names of programs present in the given directories.
-    def find_programs *aDirs
-      aDirs.flatten.map do |d|
-        Pathname.new(d).expand_path.children rescue []
-      end.flatten.map do |f|
-        f.basename.to_s if f.file? and f.executable?
-      end.compact.uniq.sort
-    end
+  # Returns the names of programs present in the given directories.
+  def find_programs *aDirs
+    aDirs.flatten.map do |d|
+      Pathname.new(d).expand_path.children rescue []
+    end.flatten.map do |f|
+      f.basename.to_s if f.file? and f.executable?
+    end.compact.uniq.sort
+  end
 
   # terminate existing instances of this program
-    fs.event << 'Start wmiirc'
+  fs.event.write 'Start wmiirc'
 
-    event :Start do |arg|
-      exit if arg == 'wmiirc'
-    end
+  event :Start do |arg|
+    exit if arg == 'wmiirc'
+  end
 
   # load user's configuration file
-    load File.join(File.dirname(__FILE__), 'wmiirc-config.rb')
+  load File.join(File.dirname(__FILE__), 'wmiirc-config.rb')
 
-    # Tag bar setup
-      fs.lbar.clear
+  # populate lbar with buttons for every tag
+  bar = fs.lbar
+  bar.clear
 
-      tags.each do |tag|
-        color = (tag == current_tag) ? Color::FOCUSED : Color::NORMAL
+  tags.each do |tag|
+    color = (tag == curr_tag) ? Color::FOCUSED : Color::NORMAL
 
-        bar = fs.lbar[tag]
-        bar.create
-        bar.write "#{color} #{tag}"
-      end
+    btn = bar[tag]
+    btn.create
+    btn.write "#{color} #{tag}"
+  end
 
-    # Keygrab setup
-      fs.keys = KEYS.keys.join("\n")
+  # enable keyboard shortcuts
+  fs.keys.write KEYS.keys.join("\n")
 
-      event :Key do |*args|
-        key(*args)
-      end
+  event :Key do |*args|
+    key(*args)
+  end
 
-    # Event loop
-      fs.event.open do |bus|
-        loop do
-          bus.read.split("\n").each do |event|
-            type, parms = event.split(' ', 2)
+  # the main event loop
+  fs.event.each_line do |line|
+    line.split("\n").each do |event|
+      type, parms = event.split(' ', 2)
 
-            args = parms.split(' ') rescue []
-            event type.to_sym, *args
-          end
-        end
-      end
+      args = parms.split(' ') rescue []
+      event type.to_sym, *args
+    end
+  end
 
 rescue => e
   LOG.error e
 
   # allow the user to rescue themselves
-    system 'xterm &'
+  system 'xterm &'
 
-    IO.popen('xmessage -file - -buttons recover:0,ignore:1', 'w') do |f|
-      f.puts e.inspect, e.backtrace
-    end
+  IO.popen('xmessage -file - -buttons recover:0,ignore:1', 'w') do |f|
+    f.puts e.inspect, e.backtrace
+  end
 
-    if $?.exitstatus == 0
-      system $0 + ' &'
-    end
+  if $?.exitstatus == 0
+    system $0 + ' &'
+  end
+
+rescue SystemExit
+  # ignore it
 
 rescue Exception => e
   LOG.fatal e

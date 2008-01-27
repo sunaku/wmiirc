@@ -51,7 +51,7 @@ WMII_FONT = '-*-bitstream vera sans mono-medium-r-*-*-16-*-*-*-*-*-*-*'
 ################################################################################
 
 # WM Configuration
-fs.ctl = <<EOF
+fs.ctl.write <<EOF
 grabmod #{Key::MOD}
 border 2
 font #{WMII_FONT}
@@ -60,12 +60,12 @@ normcolors #{Color::NORMAL}
 EOF
 
 # Column Rules
-fs.colrules = <<EOF
+fs.colrules.write <<EOF
 /./ -> 50+50
 EOF
 
 # Tagging Rules
-fs.tagrules = <<EOF
+fs.tagrules.write <<EOF
 /.*notes.*/ -> note
 /Buddy List.*/ -> chat
 /XChat.*/ -> chat
@@ -94,19 +94,22 @@ EOF
   end
 
   event :FocusTag do |tag|
-    fs.lbar[tag] << "#{Color::FOCUSED} #{tag}"
+    fs.lbar[tag].write "#{Color::FOCUSED} #{tag}"
   end
 
   event :UnfocusTag do |tag|
-    fs.lbar[tag] << "#{Color::NORMAL} #{tag}"
+    btn = fs.lbar[tag]
+    btn.write "#{Color::NORMAL} #{tag}" if btn.exist?
   end
 
   event :UrgentTag do |tag|
-    fs.lbar[tag] << "*#{tag}"
+    btn = fs.lbar[tag]
+    btn.write "*#{tag}" if btn.exist?
   end
 
   event :NotUrgentTag do |tag|
-    fs.lbar[tag] << tag
+    btn = fs.lbar[tag]
+    btn.write tag if btn.exist?
   end
 
   event :LeftBarClick do |button, viewId|
@@ -116,13 +119,13 @@ EOF
 
     when Mouse::MIDDLE
       # add the grouping onto the clicked view
-      grouped_clients.each do |c|
+      grouping.each do |c|
         c.tag viewId
       end
 
     when Mouse::SECONDARY
       # remove the grouping from the clicked view
-      grouped_clients.each do |c|
+      grouping.each do |c|
         c.untag viewId
       end
     end
@@ -132,7 +135,7 @@ EOF
     case button.to_i
     when Mouse::SECONDARY
       # toggle the clicked client's grouping
-      Client.toggle_grouping clientId
+      Client.toggle_group clientId
     end
   end
 
@@ -145,7 +148,7 @@ EOF
   end
 
   action :kill do
-    fs.ctl = 'quit'
+    fs.ctl.write 'quit'
   end
 
   action :quit do
@@ -161,15 +164,13 @@ EOF
     # gnome-panel refuses to die by other means
     system 'killall -s TERM gnome-panel'
 
-    fs.event.open do |f|
-      clients.each do |c|
-        if c.exist?
+    clients.each do |c|
+      while c.exist?
+        begin
           c.focus
-          c.ctl = :kill
-
-          # wait until the client is dead
-          until f.read =~ /DestroyClient #{c.id}/
-          end
+          c.ctl.write :kill
+        rescue IXP::Error
+          # ignore and retry
         end
       end
     end
@@ -209,61 +210,61 @@ EOF
 
     # focus client at left
     key Key::FOCUS + Key::LEFT do
-      current_view.ctl = 'select left'
+      curr_view.ctl.write 'select left' rescue nil
     end
 
     # focus client at right
     key Key::FOCUS + Key::RIGHT do
-      current_view.ctl = 'select right'
+      curr_view.ctl.write 'select right' rescue nil
     end
 
     # focus client below
     key Key::FOCUS + Key::DOWN do
-      current_view.ctl = 'select down'
+      curr_view.ctl.write 'select down'
     end
 
     # focus client above
     key Key::FOCUS + Key::UP do
-      current_view.ctl = 'select up'
+      curr_view.ctl.write 'select up'
     end
 
     # toggle focus between floating area and the columns
     key Key::FOCUS + 'space' do
-      current_view.ctl = 'select toggle'
+      curr_view.ctl.write 'select toggle'
     end
 
     # apply equal-spacing layout to current column
     key Key::ARRANGE + 'w' do
-      current_area.layout = :default
+      curr_area.layout = :default
     end
 
     # apply equal-spacing layout to all columns
     key Key::ARRANGE + 'Shift-w' do
-      current_view.columns.each do |a|
+      curr_view.columns.each do |a|
         a.layout = :default
       end
     end
 
     # apply stacked layout to currently focused column
     key Key::ARRANGE + 'v' do
-      current_area.layout = :stack
+      curr_area.layout = :stack
     end
 
     # apply stacked layout to all columns in current view
     key Key::ARRANGE + 'Shift-v' do
-      current_view.columns.each do |a|
+      curr_view.columns.each do |a|
         a.layout = :stack
       end
     end
 
     # apply maximized layout to currently focused column
     key Key::ARRANGE + 'm' do
-      current_area.layout = :max
+      curr_area.layout = :max
     end
 
     # apply maximized layout to all columns in current view
     key Key::ARRANGE + 'Shift-m' do
-      current_view.columns.each do |a|
+      curr_view.columns.each do |a|
         a.layout = :max
       end
     end
@@ -282,61 +283,61 @@ EOF
   # sending / moving
 
     key Key::SEND + Key::LEFT do
-      grouped_clients.each do |c|
+      grouping.each do |c|
         c.send :left
       end
     end
 
     key Key::SEND + Key::RIGHT do
-      grouped_clients.each do |c|
+      grouping.each do |c|
         c.send :right
       end
     end
 
     key Key::SEND + Key::DOWN do
-      grouped_clients.each do |c|
+      grouping.each do |c|
         c.send :down
       end
     end
 
     key Key::SEND + Key::UP do
-      grouped_clients.each do |c|
+      grouping.each do |c|
         c.send :up
       end
     end
 
     # send all grouped clients from managed to floating area (or vice versa)
     key Key::SEND + 'space' do
-      grouped_clients.each do |c|
+      grouping.each do |c|
         c.send :toggle
       end
     end
 
     # close all grouped clients
     key Key::SEND + 'Delete' do
-      grouped_clients.each do |c|
-        c.ctl = 'kill'
+      grouping.each do |c|
+        c.ctl.write 'kill'
       end
     end
 
     # swap the currently focused client with the one to its left
     key Key::SWAP + Key::LEFT do
-      current_client.swap :left
+      curr_client.swap :left
     end
 
     # swap the currently focused client with the one to its right
     key Key::SWAP + Key::RIGHT do
-      current_client.swap :right
+      curr_client.swap :right
     end
 
     # swap the currently focused client with the one below it
     key Key::SWAP + Key::DOWN do
-      current_client.swap :down
+      curr_client.swap :down
     end
 
     # swap the currently focused client with the one above it
     key Key::SWAP + Key::UP do
-      current_client.swap :up
+      curr_client.swap :up
     end
 
     # Changes the tag (according to a menu choice) of each grouped client and
@@ -346,7 +347,7 @@ EOF
       choices = tags.map {|t| [t, "+#{t}", "-#{t}"]}.flatten
 
       if target = show_menu(choices, 'tag as:')
-        grouped_clients.each do |c|
+        grouping.each do |c|
           case target
           when /^\+/
             c.tag $'
@@ -366,10 +367,10 @@ EOF
 
     # Sends grouped clients to temporary view.
     key Key::PREFIX + 'b' do
-      src = current_tag
+      src = curr_tag
       dst = src + '~' + src.object_id.abs.to_s
 
-      grouped_clients.each do |c|
+      grouping.each do |c|
         c.tag dst
       end
 
@@ -380,12 +381,12 @@ EOF
 
     # Sends grouped clients back to their original view.
     key Key::PREFIX + 'Shift-b' do
-      src = current_tag
+      src = curr_tag
 
       if src =~ /~\d+$/
         dst = $`
 
-        grouped_clients.each do |c|
+        grouping.each do |c|
           c.with_tags do
             delete src
             push dst if empty?
@@ -401,76 +402,76 @@ EOF
 
     # include/exclude the currently focused client from the grouping
     key Key::GROUP + 'g' do
-      current_client.toggle_grouping
+      curr_client.toggle_group
     end
 
     # include all clients in the currently focused view into the grouping
     key Key::GROUP + 'v' do
-      current_view.group
+      curr_view.group
     end
 
     # exclude all clients in the currently focused view from the grouping
     key Key::GROUP + 'Shift-v' do
-      current_view.ungroup
+      curr_view.ungroup
     end
 
     # include all clients in the currently focused area into the grouping
     key Key::GROUP + 'c' do
-      current_area.group
+      curr_area.group
     end
 
     # exclude all clients in the currently focused column from the grouping
     key Key::GROUP + 'Shift-c' do
-      current_area.ungroup
+      curr_area.ungroup
     end
 
     # include all clients in the floating area into the grouping
     key Key::GROUP + 'f' do
-      current_view.floating_area.group
+      curr_view.floating_area.group
     end
 
     # exclude all clients in the currently focused column from the grouping
     key Key::GROUP + 'Shift-f' do
-      current_view.floating_area.ungroup
+      curr_view.floating_area.ungroup
     end
 
     # include all clients in the managed areas into the grouping
     key Key::GROUP + 'a' do
-      current_view.columns.each do |c|
+      curr_view.columns.each do |c|
         c.group
       end
     end
 
     # exclude all clients in the managed areas from the grouping
     key Key::GROUP + 'Shift-a' do
-      current_view.columns.each do |c|
+      curr_view.columns.each do |c|
         c.ungroup
       end
     end
 
     # invert the grouping in the currently focused view
     key Key::GROUP + 'i' do
-      current_view.toggle_grouping
+      curr_view.toggle_group
     end
 
     # exclude all clients everywhere from the grouping
     key Key::GROUP + 'n' do
-      ungroup_all
+      Rumai.ungroup
     end
 
 
   # visual arrangement
 
     key Key::ARRANGE + 't' do
-      current_view.arrange_as_larswm
+      curr_view.arrange_as_larswm
     end
 
     key Key::ARRANGE + 'g' do
-      current_view.arrange_in_grid
+      curr_view.arrange_in_grid
     end
 
     key Key::ARRANGE + 'd' do
-      current_view.arrange_in_diamond
+      curr_view.arrange_in_diamond
     end
 
 
@@ -520,7 +521,7 @@ EOF
     # Open a new terminal and set its working directory
     # to be the same as the currently focused terminal.
     key Key::EXECUTE + 'x' do
-      c = current_client
+      c = curr_client
       d = File.expand_path(c.label.read.sub(/^.*?:\s+/, '')) rescue nil
       d = ENV['HOME'] unless File.directory? d.to_s
 
@@ -572,9 +573,9 @@ EOF
 
     # Detach the current grouping from the current view.
     key Key::PREFIX + 'd' do
-      grouped_clients.each do |c|
+      grouping.each do |c|
         c.with_tags do
-          delete current_tag
+          delete curr_tag
           push DETACHED_TAG
         end
       end
@@ -587,7 +588,7 @@ EOF
       if v.exist? and c = v.clients.last
         c.with_tags do
           delete DETACHED_TAG
-          push current_tag
+          push curr_tag
         end
       end
     end
@@ -603,19 +604,19 @@ EOF
 
       # send current grouping to {i}'th view
       key Key::SEND + i.to_s do
-        grouped_clients.each do |c|
+        grouping.each do |c|
           c.tags = tags[i - 1] || i
         end
       end
 
       # swap current client with the primary client in {i}'th column
       key Key::SWAP + i.to_s do
-        current_view.ctl = "swap sel #{i+1}" # XXX: +1 b/c floating area is column 1: until John-Galt fixes this!
+        curr_view.ctl.write "swap sel #{i+1}" # XXX: +1 b/c floating area is column 1: until John-Galt fixes this!
       end
 
       # apply grid layout with {i} clients per column
       key Key::ARRANGE + i.to_s do
-        current_view.arrange_in_grid i
+        curr_view.arrange_in_grid i
       end
     end
 
