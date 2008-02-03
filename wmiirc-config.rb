@@ -164,13 +164,12 @@ EOF
     # gnome-panel refuses to die by other means
     system 'killall -s TERM gnome-panel'
 
-    clients.each do |c|
-      while c.exist?
+    until (clients = Rumai.clients).empty?
+      clients.each do |c|
         begin
           c.focus
           c.ctl.write :kill
-        rescue IXP::Error
-          # ignore and retry
+        rescue
         end
       end
     end
