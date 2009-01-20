@@ -1,111 +1,112 @@
 #!/usr/bin/ruby -w
 # Loader for ruby-based wmii configuration.
 
-# load the wmii-irb library
-$: << '/home/sun/src/rumai/lib'
-require 'rumai'
-include Rumai
+# load the Ruby interface to wmii
+  require 'rubygems'
+  gem 'rumai', '~> 2'
+  require 'rumai'
 
+  include Rumai
 
 # create a logger to aid debugging
-require 'logger'
-LOG = Logger.new(__FILE__ + '.log', 5)
+  require 'logger'
+  LOG = Logger.new(__FILE__ + '.log', 5)
 
-unless $DEBUG
-  class << LOG
-    alias write <<  # emulate IO.write
+  unless $DEBUG
+    class << LOG
+      # emulate IO.write
+      alias write <<
 
-    def flush
-      # ignore
+      def flush
+        # ignore
+      end
     end
+
+    # capture standard output in logger
+    $stdout = $stderr = LOG
   end
-
-  # capture standard output in logger
-  $stdout = $stderr = LOG
-end
-
 
 LOG.info "birth"
 
 begin
-  ##
-  #
-  # Miniature DSL to ease configuration.
-  #
-  ##
+  # miniature DSL to ease configuration
+    class Handler < Hash
+      def initialize
+        super {|h,k| h[k] = [] }
+      end
 
-  class Handler < Hash
-    def initialize
-      super {|h,k| h[k] = [] }
-    end
+      # When a block is given, registers a handler for the given key.
+      # Otherwise, executes all registered handlers for the given key.
+      def handle aKey, *aArgs, &aBlock
+        if block_given?
+          self[aKey] << aBlock
 
-    # When a block is given, registers a handler for the given key.
-    # Otherwise, executes all registered handlers for the given key.
-    def handle aKey, *aArgs, &aBlock
-      if block_given?
-        self[aKey] << aBlock
-
-      elsif key? aKey
-        self[aKey].each do |block|
-          block.call(*aArgs)
+        elsif key? aKey
+          self[aKey].each do |block|
+            block.call(*aArgs)
+          end
         end
       end
     end
-  end
 
-  EVENTS  = Handler.new
-  ACTIONS = Handler.new
-  KEYS    = Handler.new
+    EVENTS  = Handler.new
+    ACTIONS = Handler.new
+    KEYS    = Handler.new
 
-  def event *a, &b
-    EVENTS.handle(*a, &b)
-  end
-
-  def action *a, &b
-    ACTIONS.handle(*a, &b)
-  end
-
-  def key *a, &b
-    KEYS.handle a.map {|k| k.flatten.join('-') rescue k }.join(','), &b
-  end
-
-
-  ##
-  #
-  # Utility functions
-  #
-  ##
-
-  # Shows a menu with the given items and returns the chosen
-  # item. If nothing was chosen, then *nil* is returned.
-  def show_menu aChoices, aPrompt = nil
-    cmd = "dmenu -b -fn #{WMII_FONT.inspect} " <<
-          %w[-nf -nb -sf -sb].zip(
-            Color::NORMAL.split[0,2] + Color::FOCUSED.split[0,2]
-          ).flatten.map {|s| s.inspect}.join(' ')
-
-    cmd << " -p #{aPrompt.to_s.inspect}" if aPrompt
-
-    IO.popen cmd, 'r+' do |menu|
-      menu.puts aChoices
-      menu.close_write
-
-      choice = menu.read
-      choice unless choice.empty?
+    def event *a, &b
+      EVENTS.handle(*a, &b)
     end
-  end
 
+    def action *a, &b
+      ACTIONS.handle(*a, &b)
+    end
 
-  require 'pathname'
+    def key *a, &b
+      KEYS.handle a.map {|k| k.flatten.join('-') rescue k }.join(','), &b
+    end
 
-  # Returns the names of programs present in the given directories.
-  def find_programs *aDirs
-    aDirs.flatten.map do |d|
-      Pathname.new(d).expand_path.children rescue []
-    end.flatten.map do |f|
-      f.basename.to_s if f.file? and f.executable?
-    end.compact.uniq.sort
-  end
+    def unevent *a
+      EVENTS.delete(*a)
+    end
+
+    def unaction *a
+      ACTIONS.delete(*a)
+    end
+
+    def unkey *a
+      KEYS.delete(*a)
+    end
+
+  # utility methods
+
+    # Shows a menu with the given items and returns the chosen
+    # item. If nothing was chosen, then *nil* is returned.
+    def show_menu aChoices, aPrompt = nil
+      cmd = "dmenu -b -fn #{WMII_FONT.inspect} " <<
+            %w[-nf -nb -sf -sb].zip(
+              Color::NORMAL.split[0,2] + Color::FOCUSED.split[0,2]
+            ).flatten.map {|s| s.inspect}.join(' ')
+
+      cmd << " -p #{aPrompt.to_s.inspect}" if aPrompt
+
+      IO.popen cmd, 'r+' do |menu|
+        menu.puts aChoices
+        menu.close_write
+
+        choice = menu.read
+        choice unless choice.empty?
+      end
+    end
+
+    require 'pathname'
+    # Returns the names of programs present in the given directories.
+    def find_programs *aDirs
+      aDirs.flatten.map do |d|
+        Pathname.new(d).expand_path.children rescue []
+      end.flatten.map do |f|
+        f.basename.to_s if f.file? and f.executable?
+      end.compact.uniq.sort
+    end
 
   # terminate existing instances of this program
   fs.event.write 'Start wmiirc'
@@ -118,33 +119,33 @@ begin
   load File.join(File.dirname(__FILE__), 'wmiirc-config.rb')
 
   # populate lbar with buttons for every tag
-  bar = fs.lbar
-  bar.clear
+    bar = fs.lbar
+    bar.clear
 
-  tags.each do |tag|
-    color = (tag == curr_tag) ? Color::FOCUSED : Color::NORMAL
+    tags.each do |tag|
+      color = (tag == curr_tag) ? Color::FOCUSED : Color::NORMAL
 
-    btn = bar[tag]
-    btn.create
-    btn.write "#{color} #{tag}"
-  end
+      btn = bar[tag]
+      btn.create
+      btn.write "#{color} #{tag}"
+    end
 
   # enable keyboard shortcuts
-  fs.keys.write KEYS.keys.join("\n")
+    fs.keys.write KEYS.keys.join("\n")
 
-  event :Key do |*args|
-    key(*args)
-  end
+    event :Key do |*args|
+      key(*args)
+    end
 
   # the main event loop
-  fs.event.each_line do |line|
-    line.split("\n").each do |event|
-      type, parms = event.split(' ', 2)
+    fs.event.each_line do |line|
+      line.split("\n").each do |event|
+        type, parms = event.split(' ', 2)
 
-      args = parms.split(' ') rescue []
-      event type.to_sym, *args
+        args = parms.split(' ') rescue []
+        event type.to_sym, *args
+      end
     end
-  end
 
 rescue => e
   LOG.error e

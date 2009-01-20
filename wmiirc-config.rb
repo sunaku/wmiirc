@@ -80,8 +80,7 @@ fs.tagrules.write <<EOF
 /.*/ -> 1
 EOF
 
-# Events
-
+# events
   event :CreateTag do |tag|
     bar = fs.lbar[tag]
     bar.create
@@ -158,9 +157,7 @@ EOF
     end
   end
 
-
-# Actions
-
+# actions
   action :rehash do
     @programMenu  = find_programs ENV['PATH'].squeeze(':').split(':')
     @actionMenu   = find_programs File.dirname(__FILE__)
@@ -234,11 +231,8 @@ EOF
     ]
   end
 
-
-# Key bindings
-
+# keyboard shortcuts
   # focusing / showing
-
     # focus client at left
     key Key::FOCUS + Key::LEFT do
       curr_view.ctl.write 'select left' rescue nil
@@ -310,9 +304,7 @@ EOF
       next_view.focus
     end
 
-
   # sending / moving
-
     key Key::SEND + Key::LEFT do
       grouping.each do |c|
         c.send :left
@@ -393,9 +385,7 @@ EOF
       end
     end
 
-
   # zooming / sizing
-
     ZOOMED_SUFFIX = /~(\d+)$/
 
     # Sends grouped clients to temporary view.
@@ -414,6 +404,7 @@ EOF
       v = View.new dst
       v.focus
       v.arrange_in_grid
+      #if c = grouping.shift then c.focus unless c.focus? end
     end
 
     # Sends grouped clients back to their original view.
@@ -439,9 +430,7 @@ EOF
       end
     end
 
-
   # client grouping
-
     # include/exclude the currently focused client from the grouping
     key Key::GROUP + 'g' do
       curr_client.toggle_group
@@ -501,9 +490,7 @@ EOF
       Rumai.ungroup
     end
 
-
   # visual arrangement
-
     key Key::ARRANGE + 't' do
       curr_view.arrange_as_larswm
     end
@@ -516,9 +503,7 @@ EOF
       curr_view.arrange_in_diamond
     end
 
-
   # interactive menu
-
     # launch an internal action by choosing from a menu
     key Key::MENU + 'i' do
       if choice = show_menu(@actionMenu + ACTIONS.keys, 'run action:')
@@ -555,9 +540,7 @@ EOF
       end
     end
 
-
   # external programs
-
     require 'fileutils'
 
     # Open a new terminal and set its working directory
@@ -661,7 +644,6 @@ EOF
 
 
   # wmii-2 style client detaching
-
     DETACHED_TAG = '|'
 
     # Detach the current grouping from the current view.
@@ -686,9 +668,7 @@ EOF
       end
     end
 
-
   # number keys
-
     10.times do |i|
       # focus the {i}'th view
       key Key::FOCUS + i.to_s do
@@ -713,9 +693,7 @@ EOF
       end
     end
 
-
   # alphabet keys
-
     # focus the view whose name begins with an alphabet key
     ('a'..'z').each do |k|
       key Key::VIEW + k do
@@ -725,8 +703,10 @@ EOF
       end
     end
 
+# wallpaper
+  system "xsetroot -solid #{Color::BACKGROUND.inspect} &"
+  system 'sh ~/.fehbg &' # set desktop wallpaper
 
-# Misc Setup
-system "xsetroot -solid #{Color::BACKGROUND.inspect} &"
-action :status
-action :rehash
+# bootstrap
+  action :status
+  action :rehash

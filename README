@@ -1,20 +1,16 @@
-wmiirc: wmii configuration in Ruby
-==================================
+This is my Ruby-based wmii configuration, explained in this article:
 
-This is my wmii configuration in Ruby [1]. It currently only works with
-wmii-snap20070516, but I will work on upgrading it to wmii-3.6 soon.
+  http://snk.tuxfamily.org/web/2006-07-01-wmii-3-1-configuration-in-ruby.html
 
-If you have any questions or suggestions, e-mail me at <SNK at GNA dot ORG>.
+Dependencies:
 
-Cheers.
+    gem install rumai librmpd
 
-[1] http://rassmalog.rubyforge.org/blog/2006-07-01-wmii-3-1-configuration-in-ruby.html
+Installation:
 
+    git clone git://github.com/sunaku/wmiirc.git ~/.wmii-hg
 
-Setup instructions
-------------------
+    chmod +x ~/.wmii-hg/wmiirc
 
-1. Install the Rumai library:  http://rumai.rubyforge.org
-
-2. Adjust the $: (load path) variable at the top of the wmiirc file.
+    ~/.wmii-hg/wmiirc
 
