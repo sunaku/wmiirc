@@ -18,6 +18,10 @@ LOG = Logger.new(__FILE__ + '.log', 5)
 unless $DEBUG
   class << LOG
     alias write <<  # emulate IO.write
+
+    def flush
+      # ignore
+    end
   end
 
   # capture standard output in logger
