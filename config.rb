@@ -467,14 +467,14 @@ EOF
     end
 
     # include all clients in the managed areas into the grouping
-    key Key::GROUP + 'a' do
+    key Key::GROUP + 'm' do
       curr_view.columns.each do |c|
         c.group
       end
     end
 
     # exclude all clients in the managed areas from the grouping
-    key Key::GROUP + 'Shift-a' do
+    key Key::GROUP + 'Shift-m' do
       curr_view.columns.each do |c|
         c.ungroup
       end
