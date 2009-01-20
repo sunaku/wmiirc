@@ -558,7 +558,7 @@ EOF
     # to be the same as the currently focused terminal.
     key Key::EXECUTE + 'x' do
       c = curr_client
-      d = File.expand_path(c.label.read.sub(/^.*?:\s+/, '')) rescue nil
+      d = File.expand_path(c.label.read.split(' ', 2).last) rescue nil
       d = ENV['HOME'] unless File.directory? d.to_s
 
       FileUtils.cd(d) do
