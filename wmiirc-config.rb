@@ -390,10 +390,16 @@ EOF
 
   # zooming / sizing
 
+    ZOOMED_SUFFIX = /~(\d+)$/
+
     # Sends grouped clients to temporary view.
     key Key::PREFIX + 'b' do
-      src = curr_tag
-      dst = src + '~' + src.object_id.abs.to_s
+      if curr_tag =~ ZOOMED_SUFFIX
+        src, num = $`, $1.to_i
+        dst = "#{src}~#{num+1}"
+      else
+        dst = "#{curr_tag}~1"
+      end
 
       grouping.each do |c|
         c.tag dst
@@ -408,13 +414,18 @@ EOF
     key Key::PREFIX + 'Shift-b' do
       src = curr_tag
 
-      if src =~ /~\d+$/
+      if src =~ ZOOMED_SUFFIX
         dst = $`
 
         grouping.each do |c|
           c.with_tags do
             delete src
-            push dst if empty?
+
+            if empty?
+              push dst
+            else
+              dst = last
+            end
           end
         end
 
