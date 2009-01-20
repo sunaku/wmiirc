@@ -213,6 +213,10 @@ EOF
     end
 
     @statusBars = [
+      StatusBar.new(fs.rbar.volume, 10) do
+        refresh_volume_display
+      end,
+
       StatusBar.new(fs.rbar.clock, 1) do
         Time.now
       end,
@@ -571,36 +575,87 @@ EOF
     end
 
     key Key::EXECUTE + 'j' do
-      system 'nautilus --no-desktop &'
+      system 'thunar &'
     end
 
-    key(Key::PREFIX + 'Prior')  {system 'mpc prev'}
-    key(Key::PREFIX + 'Next')   {system 'mpc next'}
-    key(Key::PREFIX + 'Return') {system 'mpc toggle'}
+    # volume controls
+      def refresh_volume_display
+        level = `amixer get Master`.scan(/\d+%/).first
+        label = "volume #{level}"
 
-    key(Key::PREFIX + 'Shift-Prior')  {system 'amixer set Master 3dB+'}
-    key(Key::PREFIX + 'Shift-Next')   {system 'amixer set Master 3dB-'}
-    key(Key::PREFIX + 'Shift-Return') {system 'amixer set Master toggle'} # FIXME: doesn't work...
+        b = Rumai.fs.rbar.volume
+        b.create unless b.exist?
+        b.write "#{Color::NORMAL} #{label}"
 
-    # load an MPD playlist
-    key(Key::PREFIX + 'Home') do
-      choices = `mpc lsplaylists`.split(/\n/)
-
-      if target = show_menu(choices, 'load MPD playlist:')
-        system 'mpc clear'
-        system 'mpc', 'load', target
-        system 'mpc play'
+        label
       end
-    end
 
-    # add current song to an MPD playlist
-    key(Key::PREFIX + 'End') do
-      choices = `mpc lsplaylists`.split(/\n/)
-
-      if target = show_menu(choices, 'add current song to MPD playlist:')
-        system 'add-to-mpd-playlist', target
+      key(Key::PREFIX + 'Shift-Prior') do
+        system 'amixer set Master 3dB+'
+        refresh_volume_display
       end
-    end
+
+      key(Key::PREFIX + 'Shift-Next') do
+        system 'amixer set Master 3dB-'
+        refresh_volume_display
+      end
+
+      key(Key::PREFIX + 'Shift-Return') do
+        system 'amixer set Master toggle'
+        refresh_volume_display
+      end
+
+    # music controls
+      print 'connecting to MPD... ',
+      begin
+        require 'rubygems'
+        require 'librmpd'
+
+        @mpd = MPD.new
+        @mpd.connect(true) # true keeps connection alive
+      rescue => e
+        puts e # ignore
+      end
+
+      key(Key::PREFIX + 'Prior')  { @mpd.previous }
+      key(Key::PREFIX + 'Next')   { @mpd.next }
+
+      key Key::PREFIX + 'Return' do # play / pause
+        if @mpd.stopped?
+          @mpd.play
+        else
+          # toggle play/pause
+          @mpd.pause = !@mpd.paused?
+        end
+      end
+
+      # load an MPD playlist
+      key(Key::PREFIX + 'Home') do
+        choices = @mpd.playlists
+
+        if target = show_menu(choices, 'load MPD playlist:')
+          @mpd.clear
+          @mpd.load target
+          @mpd.play
+        end
+      end
+
+      # add current song to an MPD playlist
+      key(Key::PREFIX + 'End') do
+        choices = @mpd.playlists
+
+        if target = show_menu(choices, 'add current song to MPD playlist:')
+          song = @mpd.current_song
+
+          file = File.join(File.expand_path('~/.mpd/playlists'), target + '.m3u')
+          list = File.read(file).split(/\r?\n/) rescue []
+
+          list.push song.file
+          list.uniq!
+
+          File.open(file, 'w') {|f| f.puts list }
+        end
+      end
 
 
   # wmii-2 style client detaching
