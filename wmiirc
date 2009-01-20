@@ -116,7 +116,7 @@ begin
   end
 
   # load user's configuration file
-  load File.join(File.dirname(__FILE__), 'wmiirc-config.rb')
+  load File.join(File.dirname(__FILE__), 'config.rb')
 
   # populate lbar with buttons for every tag
     bar = fs.lbar
