@@ -1,9 +1,5 @@
 #!/usr/bin/ruby -w
 # Loader for ruby-based wmii configuration.
-#--
-# Copyright 2006-2007 Suraj N. Kurapati
-# Copyright 2007      Nick Stenning
-# See the file named LICENSE for details.
 
 # load the wmii-irb library
 $: << '/home/sun/src/rumai/lib'

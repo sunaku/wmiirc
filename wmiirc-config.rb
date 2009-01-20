@@ -1,7 +1,4 @@
 # Ruby-based configuration file for wmii.
-#--
-# Copyright 2006-2007 Suraj N. Kurapati
-# See the file named LICENSE for details.
 
 ################################################################################
 # GENERAL CONFIGURATION
