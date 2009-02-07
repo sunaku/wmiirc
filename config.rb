@@ -148,10 +148,10 @@ EOF
   event :CreateClient do |id|
     c = Client.new(id)
 
-    case c.label.read
-    when "Gran Paradiso - Restore Previous Session"
+    case c.props.read
+    when /Gran Paradiso - Restore Previous Session/
       c.tags = 'web'
-    when /Firefox|Gran Paradiso|jEdit/i
+    when /:(Firefox|Gran Paradiso|jEdit|Epiphany)/i
       c.tags = curr_tag
       c.focus
     end
