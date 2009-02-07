@@ -8,9 +8,9 @@ Dependencies:
 
 Installation:
 
-    git clone git://github.com/sunaku/wmiirc.git ~/.wmii-hg
+    git clone git://github.com/sunaku/wmiirc.git ~/.wmii-3.5
 
-    chmod +x ~/.wmii-hg/wmiirc
+    chmod +x ~/.wmii-3.5/wmiirc
 
-    ~/.wmii-hg/wmiirc
+    ~/.wmii-3.5/wmiirc
 
