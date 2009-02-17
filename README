@@ -1,4 +1,6 @@
-This is my Ruby-based wmii configuration, explained in this article:
+This is my Ruby-based wmii configuration, explained in these articles:
+
+  http://snk.tuxfamily.org/lib/rumai/
 
   http://snk.tuxfamily.org/web/2006-07-01-wmii-3-1-configuration-in-ruby.html
 
@@ -7,6 +9,8 @@ Dependencies:
     gem install rumai librmpd
 
 Installation:
+
+    mv ~/.wmii-3.5 ~/.wmii-3.5.backup
 
     git clone git://github.com/sunaku/wmiirc.git ~/.wmii-3.5
 
