@@ -147,7 +147,10 @@ begin
       end
     end
 
-rescue => e
+rescue SystemExit
+  # ignore it
+
+rescue Exception => e
   LOG.error e
 
   # allow the user to rescue themselves
@@ -160,12 +163,6 @@ rescue => e
   if $?.exitstatus == 0
     system $0 + ' &'
   end
-
-rescue SystemExit
-  # ignore it
-
-rescue Exception => e
-  LOG.fatal e
 end
 
 LOG.info "death"
