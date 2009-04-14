@@ -10,11 +10,13 @@ Dependencies:
 
 Installation:
 
+    # download and install
+    mv ~/.wmii-hg ~/.wmii-hg.backup
+    git clone git://github.com/sunaku/wmiirc.git ~/.wmii-hg
+
+    # alias for older wmii versions
     mv ~/.wmii-3.5 ~/.wmii-3.5.backup
+    ln -s ~/.wmii-hg ~/.wmii-3.5
 
-    git clone git://github.com/sunaku/wmiirc.git ~/.wmii-3.5
-
-    chmod +x ~/.wmii-3.5/wmiirc
-
-    ~/.wmii-3.5/wmiirc
-
+    # enjoy the goods!
+    ~/.wmii-hg/wmiirc
