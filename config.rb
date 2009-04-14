@@ -112,30 +112,30 @@ EOF
     btn.write tag if btn.exist?
   end
 
-  event :LeftBarClick do |button, viewId|
+  event :LeftBarClick do |button, view_id|
     case button.to_i
     when Mouse::PRIMARY
-      focus_view viewId
+      focus_view view_id
 
     when Mouse::MIDDLE
       # add the grouping onto the clicked view
       grouping.each do |c|
-        c.tag viewId
+        c.tag view_id
       end
 
     when Mouse::SECONDARY
       # remove the grouping from the clicked view
       grouping.each do |c|
-        c.untag viewId
+        c.untag view_id
       end
     end
   end
 
-  event :ClientClick do |clientId, button|
+  event :ClientClick do |client_id, button|
     case button.to_i
     when Mouse::SECONDARY
       # toggle the clicked client's grouping
-      Client.toggle_group clientId
+      Client.toggle_group client_id
     end
   end
 
@@ -161,8 +161,8 @@ EOF
 
 # actions
   action :rehash do
-    @programMenu  = find_programs ENV['PATH'].squeeze(':').split(':')
-    @actionMenu   = find_programs File.dirname(__FILE__)
+    @program_menu = find_programs ENV['PATH'].squeeze(':').split(':')
+    @action_menu  = find_programs File.dirname(__FILE__)
   end
 
   action :kill do
@@ -193,42 +193,58 @@ EOF
     end
   end
 
-  class StatusBar < Thread
-    def initialize aBarNode, aRefreshRate, aBarColor = Color::NORMAL, &aBarText
+  class Button < Thread
+    ##
+    # Creates a new button at the given node and updates its label
+    # according to the given refresh rate (measured in seconds).  The
+    # given block is invoked to calculate the label of the button.
+    #
+    # The return value of the given block must be either an array (whose
+    # first item is a color sequence for the button, and the second is the
+    # label of the button) or a string containing the label of the button.
+    #
+    def initialize fs_bar_node, refresh_rate, &button_label
       raise ArgumentError unless block_given?
 
-      super aBarNode do |b|
+      super(fs_bar_node) do |b|
         b.create unless b.exist?
 
         while true
-          b.write "#{aBarColor} #{aBarText.call}"
-          sleep aRefreshRate
+          ary = Array(button_label.call)
+
+          # provide a default color
+          unless ary.length > 1
+            ary.unshift Color::NORMAL
+          end
+
+          b.write ary.join(' ')
+          sleep refresh_rate
         end
       end
     end
   end
 
   action :status do
-    if defined? @statusBars
-      @statusBars.each {|s| s.kill }
+    if defined? @buttons
+      @buttons.each {|s| s.kill }
     end
 
-    @statusBars = [
-      StatusBar.new(fs.rbar.volume, 10) do
-        refresh_volume_display
+    @buttons = [
+      Button.new(fs.rbar.clock, 2) do
+        Time.now.to_s
       end,
 
-      StatusBar.new(fs.rbar.clock, 1) do
-        Time.now
-      end,
-
-      StatusBar.new(fs.rbar.cpu_load, 5) do
+      Button.new(fs.rbar.cpu_load, 5) do
         File.read('/proc/loadavg').split[0..2].join(' ')
       end,
 
-      StatusBar.new(fs.rbar.disk_space, 10) do
+      Button.new(fs.rbar.disk_space, 120) do
         rem, use, dir = `df -h ~`.split[-3..-1]
         "#{dir} #{use} used #{rem} free"
+      end,
+
+      Button.new(fs.rbar.volume, 10) do
+        refresh_volume_display
       end,
     ]
   end
@@ -508,7 +524,7 @@ EOF
   # interactive menu
     # launch an internal action by choosing from a menu
     key Key::MENU + 'i' do
-      if choice = show_menu(@actionMenu + ACTIONS.keys, 'run action:')
+      if choice = show_menu(@action_menu + ACTIONS.keys, 'run action:')
         unless action choice.to_sym
           system choice << '&'
         end
@@ -517,7 +533,7 @@ EOF
 
     # launch an external program by choosing from a menu
     key Key::MENU + 'e' do
-      if choice = show_menu(@programMenu, 'run program:')
+      if choice = show_menu(@program_menu, 'run program:')
         system choice << '&'
       end
     end

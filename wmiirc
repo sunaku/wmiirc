@@ -37,13 +37,13 @@ begin
 
       # When a block is given, registers a handler for the given key.
       # Otherwise, executes all registered handlers for the given key.
-      def handle aKey, *aArgs, &aBlock
+      def handle key, *args, &block
         if block_given?
-          self[aKey] << aBlock
+          self[key] << block
 
-        elsif key? aKey
-          self[aKey].each do |block|
-            block.call(*aArgs)
+        elsif self.key? key
+          self[key].each do |block|
+            block.call(*args)
           end
         end
       end
@@ -81,16 +81,16 @@ begin
 
     # Shows a menu with the given items and returns the chosen
     # item. If nothing was chosen, then *nil* is returned.
-    def show_menu aChoices, aPrompt = nil
+    def show_menu choices, prompt = nil
       cmd = "dmenu -b -fn #{WMII_FONT.inspect} " <<
             %w[-nf -nb -sf -sb].zip(
               Color::NORMAL.split[0,2] + Color::FOCUSED.split[0,2]
             ).flatten.map {|s| s.inspect}.join(' ')
 
-      cmd << " -p #{aPrompt.to_s.inspect}" if aPrompt
+      cmd << " -p #{prompt.to_s.inspect}" if prompt
 
-      IO.popen cmd, 'r+' do |menu|
-        menu.puts aChoices
+      IO.popen(cmd, 'r+') do |menu|
+        menu.puts choices
         menu.close_write
 
         choice = menu.read
@@ -100,8 +100,8 @@ begin
 
     require 'pathname'
     # Returns the names of programs present in the given directories.
-    def find_programs *aDirs
-      aDirs.flatten.map do |d|
+    def find_programs *dirs
+      dirs.flatten.map do |d|
         Pathname.new(d).expand_path.children rescue []
       end.flatten.map do |f|
         f.basename.to_s if f.file? and f.executable?
