@@ -100,12 +100,16 @@ EOF
     btn.write "#{Color::NORMAL} #{tag}" if btn.exist?
   end
 
-  event :UrgentTag do |tag|
+  # Urgent 0x36003d4 Client
+  # UrgentTag Client chat
+  event :UrgentTag do |what, tag|
     btn = fs.lbar[tag]
     btn.write "*#{tag}" if btn.exist?
   end
 
-  event :NotUrgentTag do |tag|
+  # NotUrgent 0x36003d4 Client
+  # NotUrgentTag Client chat
+  event :NotUrgentTag do |what, tag|
     btn = fs.lbar[tag]
     btn.write tag if btn.exist?
   end
