@@ -63,8 +63,6 @@ EOF
 
 # Tagging Rules
 fs.tagrules.write <<EOF
-/Gran Paradiso - Restore Previous Session/ -> web
-/.*notes.*/ -> note
 /Deluge/ -> tor
 /Buddy List.*/ -> chat
 /XChat.*/ -> chat
@@ -153,7 +151,7 @@ EOF
     c = Client.new(id)
 
     case c.props.read
-    when /Gran Paradiso - Restore Previous Session/
+    when /(Firefox|Gran Paradiso) - Restore Previous Session/
       c.tags = 'web'
     when /:(Firefox|Gran Paradiso|jEdit|Epiphany)/i
       c.tags = curr_tag
