@@ -408,43 +408,61 @@ EOF
 
     # Sends grouped clients to temporary view.
     key Key::PREFIX + 'b' do
-      if curr_tag =~ ZOOMED_SUFFIX
-        src, num = $`, $1.to_i
-        dst = "#{src}~#{num+1}"
-      else
-        dst = "#{curr_tag}~1"
-      end
+      clients = grouping
 
-      grouping.each do |c|
-        c.tag dst
-      end
+      unless clients.empty?
+        # determine new view
+        if curr_tag =~ ZOOMED_SUFFIX
+          src, num = $`, $1.to_i
+          dst = "#{src}~#{num+1}"
+        else
+          dst = "#{curr_tag}~1"
+        end
 
-      v = View.new dst
-      v.focus
-      v.arrange_in_grid
-      #if c = grouping.shift then c.focus unless c.focus? end
+        # add clients to new view
+        clients.each {|c| c.tag dst }
+
+        # focus new view
+        v = View.new dst
+        v.focus
+        v.arrange_in_grid
+
+        # preserve focus inside new view
+        clients.first.focus v
+      end
     end
 
     # Sends grouped clients back to their original view.
     key Key::PREFIX + 'Shift-b' do
-      src = curr_tag
+      clients = grouping
 
-      if src =~ ZOOMED_SUFFIX
-        dst = $`
+      unless clients.empty?
+        src = curr_tag
 
-        grouping.each do |c|
-          c.with_tags do
-            delete src
+        if src =~ ZOOMED_SUFFIX
+          # determine new view
+          dst = $`
 
-            if empty?
-              push dst
-            else
-              dst = last
+          # remove clients from old view
+          clients.each do |c|
+            c.with_tags do
+              delete src
+
+              if empty?
+                push dst
+              else
+                dst = last
+              end
             end
           end
-        end
 
-        focus_view dst
+          # focus new view
+          v = View.new dst
+          v.focus
+
+          # preserve focus inside new view
+          clients.first.focus v
+        end
       end
     end
 
