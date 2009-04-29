@@ -153,7 +153,7 @@ EOF
     case c.props.read
     when /(Firefox|Gran Paradiso) - Restore Previous Session/
       c.tags = 'web'
-    when /:(Firefox|Gran Paradiso|jEdit|Epiphany)/i
+    when /:(Firefox|Gran Paradiso|jEdit|Epiphany|Thunar)/i
       c.tags = curr_tag
       c.focus
     end
