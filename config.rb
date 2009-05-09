@@ -325,32 +325,32 @@ EOF
   # sending / moving
     key Key::SEND + Key::LEFT do
       grouping.each do |c|
-        c.send :left
+        c.send :left rescue nil
       end
     end
 
     key Key::SEND + Key::RIGHT do
       grouping.each do |c|
-        c.send :right
+        c.send :right rescue nil
       end
     end
 
     key Key::SEND + Key::DOWN do
       grouping.each do |c|
-        c.send :down
+        c.send :down rescue nil
       end
     end
 
     key Key::SEND + Key::UP do
       grouping.each do |c|
-        c.send :up
+        c.send :up rescue nil
       end
     end
 
     # send all grouped clients from managed to floating area (or vice versa)
     key Key::SEND + 'space' do
       grouping.each do |c|
-        c.send :toggle
+        c.send :toggle rescue nil
       end
     end
 
@@ -363,22 +363,22 @@ EOF
 
     # swap the currently focused client with the one to its left
     key Key::SWAP + Key::LEFT do
-      curr_client.swap :left
+      curr_client.swap :left rescue nil
     end
 
     # swap the currently focused client with the one to its right
     key Key::SWAP + Key::RIGHT do
-      curr_client.swap :right
+      curr_client.swap :right rescue nil
     end
 
     # swap the currently focused client with the one below it
     key Key::SWAP + Key::DOWN do
-      curr_client.swap :down
+      curr_client.swap :down rescue nil
     end
 
     # swap the currently focused client with the one above it
     key Key::SWAP + Key::UP do
-      curr_client.swap :up
+      curr_client.swap :up rescue nil
     end
 
     # Changes the tag (according to a menu choice) of each grouped client and
