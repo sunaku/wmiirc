@@ -1,6 +1,13 @@
-This is my Ruby-based wmii configuration, explained in these articles:
+sunaku's Ruby wmiirc
+====================
+
+This is my wmii configuration, described in these articles:
+
+  http://wmii.suckless.org/alternative_wmiirc_scripts
 
   http://snk.tuxfamily.org/lib/rumai/
+
+  http://article.gmane.org/gmane.comp.window-managers.wmii/1704
 
   http://snk.tuxfamily.org/web/2006-07-01-wmii-3-1-configuration-in-ruby.html
 
@@ -20,3 +27,22 @@ Installation:
 
     # enjoy the goods!
     ~/.wmii-hg/wmiirc
+
+Documentation:
+
+    # see list of all key bindings
+    grep 'Mod1.*#' ~/.wmii-hg/config.yaml
+
+    # read the configuration file
+    less ~/.wmii-hg/config.yaml
+
+Configuration:
+
+    Edit the configuration file to your liking.
+
+    Run ~/.wmii-hg/wmiirc to apply your changes.
+
+Questions:
+
+    Send me an e-mail; see LICENSE for my address.
+

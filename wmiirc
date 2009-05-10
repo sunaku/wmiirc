@@ -1,154 +1,65 @@
-#!/usr/bin/ruby -w
-# Loader for ruby-based wmii configuration.
-
-# load the Ruby interface to wmii
-  require 'rubygems'
-  gem 'rumai', '~> 2'
-  require 'rumai'
-
-  include Rumai
+#!/usr/bin/env ruby
+# Bootloader for wmii configuration.
+#--
+# Copyright 2006 Suraj N. Kurapati
+# See the LICENSE file for details.
+#++
 
 # create a logger to aid debugging
-  require 'logger'
-  LOG = Logger.new(__FILE__ + '.log', 5)
+require 'logger'
+LOG = Logger.new(__FILE__ + '.log', 5)
 
-  unless $DEBUG
-    class << LOG
-      # emulate IO.write
-      alias write <<
+class << LOG
+  # emulate IO.write
+  alias write <<
 
-      def flush
-        # ignore
-      end
-    end
-
-    # capture standard output in logger
-    $stdout = $stderr = LOG
+  def flush
+    # ignore
   end
+end
 
-LOG.info "birth"
+# capture standard output in logger
+$stdout = $stderr = LOG
 
 begin
-  # miniature DSL to ease configuration
-    class Handler < Hash
-      def initialize
-        super {|h,k| h[k] = [] }
-      end
+  LOG.info 'birth'
 
-      # When a block is given, registers a handler for the given key.
-      # Otherwise, executes all registered handlers for the given key.
-      def handle key, *args, &block
-        if block_given?
-          self[key] << block
+  # load user configuration
+    config_home = File.dirname(__FILE__)
+    config_libs = File.join(config_home, 'config.rb')
+    config_file = File.join(config_home, 'config.yaml')
 
-        elsif self.key? key
-          self[key].each do |block|
-            block.call(*args)
-          end
-        end
-      end
-    end
+    require          config_libs
+    load_config_file config_file
 
-    EVENTS  = Handler.new
-    ACTIONS = Handler.new
-    KEYS    = Handler.new
+  # add view buttons to left-bar
+    fs.lbar.clear
+    tags.each {|t| event 'CreateTag', t }
+    event 'FocusTag', curr_tag
 
-    def event *a, &b
-      EVENTS.handle(*a, &b)
-    end
-
-    def action *a, &b
-      ACTIONS.handle(*a, &b)
-    end
-
-    def key *a, &b
-      KEYS.handle a.map {|k| k.flatten.join('-') rescue k }.join(','), &b
-    end
-
-    def unevent *a
-      EVENTS.delete(*a)
-    end
-
-    def unaction *a
-      ACTIONS.delete(*a)
-    end
-
-    def unkey *a
-      KEYS.delete(*a)
-    end
-
-  # utility methods
-
-    # Shows a menu with the given items and returns the chosen
-    # item. If nothing was chosen, then *nil* is returned.
-    def show_menu choices, prompt = nil
-      cmd = "dmenu -b -fn #{WMII_FONT.inspect} " <<
-            %w[-nf -nb -sf -sb].zip(
-              Color::NORMAL.split[0,2] + Color::FOCUSED.split[0,2]
-            ).flatten.map {|s| s.inspect}.join(' ')
-
-      cmd << " -p #{prompt.to_s.inspect}" if prompt
-
-      IO.popen(cmd, 'r+') do |menu|
-        menu.puts choices
-        menu.close_write
-
-        choice = menu.read
-        choice unless choice.empty?
-      end
-    end
-
-    require 'pathname'
-    # Returns the names of programs present in the given directories.
-    def find_programs *dirs
-      dirs.flatten.map do |d|
-        Pathname.new(d).expand_path.children rescue []
-      end.flatten.map do |f|
-        f.basename.to_s if f.file? and f.executable?
-      end.compact.uniq.sort
-    end
-
-  # terminate existing instances of this program
-  fs.event.write 'Start wmiirc'
-
-  event :Start do |arg|
-    exit if arg == 'wmiirc'
-  end
-
-  # load user's configuration file
-  load File.join(File.dirname(__FILE__), 'config.rb')
-
-  # populate lbar with buttons for every tag
-    bar = fs.lbar
-    bar.clear
-
-    tags.each do |tag|
-      color = (tag == curr_tag) ? Color::FOCUSED : Color::NORMAL
-
-      btn = bar[tag]
-      btn.create
-      btn.write "#{color} #{tag}"
-    end
-
-  # enable keyboard shortcuts
+  # register keyboard shortcuts
     fs.keys.write KEYS.keys.join("\n")
+    event('Key') {|*a| key(*a) }
 
-    event :Key do |*args|
-      key(*args)
+  # terminate existing instances of this configuration
+    fs.event.write 'Start wmiirc'
+
+    event 'Start' do |arg|
+      exit if arg == 'wmiirc'
     end
 
   # the main event loop
     fs.event.each_line do |line|
-      line.split("\n").each do |event|
-        type, parms = event.split(' ', 2)
+      line.split("\n").each do |call|
+        name, args = call.split(' ', 2)
 
-        args = parms.split(' ') rescue []
-        event type.to_sym, *args
+        argv = args.to_s.split(' ')
+        event name, *argv
       end
     end
 
 rescue SystemExit
-  # ignore it
+  # ignore it; the program wants to terminate
 
 rescue Exception => e
   LOG.error e
@@ -156,13 +67,15 @@ rescue Exception => e
   # allow the user to rescue themselves
   system 'xterm &'
 
-  IO.popen('xmessage -file - -buttons recover:0,ignore:1', 'w') do |f|
+  IO.popen('xmessage -nearmouse -file - -buttons Recover,Ignore -print', 'w+') do |f|
     f.puts e.inspect, e.backtrace
+    f.close_write
+
+    if f.read.chomp == 'Recover'
+      system $0 + ' &'
+    end
   end
 
-  if $?.exitstatus == 0
-    system $0 + ' &'
-  end
+ensure
+  LOG.info 'death'
 end
-
-LOG.info "death"
