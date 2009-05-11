@@ -4,6 +4,10 @@
 # See the LICENSE file for details.
 #++
 
+require 'shellwords'
+require 'pathname'
+require 'yaml'
+
 require 'rubygems'
 gem 'rumai', '~> 3'
 require 'rumai'
@@ -115,7 +119,7 @@ def key_menu choices, prompt = nil
 
   words.push '-p', prompt if prompt
 
-  command = shell_join(words)
+  command = words.shelljoin
   IO.popen(command, 'r+') do |menu|
     menu.puts choices
     menu.close_write
@@ -159,21 +163,11 @@ def click_menu choices, initial = nil
   end
 
   words.concat choices
-  command = shell_join(words)
+  command = words.shelljoin
 
   choice = `#{command}`.chomp
   choice unless choice.empty?
 end
-
-##
-# Joins the given array of words into a properly quoted shell command.
-#
-def shell_join words
-  # TODO: properly shell escape these items instead of doing String#inspect
-  words.map {|c| c.to_s.inspect }.join(' ')
-end
-
-require 'pathname'
 
 ##
 # Returns the basenames of executable files present in the given directories.
@@ -231,8 +225,6 @@ class Button < Thread
   #
   alias refresh wakeup
 end
-
-require 'yaml'
 
 ##
 # Loads the given YAML configuration file.
