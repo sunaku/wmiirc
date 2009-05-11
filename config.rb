@@ -81,17 +81,7 @@ end
 #   Instruction on what the user should enter or choose.
 #
 def key_menu choices, prompt = nil
-  words = %w[dmenu -b -fn].push(CONFIG['display']['font'])
-
-  words.concat %w[-nf -nb -sf -sb].zip(
-    [
-      CONFIG['display']['color']['normal'],
-      CONFIG['display']['color']['focus'],
-
-    ].map {|c| c.to_s.split[0,2] }.flatten
-
-  ).flatten
-
+  words = %w[wimenu]
   words.push '-p', prompt if prompt
 
   command = shell_join(words)
