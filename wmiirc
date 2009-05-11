@@ -24,29 +24,31 @@ $stdout = $stderr = LOG
 begin
   LOG.info 'birth'
 
-  # load user configuration
+  # load configuration library
     config_home = File.dirname(__FILE__)
     config_libs = File.join(config_home, 'config.rb')
     config_file = File.join(config_home, 'config.yaml')
 
-    require          config_libs
-    load_config_file config_file
+    require config_libs
 
-  # add view buttons to left-bar
-    fs.lbar.clear
-    tags.each {|t| event 'CreateTag', t }
-    event 'FocusTag', curr_tag
-
-  # register keyboard shortcuts
-    fs.keys.write KEYS.keys.join("\n")
-    event('Key') {|*a| key(*a) }
-
-  # terminate existing instances of this configuration
+  # terminate any existing wmiirc
     fs.event.write 'Start wmiirc'
 
     event 'Start' do |arg|
       exit if arg == 'wmiirc'
     end
+
+  # apply user configuration
+    load_config_file config_file
+
+  # setup tag bar (buttons that correspond to views)
+    fs.lbar.clear
+    tags.each {|t| event 'CreateTag', t }
+    event 'FocusTag', curr_tag
+
+  # register key bindings
+    fs.keys.write KEYS.keys.join("\n")
+    event('Key') {|*a| key(*a) }
 
   # the main event loop
     fs.event.each_line do |line|
