@@ -1,6 +1,3 @@
-This is a history of major changes to {my wmii configuration}[http://people.ucsc.edu/~skurapat/wmii.html].
-
-
 = 2006-09-30
 
 * Included 1.1.0 release of Ruby-IXP.
@@ -8,17 +5,22 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 = 2006-09-29
 
-* Fixed bug in toggle_maximize method (in rc.rb) due to accessing a nonexistent file in IXP file system.
-  * Thanks to Christian von Mueffling for reporting this bug.
+* Fixed bug in toggle_maximize method (in rc.rb) due
+  to accessing a nonexistent file in IXP file system.
 
-* Fixed problem with reading index (Wmii::Client#index) of currently selected client.
+  Thanks to Christian von Mueffling for reporting this bug.
+
+* Fixed problem with reading
+  index (Wmii::Client#index) of
+  currently selected client.
 
 * Wmii.find_client now accepts a variable number of places to be searched.
 
 
 = 2006-09-28
 
-* Added number_view_buttons method (in rc.rb) which numbers the view buttons displayed on the bar, from left to right.
+* Added number_view_buttons method (in rc.rb) which numbers
+  the view buttons displayed on the bar, from left to right.
 
 
 = 2006-09-27
@@ -28,24 +30,31 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 = 2006-09-24
 
-* Added two-stage event handling, to minimize the number of events missed while processing an event.
+* Added two-stage event handling,
+  to minimize the number of events
+  missed while processing an event.
 
 
 = 2006-09-23
 
-* Fixed event & status bar loop. It was forgotten when I transitioned to the new Ixp::Node#method_missing behavior on 2006-09-22.
-  * Thanks to Fredrik Ternerot for reporting this bug.
+* Fixed event & status bar loop. It was forgotten when I transitioned
+  to the new Ixp::Node#method_missing behavior on 2006-09-22.
 
-* When selecting views based on their first letter: if more than one view matches, then they are cycled (adapted from Fredrik Ternerot).
+  Thanks to Fredrik Ternerot for reporting this bug.
+
+* When selecting views based on their first letter: if more than one
+  view matches, then they are cycled (adapted from Fredrik Ternerot).
 
 * Added focus_view_matching method in rc.rb.
 
-* Fixed errors that occurred when the tile and diamond arrangements were applied to empty views.
+* Fixed errors that occurred when the tile and
+  diamond arrangements were applied to empty views.
 
 
 = 2006-09-22
 
-* Ixp::Node#method_missing now only dereferences files. Also, the ! notation has been removed, as you can see below.
+* Ixp::Node#method_missing now only dereferences files. Also,
+  the ! notation has been removed, as you can see below.
 
     >> Wmii.fs.bar.status
     => #<Ixp::Node:0xb7b5940c @path="/bar/status">
@@ -70,13 +79,17 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 * Included code from upcoming Ruby-IXP 1.1.0 release.
 
-* Ixp::Node#method_missing now only dereferences a node if the method is suffixed with an exclamation mark.
+* Ixp::Node#method_missing now only dereferences a node
+  if the method is suffixed with an exclamation mark.
 
 * show_menu now returns *nil* if nothing was chosen.
 
-* Updated event loop for {wmii-3.1's /event overload bug fix}[http://wmii.de/pipermail/wmii/2006-September/002718.html].
+* Updated event loop for {wmii-3.1's /event overload bug
+  fix}[http://wmii.de/pipermail/wmii/2006-September/002718.html].
 
-* Added explicit termination of already running instances in *wmiirc* via Process.kill and `ps`, instead of using /event as a means of coordinating said task.
+* Added explicit termination of already running instances
+  in *wmiirc* via Process.kill and `ps`, instead of using
+  /event as a means of coordinating said task.
 
 
 = 2006-09-19
@@ -85,14 +98,22 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 * Added Ixp::Node#open method to reduce 9P traffic.
 
-* Added ability to fetch a sub-node via Ixp::Node#method_missing, while not dereferencing it (reading its contents if it is a file), by adding an exclamation to the file name. For example, consider the following output in *wmiish*.
+* Added ability to fetch a sub-node
+  via Ixp::Node#method_missing, while
+  not dereferencing it (reading its
+  contents if it is a file), by adding
+  an exclamation to the file name.
+
+  For example, consider the following output in *wmiish*.
 
     >> Wmii.fs.bar.status.data
     => "Tue Sep 19 10:50:41 PDT 2006 | 0.30 0.43 0.29 | 1.7G 98% /home"
     >> Wmii.fs.bar.status.data!
     => #<Ixp::Node:0xb7bf1f18 @path="/bar/status/data">
 
-* *wmiirc* no longer automatically resumes from error. Instead, it throws you a terminal and shows you the error details so you have a chance to fix it and restart *wmiirc* yourself.
+* *wmiirc* no longer automatically resumes from error. Instead,
+  it throws you a terminal and shows you the error details so
+  you have a chance to fix it and restart *wmiirc* yourself.
 
 
 = 2006-09-18
@@ -103,35 +124,49 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 = 2006-09-17
 
 * Added Wmii::View#empty? and Wmii::Area#empty? methods.
+
 * change_tag_from_menu now returns the chosen tag.
+
 * Included Ruby-IXP 1.0.1 release.
 
 
 = 2006-09-16
 
-* Fixed toggling of maximization of currently focused client, via toggle_maximize in rc.rb.
-  * Thanks to Fredrik Ternerot for reporting this bug.
+* Fixed toggling of maximization
+  of currently focused client,
+  via toggle_maximize in rc.rb.
+
+  Thanks to Fredrik Ternerot for reporting this bug.
 
 
 = 2006-09-15
 
-* Added Wmii.get_view and Wmii.get_client methods, to further minimize hard-coded IXP file system paths. This will make it easier to upgrade to wmii-4 later on.
+* Added Wmii.get_view and Wmii.get_client
+  methods, to further minimize hard-coded
+  IXP file system paths. This will make it
+  easier to upgrade to wmii-4 later on.
 
 * Fixed ruby-ixp to be internally buffered for Ixp#read.
-  * Event loop now uses Ixp#read instead of *wmiir*.
-    * Already running configurations now correctly exit when another instance starts up.
+
+* Event loop now uses Ixp#read instead of *wmiir*.
+
+* Already running configurations now correctly
+  exit when another instance starts up.
 
 
 = 2006-09-14
 
-* Added ability to swap current client with the currently focused client in any other column.
+* Added ability to swap current client with the
+  currently focused client in any other column.
 
 
 = 2006-09-13
 
-* Reverted to *wmiir* for event loop, because Ixp#read isn't internally buffered!
+* Reverted to *wmiir* for event loop, because
+  Ixp#read isn't internally buffered!
 
-* Changed Wmii::View#each to Wmii::View#each_column because floating area isn't a column (it doesn't have /mode file).
+* Changed Wmii::View#each to Wmii::View#each_column because
+  floating area isn't a column (it doesn't have /mode file).
 
 * Added shortcuts for setting layouts of all columns in current view.
 
@@ -143,7 +178,9 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 = 2006-09-12
 
 * Event loop now uses Ixp#read instead of *wmiir*.
-  * Already running configurations now correctly exit when another instance starts up.
+
+  * Already running configurations now correctly
+    exit when another instance starts up.
 
 * Added Wmii::View#diamond! -- a diamond-shaped automated client arrangement.
 
@@ -153,11 +190,17 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 = 2006-09-11
 
 * Added exception logging and recovery mechanism.
-  * wmiirc is now split into a loader file (wmiirc) and a configuration file (wmiirc-config.rb), just like in the ruby-wmii project.
+
+  * wmiirc is now split into a loader
+    file (wmiirc) and a configuration
+    file (wmiirc-config.rb), just
+    like in the ruby-wmii project.
 
 * IXPException' are no longer hidden away inside Ixp.
 
-* Moved support for destructive area-operations from Wmii#with_selection into Array#each so that it is generally available.
+* Moved support for destructive area-operations
+  from Wmii#with_selection into Array#each so
+  that it is generally available.
 
 
 = 2006-09-10
@@ -170,7 +213,9 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 = 2006-09-09
 
-* Cleaned up IXP abstraction... now multiple levels of method_missing works, and so does self[sub_path]
+* Cleaned up IXP abstraction... now
+  multiple levels of method_missing
+  works, and so does self[sub_path]
 
 * Wmii#with_selection now supports destructive area-operations.
 
@@ -179,11 +224,10 @@ This is a history of major changes to {my wmii configuration}[http://people.ucsc
 
 = 2006-08-31
 
-* Added facility which sends the selection to temporary view or switches back again.
+* Added facility which sends the selection
+  to temporary view or switches back again.
 
 
 = 2006-08-30
 
 * Add Wmii#with_selection method for operating on all clients in selection.
-
-

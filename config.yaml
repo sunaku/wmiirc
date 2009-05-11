@@ -11,14 +11,14 @@
 display:
 
   ##
-  # Where to display the horizontal bar?
+  # Where to display the horizontal status bar?
   #
-  #   (either "top" or "bottom")
+  # Possible choices are "top" and "bottom".
   #
   bar: bottom
 
   ##
-  # The font to use in all text rendered by wmii.
+  # The font to use in all text drawn by wmii.
   #
   font: -*-fixed-medium-r-*-*-18-*-*-*-*-*-*-*
 
@@ -77,7 +77,7 @@ display:
     !ruby/regexp '/\bRestore (Previous )?Session\b/'      : web
 
   ##
-  # Self-refreshing buttons on the status bar:
+  # Self-refreshing buttons on the status bar.
   #
   #   <IXP node basename>:
   #     refresh: <number of seconds to wait before refreshing the content>
@@ -244,9 +244,12 @@ control:
 
     Mod1-Control-m,v: | # move grouping to chosen view
       #
-      # Changes the tag (according to a menu choice) of each grouped client and
-      # returns the chosen tag. The +tag -tag idea is from Jonas Pfenniger:
-      # <http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby>
+      # Changes the tag (according to a menu choice) of
+      # each grouped client and returns the chosen tag.
+      #
+      # The +tag -tag idea is from Jonas Pfenniger:
+      #
+      #   http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby
       #
       choices = tags.map {|t| [t, "+#{t}", "-#{t}"] }.flatten
 
@@ -587,8 +590,8 @@ control:
   #
   #   <event name>: <Ruby code to execute>
   #
-  # The Ruby code has access to an "argv" variable which is an
-  # array of arguments passed that were specified by the event.
+  # The Ruby code has access to an "argv" variable which
+  # is a list of arguments that were passed to the event.
   #
   event:
     CreateTag: |
@@ -738,7 +741,9 @@ control:
 
 
 ##
-# Ruby code that is executed after this file has been loaded.
+# Arbitrary logic.
+#
+# The given Ruby code is executed *after* this file has been processed.
 #
 script: |
   DETACHED_TAG  = '|'
@@ -748,3 +753,4 @@ script: |
 
   # desktop wallpaper
   system 'sh ~/.fehbg &'
+
