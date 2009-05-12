@@ -267,11 +267,20 @@ def load_config config_file
       event 'CreateClient' do |client_id|
         client = Client.new(client_id)
 
-        if label = client.label.read rescue nil
+        unless defined? @client_tags_by_regexp
+          # compile the regular expression only once
+          pairs = CONFIG['display']['client'].to_a.map {|k,v|
+            [eval(k, TOPLEVEL_BINDING, "#{config_file}:display:client:#{k}"), v]
+          }
+
+          @client_tags_by_regexp = Hash[*pairs.flatten]
+        end
+
+        if label = client.props.read rescue nil
           catch :found do
-            CONFIG['display']['client'].each do |regexp, target|
+            @client_tags_by_regexp.each do |regexp, tags|
               if label =~ regexp
-                client.tags = target
+                client.tags = tags
                 throw :found
               end
             end

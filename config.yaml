@@ -68,13 +68,13 @@ display:
   ##
   # Mapping of clients to views they must appear on:
   #
-  #   !ruby/regexp '<client label>' : <tags to apply>
+  #   <client props regular expression> : <tags to apply>
   #
   client:
-    !ruby/regexp '/\b(xconsole|alsamixer|XMMS|Sonata)\b/' : 1
-    !ruby/regexp '/\b(Buddy List|XChat|WeeChat)\b/'       : chat
-    !ruby/regexp '/\b(Liferea|GMail)\b/'                  : mail
-    !ruby/regexp '/\bRestore (Previous )?Session\b/'      : web
+    /\b(xconsole|alsamixer|XMMS|Sonata)\b/                : 1
+    /^pidgin:|:WeeChat\b/                                 : chat
+    /\b(Liferea|GMail)\b/                                 : mail
+    /:(Firefox|Gran Paradiso):.*\bRestore\b.*\bSession\b/ : web
 
   ##
   # Self-refreshing buttons on the status bar.
