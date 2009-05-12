@@ -47,7 +47,7 @@ begin
     event 'FocusTag', curr_tag
 
   # register key bindings
-    fs.keys.write KEYS.keys.join("\n")
+    fs.keys.write keys.join("\n")
     event('Key') {|*a| key(*a) }
 
   # the main event loop
