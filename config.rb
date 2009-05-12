@@ -206,7 +206,7 @@ require 'yaml'
 ##
 # Loads the given YAML configuration file.
 #
-def load_config_file config_file
+def load_config config_file
   config_data = YAML.load_file(config_file)
   Object.const_set :CONFIG, config_data
 
@@ -293,4 +293,12 @@ def load_config_file config_file
   # script
     eval CONFIG['script'], TOPLEVEL_BINDING, "#{config_file}:script"
 
+end
+
+##
+# Reloads the entire wmii configuration.
+#
+def reload_config
+  LOG.info 'reload'
+  exec $0
 end

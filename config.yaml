@@ -717,6 +717,9 @@ control:
   #   <action name>: <Ruby code to execute>
   #
   action:
+    reload: | # reload this wmii configuration
+      reload_config
+
     rehash: | # scan for available programs and actions
       @program_menu = find_programs(ENV['PATH'].squeeze(':').split(':'))
       @action_menu  = find_programs(File.dirname(__FILE__))
