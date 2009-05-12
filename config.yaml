@@ -80,8 +80,9 @@ display:
   # Self-refreshing buttons on the status bar.
   #
   #   <IXP node basename>:
-  #     refresh: <number of seconds to wait before refreshing the content>
-  #     content: <Ruby code whose result is displayed as the content>
+  #     position: <index of this button on the status bar> # (optional)
+  #     refresh:  <number of seconds to wait before refreshing the content>
+  #     content:  <Ruby code whose result is displayed as the content>
   #
   # You can refresh a particular status button in Ruby using:
   #
@@ -89,25 +90,30 @@ display:
   #
   status:
     clock:
+      position: 5
       refresh: 5
       content: Time.now.to_s
 
     cpu_load:
+      position: 4
       refresh: 10
       content: File.read('/proc/loadavg').split.first(3).unshift('load')
 
     disk_space:
+      position: 3
       refresh: 600 # 10 minutes
       content: |
         free, used, path = `df -h ~`.split.last(3)
         [path, used, 'used', free, 'free']
 
     volume:
+      position: 1
       refresh: 60
       content: |
         ['vol', `amixer get Master`.scan(/\d+%/).first]
 
     music:
+      position: 2
       refresh: 15
       content: |
         unless defined? @music

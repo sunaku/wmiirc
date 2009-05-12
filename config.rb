@@ -269,7 +269,10 @@ def load_config_file config_file
           @status_button_by_name = {}
 
           CONFIG['display']['status'].each do |name, defn|
-            button = eval "Button.new(Rumai.fs.rbar[#{name.inspect}], #{defn['refresh']}) { #{defn['content']} }", TOPLEVEL_BINDING, "#{config_file}:display:status:#{name}"
+            # buttons are displayed in the ASCII order of their IXP file names
+            file = [defn['position'], name].compact.join('-')
+
+            button = eval "Button.new(fs.rbar[#{file.inspect}], #{defn['refresh']}) { #{defn['content']} }", TOPLEVEL_BINDING, "#{config_file}:display:status:#{name}"
 
             @status_button_by_name[name] = button
           end
