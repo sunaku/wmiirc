@@ -344,20 +344,38 @@ control:
     # group
     #---------------------------------------------------------------------------
 
-    Mod1-Control-g,c: | # add current client to grouping (toggle)
+    Mod1-Control-g,g: | # toggle current client from grouping
       curr_client.group!
 
-    Mod1-Control-g,a: | # add clients in current area to grouping (toggle)
-      curr_area.group!
+    Mod1-Control-g,c: | # add clients in current area to grouping
+      curr_area.group
 
-    Mod1-Control-g,f: | # add clients in floating area to grouping (toggle)
-      Area.floating.group!
+    Mod1-Control-g,Shift-c: | # remove clients in current area from grouping
+      curr_area.ungroup
 
-    Mod1-Control-g,v: | # add clients in current view to grouping (toggle)
+    Mod1-Control-g,f: | # add clients in floating area to grouping
+      Area.floating.group
+
+    Mod1-Control-g,Shift-f: | # remove clients in floating area from grouping
+      Area.floating.ungroup
+
+    Mod1-Control-g,m: | # add clients in managed areas to grouping
+      curr_view.managed_areas.each {|a| a.group }
+
+    Mod1-Control-g,Shift-m: | # remove clients in managed areas from grouping
+      curr_view.managed_areas.each {|a| a.ungroup }
+
+    Mod1-Control-g,v: | # add clients in current view to grouping
+      curr_view.group
+
+    Mod1-Control-g,Shift-v: | # remove clients in current view from grouping
+      curr_view.ungroup
+
+    Mod1-Control-g,i: | # invert the grouping in the current view
       curr_view.group!
 
-    Mod1-Control-g,m: | # add clients in managed areas to grouping (toggle)
-      curr_view.columns.each {|a| a.group! }
+    Mod1-Control-g,Shift-i: | # invert the grouping in all views
+      Rumai.group!
 
     Mod1-Control-g,n: | # remove all clients everywhere from grouping
       Rumai.ungroup
