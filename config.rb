@@ -269,8 +269,9 @@ def load_config config_file
 
         unless defined? @client_tags_by_regexp
           # compile the regular expression only once
-          pairs = CONFIG['display']['client'].to_a.map {|k,v|
-            [eval(k, TOPLEVEL_BINDING, "#{config_file}:display:client:#{k}"), v]
+          pairs = CONFIG['display']['client'].map {|hash|
+            k, v = hash.to_a.first
+            [eval(k, TOPLEVEL_BINDING, "#{config_file}:display:client"), v]
           }
 
           @client_tags_by_regexp = Hash[*pairs.flatten]
