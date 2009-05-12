@@ -183,11 +183,9 @@ class Button < Thread
   def initialize fs_bar_node, refresh_rate, &button_label
     raise ArgumentError, 'block must be given' unless block_given?
 
-    super(fs_bar_node) do |b|
-      b.create unless b.exist?
-
+    super(fs_bar_node) do |button|
       while true
-        data =
+        label =
           begin
             Array(button_label.call)
           rescue Exception => e
@@ -196,11 +194,12 @@ class Button < Thread
           end
 
         # provide default color
-        unless data.first =~ /(?:#[[:xdigit:]]{6} ?){3}/
-          data.unshift CONFIG['display']['color']['normal']
+        unless label.first =~ /(?:#[[:xdigit:]]{6} ?){3}/
+          label.unshift CONFIG['display']['color']['normal']
         end
 
-        b.write data.join(' ')
+        button.create unless button.exist?
+        button.write label.join(' ')
         sleep refresh_rate
       end
     end
@@ -265,6 +264,8 @@ def load_config_file config_file
 
     # status
       action 'status' do
+        fs.rbar.clear
+
         unless defined? @status_button_by_name
           @status_button_by_name = {}
 
