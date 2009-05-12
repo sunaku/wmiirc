@@ -1,3 +1,5 @@
+(the ISC license)
+
 Copyright 2006 Suraj N. Kurapati <sunaku@gmail.com>
 
 Permission to use, copy, modify, and distribute this software for any
@@ -15,6 +17,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 Portions of this software originate from wmii <http://wmii.suckless.org>:
 
+(the MIT license)
 
 © 2006-2007 Kris Maglione <fbsdaemon@gmail.com>
 © 2003-2006 Anselm R. Garbe <garbeam at suckless dot org>
