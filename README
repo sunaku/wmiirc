@@ -13,18 +13,19 @@ This is my wmii configuration, described in these articles:
 
 Dependencies:
 
+    wmii-3.6 or newer (preferably wmii-hg)
+
     Ruby 1.8.6 or newer
 
     RubyGems 1.3.1 or newer
 
-    wmii-3.6 or newer (preferably wmii-hg)
-
 Installation:
 
-    # required libraries
-    gem install rumai librmpd
+    # dependencies
+    gem install rumai     # required
+    gem install librmpd   # optional
 
-    # the wmiirc itself
+    # installation
     mv ~/.wmii-hg ~/.wmii-hg.backup
     git clone git://github.com/sunaku/wmiirc.git ~/.wmii-hg
 
@@ -38,7 +39,7 @@ Installation:
 Documentation:
 
     # see list of all key bindings
-    grep 'Mod1.*#' ~/.wmii-hg/config.yaml
+    grep 'Mod.*#' ~/.wmii-hg/config.yaml
 
     # read the configuration file
     less ~/.wmii-hg/config.yaml

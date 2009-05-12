@@ -303,7 +303,10 @@ def load_config config_file
             # buttons are displayed in the ASCII order of their IXP file names
             file = [defn['position'], name].compact.join('-')
 
-            button = eval "Button.new(fs.rbar[#{file.inspect}], #{defn['refresh']}) { #{defn['content']} }", TOPLEVEL_BINDING, "#{config_file}:display:status:#{name}"
+            button = eval(
+              "Button.new(fs.rbar[#{file.inspect}], #{defn['refresh']}) { #{defn['content']} }",
+              TOPLEVEL_BINDING, "#{config_file}:display:status:#{name}"
+            )
 
             @status_button_by_name[name] = button
           end

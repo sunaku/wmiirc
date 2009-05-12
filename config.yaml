@@ -1,4 +1,10 @@
+#
 # High-level wmii configuration.
+#
+# Ruby code in this file has access
+# to a CONFIG constant which contains
+# the data in this configuration file.
+#
 #--
 # Copyright 2006 Suraj N. Kurapati
 # See the LICENSE file for details.
@@ -56,7 +62,7 @@ display:
   ##
   # Settings for columns drawn by wmii.
   #
-  #   mode: <the default column mode>
+  #   mode: <the wmii "colmode" setting>
   #   rule: <the wmii "colrules" setting>
   #
   column:
