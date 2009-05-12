@@ -66,7 +66,7 @@ display:
   #   rule: <the wmii "colrules" setting>
   #
   column:
-    mode: stack
+    mode: default
     rule: |
       /gimp/ -> 17+83+41
       /.*/   -> 62+38 # Golden Ratio
@@ -113,13 +113,13 @@ display:
         [path, used, 'used', free, 'free']
 
     volume:
-      position: 1
+      position: 2
       refresh: 60
       content: |
-        ['vol', `amixer get Master`.scan(/\d+%/).first]
+        ['volume', `amixer get Master`.scan(/\d+%/).first]
 
     music:
-      position: 2
+      position: 1
       refresh: 15
       content: |
         unless defined? @music
