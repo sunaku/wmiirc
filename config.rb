@@ -205,7 +205,6 @@ class Button < Thread
   #
   def initialize fs_bar_node, refresh_rate, &button_label
     raise ArgumentError, 'block must be given' unless block_given?
-
     super(fs_bar_node) do |button|
       while true
         label =
@@ -320,6 +319,8 @@ def load_config config_file
       # Refreshes the content of the status button with the given name.
       #
       def status name
+        name = name.sub(/^\d+-/,'')
+
         if button = @status_button_by_name[name]
           button.refresh
         end
