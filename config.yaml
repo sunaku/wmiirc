@@ -540,28 +540,27 @@ control:
       # working directory to be the same
       # as the currently focused terminal.
       #
-      root = ENV['HOME']
+      work = ENV['HOME']
 
       label = curr_client.label.read rescue ''
-      label.split(' ').reverse_each do |word|
-        #
-        # iterate in reverse order because
-        # paths are usually at end of label
-        #
-        path = File.expand_path(word)
+
+      # iterate in reverse order because
+      # paths are usually at end of label
+      label.split(' ').reverse_each do |s|
+        path = File.expand_path(s)
 
         if File.exist? path
           unless File.directory? path
             path = File.dirname(path)
           end
 
-          root = path
+          work = path
           break
         end
       end
 
       require 'fileutils'
-      FileUtils.cd root do
+      FileUtils.cd work do
         launch 'urxvt'
       end
 
