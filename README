@@ -13,7 +13,7 @@ This is my wmii configuration, described in these articles:
 
 Dependencies:
 
-    wmii-3.6 or newer (preferably wmii-hg)
+    wmii hg2444 or newer
 
     Ruby 1.8.6 or newer
 
@@ -21,19 +21,15 @@ Dependencies:
 
 Installation:
 
-    # dependencies
+    # library
     gem install rumai     # required
     gem install librmpd   # optional
 
-    # installation
+    # install
     mv ~/.wmii-hg ~/.wmii-hg.backup
     git clone git://github.com/sunaku/wmiirc.git ~/.wmii-hg
 
-    # alias for older wmii
-    mv ~/.wmii-3.5 ~/.wmii-3.5.backup
-    ln -s ~/.wmii-hg ~/.wmii-3.5
-
-    # enjoy the goods!
+    # run
     ~/.wmii-hg/wmiirc
 
 Documentation:
