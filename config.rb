@@ -179,8 +179,7 @@ def find_programs *dirs
 end
 
 ##
-# Launches the given command in the background.  The command
-# can be specified either as a string or as an array of words.
+# Launches the command built from the given words in the background.
 #
 def launch *words
   command = words.shelljoin
