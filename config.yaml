@@ -510,7 +510,7 @@ control:
 
     Mod1-Control-e: | # run external program chosen from a menu
       if choice = key_menu(@programs, 'run program:')
-        system choice << '&'
+        launch choice
       end
 
     Mod1-Control-u: | # focus view chosen from a menu
@@ -562,17 +562,17 @@ control:
 
       require 'fileutils'
       FileUtils.cd root do
-        system 'urxvt &'
+        launch 'urxvt'
       end
 
     Mod1-Control-k: | # launch a web browser
-      system 'firefox &'
+      launch 'firefox'
 
     Mod1-Control-j: | # launch a file manager
-      system 'thunar &'
+      launch 'thunar'
 
     Mod1-Control-q: | # launch a note taker
-      system 'mousepad &'
+      launch 'mousepad'
 
     #---------------------------------------------------------------------------
     # music
@@ -750,10 +750,10 @@ control:
     clear: | # kill all clients
       # firefox's restore session feature does not
       # work unless the whole process is killed.
-      system 'killall firefox firefox-bin thunderbird thunderbird-bin &'
+      system 'killall firefox firefox-bin thunderbird thunderbird-bin'
 
       # gnome-panel refuses to die by any other means
-      system 'killall -s TERM gnome-panel &'
+      system 'killall -s TERM gnome-panel'
 
       Thread.pass until clients.each do |c|
         begin
@@ -784,5 +784,5 @@ script: |
   action 'rehash'
 
   # desktop wallpaper
-  system 'sh ~/.fehbg &'
+  launch 'sh ~/.fehbg'
 

@@ -179,6 +179,15 @@ def find_programs *dirs
 end
 
 ##
+# Launches the given command in the background.  The command
+# can be specified either as a string or as an array of words.
+#
+def launch *words
+  command = words.shelljoin
+  system "#{command} &"
+end
+
+##
 # A button on a bar.
 #
 class Button < Thread
@@ -250,7 +259,7 @@ def load_config config_file
 
     fs.ctl.write settings.map {|pair| pair.join(' ') }.join("\n")
 
-    system "xsetroot -solid #{CONFIG['display']['background'].inspect} &"
+    launch 'xsetroot', '-solid', CONFIG['display']['background']
 
     # column
       fs.colrules.write CONFIG['display']['column']['rule']
