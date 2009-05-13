@@ -205,6 +205,7 @@ class Button < Thread
   #
   def initialize fs_bar_node, refresh_rate, &button_label
     raise ArgumentError, 'block must be given' unless block_given?
+
     super(fs_bar_node) do |button|
       while true
         label =
@@ -294,12 +295,14 @@ def load_config config_file
         fs.rbar.clear
 
         unless defined? @status_button_by_name
-          @status_button_by_name = {}
+          @status_button_by_name     = {}
+          @status_button_by_file     = {}
+          @on_click_by_status_button = {}
 
           CONFIG['display']['status'].each_with_index do |hash, position|
             name, defn = hash.to_a.first
 
-            # buttons are displayed in the ASCII order of their IXP file names
+            # buttons appear in ASCII order of their IXP file name
             file = "#{position}-#{name}"
 
             button = eval(
@@ -308,6 +311,13 @@ def load_config config_file
             )
 
             @status_button_by_name[name] = button
+            @status_button_by_file[file] = button
+
+            # mouse click handler
+            @on_click_by_status_button[button] = eval(
+              "lambda {|mouse_button| #{defn['click']} }",
+              TOPLEVEL_BINDING, "#{config_file}:display:status:#{name}:click"
+            )
           end
         end
 
@@ -316,13 +326,56 @@ def load_config config_file
       end.call
 
       ##
+      # Returns the status button associated with the given name.
+      #
+      # ==== Parameters
+      #
+      # [name]
+      #   Either the the user-defined name of
+      #   the status button or the basename
+      #   of the status button's IXP file.
+      #
+      def status_button name
+        @status_button_by_name[name] || @status_button_by_file[name]
+      end
+
+      ##
       # Refreshes the content of the status button with the given name.
       #
+      # ==== Parameters
+      #
+      # [name]
+      #   Either the the user-defined name of
+      #   the status button or the basename
+      #   of the status button's IXP file.
+      #
       def status name
-        name = name.sub(/^\d+-/,'')
-
-        if button = @status_button_by_name[name]
+        if button = status_button(name)
           button.refresh
+        end
+      end
+
+      ##
+      # Invokes the mouse click handler for the given mouse
+      # button on the status button that has the given name.
+      #
+      # ==== Parameters
+      #
+      # [name]
+      #   Either the the user-defined name of
+      #   the status button or the basename
+      #   of the status button's IXP file.
+      #
+      # [mouse_button]
+      #   The identification number of
+      #   the mouse button (as defined
+      #   by X server) that was clicked.
+      #
+      def status_click name, mouse_button
+        if button = status_button(name) and
+           handle = @on_click_by_status_button[button]
+        then
+          handle.call mouse_button.to_i
         end
       end
 
