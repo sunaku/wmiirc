@@ -147,14 +147,15 @@ display:
           @music.connect
         end
 
-        song_state = (@music.stopped? || @music.paused?) ? '(-)' : '(>)'
+        music_state = (@music.stopped? || @music.paused?) ? '(-)' : '(>)'
 
-        song       = @music.current_song
-        artist     = song.artist
-        title      = song.title || (f = song.file and File.basename(f))
-        song_name  = [artist, title].compact.join(': ')
+        if song = @music.current_song
+          artist    = song.artist
+          title     = song.title || (f = song.file and File.basename(f))
+          song_name = [artist, title].compact.join(': ')
+        end
 
-        [song_state, song_name]
+        [music_state, song_name].compact
 
       # TODO: mouse events on this status button
       click:
