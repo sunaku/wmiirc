@@ -238,8 +238,7 @@ end
 # Loads the given YAML configuration file.
 #
 def load_config config_file
-  config_data = YAML.load_file(config_file)
-  Object.const_set :CONFIG, config_data
+  Object.const_set :CONFIG, YAML.load_file(config_file)
 
   # display
     fo = ENV['WMII_FONT']        = CONFIG['display']['font']
@@ -265,7 +264,8 @@ def load_config config_file
       # are ignored, and those that are supported are (silently)
       # applied.  but a "bad command" error is raised nevertheless!
       #
-      warn e.inspect, e.backtrace
+      warn e.inspect
+      warn e.backtrace
     end
 
     launch 'xsetroot', '-solid', CONFIG['display']['background']
