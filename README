@@ -13,7 +13,7 @@ This is my wmii configuration, described in these articles:
 
 Dependencies:
 
-    wmii hg2444 or newer
+    wmii 3.6 or newer (preferably wmii-hg)
 
     Ruby 1.8.6 or newer
 

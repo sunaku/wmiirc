@@ -256,7 +256,17 @@ def load_config config_file
       'grabmod'     => CONFIG['control']['grab'],
     }
 
-    fs.ctl.write settings.map {|pair| pair.join(' ') }.join("\n")
+    begin
+      fs.ctl.write settings.map {|pair| pair.join(' ') }.join("\n")
+
+    rescue Rumai::IXP::Error => e
+      #
+      # settings that are not supported in a particular wmii version
+      # are ignored, and those that are supported are (silently)
+      # applied.  but a "bad command" error is raised nevertheless!
+      #
+      warn e.inspect, e.backtrace
+    end
 
     launch 'xsetroot', '-solid', CONFIG['display']['background']
 
