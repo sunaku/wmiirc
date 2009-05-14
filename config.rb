@@ -314,10 +314,12 @@ def load_config config_file
             @status_button_by_file[file] = button
 
             # mouse click handler
-            @on_click_by_status_button[button] = eval(
-              "lambda {|mouse_button| #{defn['click']} }",
-              TOPLEVEL_BINDING, "#{config_file}:display:status:#{name}:click"
-            )
+            if code = defn['click']
+              @on_click_by_status_button[button] = eval(
+                "lambda {|mouse_button| #{code} }", TOPLEVEL_BINDING,
+                "#{config_file}:display:status:#{name}:click"
+              )
+            end
           end
         end
 
