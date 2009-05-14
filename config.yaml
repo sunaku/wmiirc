@@ -88,84 +88,71 @@ display:
   ##
   # Self-refreshing buttons on the status bar.
   #
-  #   <IXP node basename>:
-  #     position: <index of this button on the status bar> # (optional)
-  #     refresh:  <number of seconds to wait before refreshing the content>
-  #     content:  <Ruby code whose result is displayed as the content>
+  #   - <button name>:
+  #       refresh:  <number of seconds to wait before refreshing the content>
+  #       content:  <Ruby code whose result is displayed as the content>
   #
   # You can refresh a particular status button in Ruby using:
   #
-  #   status( "IXP node basename" )
+  #   status("your button name")
+  #
+  # The horizontal order in which these buttons appear on the status
+  # bar reflects the vertical order in which they are defined below.
   #
   status:
-    clock:
-      position: 5
-      refresh: 5
-      content: Time.now.to_s
+    - music:
+        refresh: 15
+        content: |
+          unless defined? @music
+            require 'rubygems'
+            gem 'librmpd', '~> 0.1'
+            require 'librmpd'
 
-    system_load:
-      position: 4
-      refresh: 10
-      content: |
-        load_averages = File.read('/proc/loadavg').split.first(3)
-        current_load  = load_averages.first.to_f
+            @music = MPD.new
+          end
 
-        # visually indicate the intensity of system load
-        color = case
-          when current_load > 3.0 then CONFIG['display']['color']['error']
-          when current_load > 1.5 then CONFIG['display']['color']['notice']
-        end
+          unless @music.connected?
+            @music.connect
+          end
 
-        [color, *load_averages]
+          music_state = (@music.stopped? || @music.paused?) ? '(-)' : '(>)'
 
-    disk_space:
-      position: 3
-      refresh: 600 # 10 minutes
-      content: |
-        free, used, path = `df -h ~`.split.last(3)
-        [path, used, 'used', free, 'free']
+          if song = @music.current_song
+            artist    = song.artist
+            title     = song.title || (f = song.file and File.basename(f))
+            song_name = [artist, title].compact.join(': ')
+          end
 
-    volume:
-      position: 2
-      refresh: 60
-      content: |
-        ['volume', `amixer get Master`.scan(/\d+%/).first]
+          [music_state, song_name].compact
 
-    music:
-      position: 1
-      refresh: 15
-      content: |
-        unless defined? @music
-          require 'rubygems'
-          gem 'librmpd', '~> 0.1'
-          require 'librmpd'
+    - volume:
+        refresh: 60
+        content: |
+          ['volume', `amixer get Master`.scan(/\d+%/).first]
 
-          @music = MPD.new
-        end
+    - disk_space:
+        refresh: 600 # 10 minutes
+        content: |
+          free, used, path = `df -h ~`.split.last(3)
+          [path, used, 'used', free, 'free']
 
-        unless @music.connected?
-          @music.connect
-        end
+    - system_load:
+        refresh: 10
+        content: |
+          load_averages = File.read('/proc/loadavg').split.first(3)
+          current_load  = load_averages.first.to_f
 
-        music_state = (@music.stopped? || @music.paused?) ? '(-)' : '(>)'
+          # visually indicate the intensity of system load
+          color = case
+            when current_load > 3.0 then CONFIG['display']['color']['error']
+            when current_load > 1.5 then CONFIG['display']['color']['notice']
+          end
 
-        if song = @music.current_song
-          artist    = song.artist
-          title     = song.title || (f = song.file and File.basename(f))
-          song_name = [artist, title].compact.join(': ')
-        end
+          [color, *load_averages]
 
-        [music_state, song_name].compact
-
-      # TODO: mouse events on this status button
-      click:
-        left:
-        middle:
-        right:
-
-      scroll:
-        up:
-        down:
+    - clock:
+        refresh: 5
+        content: Time.now.to_s
 
 
 ##
