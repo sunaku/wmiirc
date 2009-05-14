@@ -648,12 +648,13 @@ control:
     UrgentTag: |
       tag = argv[1]
       but = fs.lbar[tag]
-      but.write '*' + tag if but.exist?
+      but.write "#{CONFIG['display']['color']['notice']} #{tag}" if but.exist?
 
     NotUrgentTag: |
       tag = argv[1]
       but = fs.lbar[tag]
-      but.write tag if but.exist?
+      color = curr_view.id == tag ? 'focus' : 'normal'
+      but.write "#{CONFIG['display']['color'][color]} #{tag}" if but.exist?
 
     LeftBarClick: &LeftBarClick |
       mouse_button, view_id = argv
