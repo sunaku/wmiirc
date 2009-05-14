@@ -268,13 +268,10 @@ def load_config config_file
         client = Client.new(client_id)
 
         unless defined? @client_tags_by_regexp
-          # compile the regular expression only once
-          pairs = CONFIG['display']['client'].map {|hash|
+          @client_tags_by_regexp = CONFIG['display']['client'].map {|hash|
             k, v = hash.to_a.first
             [eval(k, TOPLEVEL_BINDING, "#{config_file}:display:client"), v]
           }
-
-          @client_tags_by_regexp = Hash[*pairs.flatten]
         end
 
         if label = client.props.read rescue nil
