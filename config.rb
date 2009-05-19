@@ -413,5 +413,5 @@ end
 #
 def reload_config
   LOG.info 'reload'
-  exec $0
+  launch $0
 end
