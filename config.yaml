@@ -768,14 +768,18 @@ control:
 ##
 # Arbitrary logic.
 #
-# The given Ruby code is executed *after* this file has been processed.
+#   script:
+#     before: <Ruby code to execute before processing this file>
+#     after:  <Ruby code to execute after processing this file>
 #
-script: |
-  DETACHED_TAG  = '|'
-  ZOOMED_SUFFIX = /~(\d+)$/
+script:
+  before: |
+    DETACHED_TAG  = '|'
+    ZOOMED_SUFFIX = /~(\d+)$/
 
-  action 'rehash'
+  after: |
+    action 'rehash'
 
-  # desktop wallpaper
-  system 'sh ~/.fehbg'
+    # desktop wallpaper
+    system 'sh ~/.fehbg'
 

@@ -240,6 +240,10 @@ end
 def load_config config_file
   Object.const_set :CONFIG, YAML.load_file(config_file)
 
+  # script
+    eval CONFIG['script']['before'].to_s, TOPLEVEL_BINDING,
+         "#{config_file}:script:before"
+
   # display
     fo = ENV['WMII_FONT']        = CONFIG['display']['font']
     fc = ENV['WMII_FOCUSCOLORS'] = CONFIG['display']['color']['focus']
@@ -404,7 +408,8 @@ def load_config config_file
     end
 
   # script
-    eval CONFIG['script'], TOPLEVEL_BINDING, "#{config_file}:script"
+    eval CONFIG['script']['after'].to_s, TOPLEVEL_BINDING,
+         "#{config_file}:script:after"
 
 end
 
