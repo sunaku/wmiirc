@@ -294,8 +294,12 @@ def load_config config_file
             end
 
             # force client onto current view
-            client.tags = curr_tag
-            client.focus
+            begin
+              client.tags = curr_tag
+              client.focus
+            rescue
+              # ignore
+            end
           end
         end
       end
