@@ -34,7 +34,7 @@ display:
   border: 1
 
   ##
-  # Number of seconds a notice shoud be displayed.
+  # Number of seconds a notice should be displayed.
   #
   notice: 5
 
@@ -43,7 +43,7 @@ display:
   #
   #   <scheme>: "<text> <background> <border>"
   #
-  # You can find more color schemes at:
+  # You can find more color schemes here:
   #
   #   http://wmii.suckless.org/scripts_n_snips/themes
   #
@@ -72,7 +72,7 @@ display:
       /.*/   -> 62+38 # Golden Ratio
 
   ##
-  # Mapping of clients to views they must appear on:
+  # Mapping of clients to views they must appear on.
   #
   #   - <client props regular expression> : <tags to apply>
   #
