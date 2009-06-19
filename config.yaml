@@ -599,6 +599,24 @@ control:
 
       status 'music'
 
+    Mod1-Control-Home: | # load a playlist
+      if list = key_menu(@music.playlists, 'load playlist:')
+        @music.clear
+        @music.load list
+        @music.play
+      end
+
+    Mod1-Control-End: | # add current song to a playlist
+      if list = key_menu(@music.playlists, 'add current song to playlist:')
+        file = File.join(File.expand_path('~/.mpd/playlists'), list + '.m3u')
+
+        songs = File.readlines(file) rescue []
+        songs << @music.current_song.file
+        songs.uniq!
+
+        File.open(file, 'w') {|f| f.puts songs }
+      end
+
     #---------------------------------------------------------------------------
     # volume
     #---------------------------------------------------------------------------
