@@ -80,10 +80,10 @@ display:
   # Processing stops after the first matching mapping is applied.
   #
   client:
-    - /\b(xconsole|alsamixer|XMMS|Sonata)\b/                : 1
-    - /^pidgin:|:WeeChat\b/                                 : chat
-    - /\b(Liferea|GMail)\b/                                 : mail
-    - /:(Firefox|Gran Paradiso):.*\bRestore\b.*\bSession\b/ : web
+    - /\b(xconsole|alsamixer|XMMS|Sonata)\b/            : 1
+    - /^pidgin:|:WeeChat\b/                             : chat
+    - /\b(Liferea|GMail|Thunderbird)\b/                 : mail
+    - /:(Firefox|Shiretoko):.*\bRestore\b.*\bSession\b/ : web
 
   ##
   # Self-refreshing buttons on the status bar.
