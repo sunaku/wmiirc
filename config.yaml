@@ -69,7 +69,7 @@ display:
     mode: default
     rule: |
       /gimp/ -> 17+83+41
-      /.*/   -> 62+38 # Golden Ratio
+      /.*/   -> 50+50
 
   ##
   # Mapping of clients to views they must appear on.
