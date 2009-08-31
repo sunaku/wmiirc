@@ -1,7 +1,7 @@
 # DSL for wmiirc configuration.
 #--
-# Copyright 2006 Suraj N. Kurapati
-# See the LICENSE file for details.
+# Copyright protects this work.
+# See LICENSE file for details.
 #++
 
 require 'shellwords'

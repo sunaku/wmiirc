@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 # Bootloader for wmii configuration.
 #--
-# Copyright 2006 Suraj N. Kurapati
-# See the LICENSE file for details.
+# Copyright protects this work.
+# See LICENSE file for details.
 #++
 
 # create a logger to aid debugging
