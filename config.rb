@@ -260,6 +260,7 @@ def load_config config_file
       'bar on'      => CONFIG['display']['bar'],
       'colmode'     => CONFIG['display']['column']['mode'],
       'grabmod'     => CONFIG['control']['grab'],
+      'modkey'      => CONFIG['control']['mod'],
     }
 
     begin
@@ -405,7 +406,7 @@ def load_config config_file
   # control
     %w[key action event].each do |param|
       CONFIG['control'][param].each do |name, code|
-        eval "#{param}(#{name.inspect}) {|*argv| #{code} }",
+        eval "#{param}(#{name.gsub(/\$\{(.*?)}/) {CONFIG['control'][$1]}.inspect}) {|*argv| #{code} }",
              TOPLEVEL_BINDING, "#{config_file}:control:#{param}:#{name}"
       end
     end
