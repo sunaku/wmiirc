@@ -827,5 +827,5 @@ script:
     action 'rehash'
 
     # desktop wallpaper
-    system 'sh ~/.fehbg'
+    system 'test -f ~/.fehbg && sh ~/.fehbg'
 
