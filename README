@@ -1,3 +1,28 @@
+
+This is a modified version of sunaku's wmiirc, designed for
+his Rumai Ruby module. Minor configuration changes, namely to
+the color scheme and default key bindings, as well as the
+configuration search path, exist in this version. Builtin mpd
+support has also been removed. Also added is support for
+string interpolation in key bindings, as should be apparent in
+the included config.yaml.
+
+In particular, not that there is no need to copy any files to
+~/.wmii-hg or ~/.wmii other than config.yaml. The script will
+happily load the requisite files from their default install
+location. They can be loaded either by involing wmii as
+follows:
+
+    wmiir -r ruby/wmiirc
+
+or running the following after startup:
+
+    wmiir xwrite /ctl spawn ruby/wmiirc
+
+The rumai gem is still required, as noted below.
+
+The original readme appears below unmodified:
+
 sunaku's Ruby wmiirc
 ====================
 
