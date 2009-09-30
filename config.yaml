@@ -163,10 +163,10 @@ control:
   group:  Mod1-Control-g
   layout: Mod1-Control-z
 
-  up:    t
-  down:  n
+  up:    k
+  down:  j
   left:  h
-  right: s
+  right: l
 
   ##
   # Key bindings.
@@ -433,6 +433,13 @@ control:
       end
 
     #---------------------------------------------------------------------------
+    # kill
+    #---------------------------------------------------------------------------
+    
+    ${mod}-Shift-c: | # kill the current client
+      curr_client.kill
+
+    #---------------------------------------------------------------------------
     # zoom
     #---------------------------------------------------------------------------
 
@@ -555,7 +562,7 @@ control:
     # launcher
     #---------------------------------------------------------------------------
 
-    ${mod}-x: | # launch a terminal
+    ${mod}-Return: | # launch a terminal
       #
       # Launch a new terminal and set its
       # working directory to be the same
