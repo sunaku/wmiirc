@@ -113,31 +113,6 @@ display:
   # bar reflects the vertical order in which they are defined below.
   #
   status:
-    - music:
-        refresh: 15
-        content: |
-          unless defined? @music
-            require 'rubygems'
-            gem 'librmpd', '~> 0.1'
-            require 'librmpd'
-
-            @music = MPD.new
-          end
-
-          unless @music.connected?
-            @music.connect
-          end
-
-          music_state = (@music.stopped? || @music.paused?) ? '(-)' : '(>)'
-
-          if song = @music.current_song
-            artist    = song.artist
-            title     = song.title || (f = song.file and File.basename(f))
-            song_name = [artist, title].compact.join(': ')
-          end
-
-          [music_state, song_name].compact
-
     - volume:
         refresh: 60
         content: |
@@ -618,49 +593,6 @@ control:
 
     ${mod}-q: | # launch a note taker
       launch CONFIG['program']['editor']
-
-    #---------------------------------------------------------------------------
-    # music
-    #---------------------------------------------------------------------------
-
-    Mod1-Control-Prior: | # previous song
-      @music.previous rescue nil
-      status 'music'
-
-    Mod1-Control-Next: | # next song
-      @music.next rescue nil
-      status 'music'
-
-    Mod1-Control-Return: | # pause song (toggle)
-      begin
-        if @music.stopped?
-          @music.play
-        else
-          @music.pause = !@music.paused?
-        end
-      rescue
-        # ignore
-      end
-
-      status 'music'
-
-    Mod1-Control-Home: | # load a playlist
-      if list = key_menu(@music.playlists, 'load playlist:')
-        @music.clear
-        @music.load list
-        @music.play
-      end
-
-    Mod1-Control-End: | # add current song to a playlist
-      if list = key_menu(@music.playlists, 'add current song to playlist:')
-        file = File.join(File.expand_path('~/.mpd/playlists'), list + '.m3u')
-
-        songs = File.readlines(file) rescue []
-        songs << @music.current_song.file
-        songs.uniq!
-
-        File.open(file, 'w') {|f| f.puts songs }
-      end
 
     #---------------------------------------------------------------------------
     # volume
