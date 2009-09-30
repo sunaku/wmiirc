@@ -106,7 +106,10 @@ end
 #   Instruction on what the user should enter or choose.
 #
 def key_menu choices, prompt = nil
-  words = %w[dmenu -b -fn].push(CONFIG['display']['font'])
+  words = %w[dmenu -fn].push(CONFIG['display']['font'])
+
+  # show menu at the same location as the status bar
+  words << '-b' if CONFIG['display']['bar'] == 'bottom'
 
   words.concat %w[-nf -nb -sf -sb].zip(
     [
