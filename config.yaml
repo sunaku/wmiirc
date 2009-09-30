@@ -771,7 +771,7 @@ control:
 #
 script:
   before: |
-    DETACHED_TAG  = '|'
+    DETACHED_TAG  = 'orphans'
     ZOOMED_SUFFIX = /~(\d+)$/
 
   after: |
