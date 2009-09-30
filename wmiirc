@@ -25,11 +25,15 @@ begin
   LOG.info 'birth'
 
   # load configuration library
-    config_home = File.dirname(__FILE__)
-    config_libs = File.join(config_home, 'config.rb')
-    config_file = File.join(config_home, 'config.yaml')
+    p ENV['WMII_CONFPATH'].split(':').map {|p| [p, File.join(p, 'ruby')]}.flatten!
+    def find_config file
+      for path in ENV['WMII_CONFPATH'].split(':').map {|p| [p, File.join(p, 'ruby')]}.flatten!
+        p = File.join(path, file)
+        return p if File.file? p and File.readable_real? p
+      end
+    end
 
-    require config_libs
+    require find_config('config.rb')
 
   # terminate any existing wmiirc
     fs.event.write 'Start wmiirc'
@@ -39,7 +43,7 @@ begin
     end
 
   # apply user configuration
-    load_config config_file
+    load_config find_config('config.yaml')
 
   # setup tag bar (buttons that correspond to views)
     fs.lbar.clear
