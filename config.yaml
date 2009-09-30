@@ -58,11 +58,11 @@ display:
   #   http://wmii.suckless.org/scripts_n_snips/themes
   #
   color:
-    normal:   "#c0c0c0 #0a0a0a #202020"
-    focus:    "#ffffff #285577 #4c7899"
-    error:    "#8a1f11 #FBE3E4 #FBC2C4" # from http://www.blueprintcss.org
-    notice:   "#514721 #FFF6BF #FFD324" # from http://www.blueprintcss.org
-    success:  "#264409 #E6EFC2 #C6D880" # from http://www.blueprintcss.org
+    normal:   "#000000 #c1c48b #81654f"
+    focus:    "#000000 #81654f #000000"
+    error:    "#000000 #81654f #000000"
+    notice:   "#000000 #a1956d #413328"
+    success:  "#000000 #c1c48b #81654f"
 
   ##
   # Color of desktop background.
