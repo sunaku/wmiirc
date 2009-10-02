@@ -90,6 +90,7 @@ display:
   # Processing stops after the first matching mapping is applied.
   #
   client:
+    - /MPlayer|VLC/                                     : ~
     - /\b(xconsole|alsamixer|XMMS|Sonata)\b/            : 1
     - /^pidgin:|:WeeChat\b/                             : chat
     - /\b(Liferea|GMail|Thunderbird)\b/                 : mail
@@ -254,16 +255,16 @@ control:
       next_view.focus
 
     # focus the view whose index or name equals the pressed number
-    ${mod}-1: focus_view( tags[0] || 1  )
-    ${mod}-2: focus_view( tags[1] || 2  )
-    ${mod}-3: focus_view( tags[2] || 3  )
-    ${mod}-4: focus_view( tags[3] || 4  )
-    ${mod}-5: focus_view( tags[4] || 5  )
-    ${mod}-6: focus_view( tags[5] || 6  )
-    ${mod}-7: focus_view( tags[6] || 7  )
-    ${mod}-8: focus_view( tags[7] || 8  )
-    ${mod}-9: focus_view( tags[8] || 9  )
-    ${mod}-0: focus_view( tags[9] || 10 )
+    ${mod}-1: focus_view tags[0] || 1
+    ${mod}-2: focus_view tags[1] || 2
+    ${mod}-3: focus_view tags[2] || 3
+    ${mod}-4: focus_view tags[3] || 4
+    ${mod}-5: focus_view tags[4] || 5
+    ${mod}-6: focus_view tags[5] || 6
+    ${mod}-7: focus_view tags[6] || 7
+    ${mod}-8: focus_view tags[7] || 8
+    ${mod}-9: focus_view tags[8] || 9
+    ${mod}-0: focus_view tags[9] || 10
 
     # focus the view whose name begins with the pressed alphabet
     ${view},a: t = tags.grep(/^a/i).first and focus_view(t)
@@ -377,6 +378,16 @@ control:
     ${swap},0: curr_client.swap 10
 
     #---------------------------------------------------------------------------
+    # client
+    #---------------------------------------------------------------------------
+
+    ${mod}-f: | # zoom client to fullscreen (toggle)
+      curr_client.fullscreen!
+
+    ${mod}-Shift-c: | # kill the current client
+      curr_client.kill
+
+    #---------------------------------------------------------------------------
     # column
     #---------------------------------------------------------------------------
 
@@ -469,9 +480,6 @@ control:
     #---------------------------------------------------------------------------
     # zoom
     #---------------------------------------------------------------------------
-
-    ${mod}-f: | # zoom client to fullscreen (toggle)
-      curr_client.fullscreen!
 
     ${mod}-b: | # copy grouping to temporary view
       clients = grouping
