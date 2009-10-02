@@ -780,12 +780,6 @@ control:
   #   <action name>: <Ruby code to execute>
   #
   action:
-    reload: | # reload this wmii configuration
-      reload_config
-
-    rehash: | # scan for available programs and actions
-      @programs = find_programs(ENV['PATH'].squeeze(':').split(':'))
-
     clear: | # kill all clients
       # firefox's restore session feature does not
       # work unless the whole process is killed.

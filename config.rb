@@ -404,6 +404,16 @@ def load_config config_file
       end
 
   # control
+    action 'reload' do
+      # reload this wmii configuration
+      reload_config
+    end
+
+    action 'rehash' do
+      # scan for available programs and actions
+      @programs = find_programs(ENV['PATH'].squeeze(':').split(':'))
+    end
+
     %w[key action event].each do |param|
       CONFIG['control'][param].each do |name, code|
         eval "#{param}(#{name.gsub(/\$\{(.*?)}/) {CONFIG['control'][$1]}.inspect}) {|*argv| #{code} }",
