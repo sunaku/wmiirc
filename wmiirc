@@ -27,11 +27,12 @@ begin
   LOG.info 'birth'
 
   # load configuration library
-    p ENV['WMII_CONFPATH'].split(':').map {|p| [p, File.join(p, 'ruby')]}.flatten!
     def find_config file
-      for path in ENV['WMII_CONFPATH'].split(':').map {|p| [p, File.join(p, 'ruby')]}.flatten!
-        p = File.join(path, file)
-        return p if File.file? p and File.readable_real? p
+      base_dirs = ENV['WMII_CONFPATH'].to_s.split(/:+/)
+      ruby_dirs = base_dirs.map {|dir| File.join(dir, 'ruby') }
+
+      Dir["{#{(base_dirs + ruby_dirs).join(',')}}/#{file}"].find do |path|
+        File.file? path and File.readable_real? path
       end
     end
 
