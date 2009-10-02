@@ -44,7 +44,7 @@ ACTIONS = Handler.new
 KEYS    = Handler.new
 
 ##
-# When a block is given, registers a handler
+# If a block is given, registers a handler
 # for the given event and returns the handler.
 #
 # Otherwise, executes all handlers for the given event.
@@ -106,7 +106,7 @@ end
 #   Instruction on what the user should enter or choose.
 #
 def key_menu choices, prompt = nil
-  words = %w[dmenu -fn].push(CONFIG['display']['font'])
+  words = ['dmenu', '-fn', CONFIG['display']['font']]
 
   # show menu at the same location as the status bar
   words << '-b' if CONFIG['display']['bar'] == 'bottom'
@@ -152,7 +152,7 @@ end
 #   into a makeshift title-bar for the menu.
 #
 def click_menu choices, initial = nil
-  words = %w[wmii9menu]
+  words = ['wmii9menu']
 
   if initial
     words << '-i'

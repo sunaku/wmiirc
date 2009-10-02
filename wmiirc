@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
+#
 # Bootloader for wmii configuration.
+#
 #--
 # Copyright protects this work.
 # See LICENSE file for details.
