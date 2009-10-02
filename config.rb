@@ -416,7 +416,12 @@ def load_config config_file
 
     %w[key action event].each do |param|
       CONFIG['control'][param].each do |name, code|
-        eval "#{param}(#{name.gsub(/\$\{(.*?)}/) {CONFIG['control'][$1]}.inspect}) {|*argv| #{code} }",
+        # expand ${...} expressions in key sequences
+        if param == 'key'
+          name = name.gsub(/\$\{(.+?)}/) { CONFIG['control'][$1] }
+        end
+
+        eval "#{param}(#{name.inspect}) {|*argv| #{code} }",
              TOPLEVEL_BINDING, "#{config_file}:control:#{param}:#{name}"
       end
     end

@@ -178,7 +178,15 @@ control:
   #
   grab: Mod1
 
-  mod:  Mod1-Control
+  ##
+  # Key sequence prefixes.
+  #
+  mod:    Mod1-Control
+  move:   Mod1-Control-m
+  swap:   Mod1-Control-w
+  view:   Mod1-Control-v
+  group:  Mod1-Control-g
+  layout: Mod1-Control-z
 
   up:    t
   down:  n
@@ -249,53 +257,53 @@ control:
     ${mod}-0: focus_view( tags[9] || 10 )
 
     # focus the view whose name begins with the pressed alphabet
-    ${mod}-v,a: t = tags.grep(/^a/i).first and focus_view(t)
-    ${mod}-v,b: t = tags.grep(/^b/i).first and focus_view(t)
-    ${mod}-v,c: t = tags.grep(/^c/i).first and focus_view(t)
-    ${mod}-v,d: t = tags.grep(/^d/i).first and focus_view(t)
-    ${mod}-v,e: t = tags.grep(/^e/i).first and focus_view(t)
-    ${mod}-v,f: t = tags.grep(/^f/i).first and focus_view(t)
-    ${mod}-v,g: t = tags.grep(/^g/i).first and focus_view(t)
-    ${mod}-v,h: t = tags.grep(/^h/i).first and focus_view(t)
-    ${mod}-v,i: t = tags.grep(/^i/i).first and focus_view(t)
-    ${mod}-v,j: t = tags.grep(/^j/i).first and focus_view(t)
-    ${mod}-v,k: t = tags.grep(/^k/i).first and focus_view(t)
-    ${mod}-v,l: t = tags.grep(/^l/i).first and focus_view(t)
-    ${mod}-v,m: t = tags.grep(/^m/i).first and focus_view(t)
-    ${mod}-v,n: t = tags.grep(/^n/i).first and focus_view(t)
-    ${mod}-v,o: t = tags.grep(/^o/i).first and focus_view(t)
-    ${mod}-v,p: t = tags.grep(/^p/i).first and focus_view(t)
-    ${mod}-v,q: t = tags.grep(/^q/i).first and focus_view(t)
-    ${mod}-v,r: t = tags.grep(/^r/i).first and focus_view(t)
-    ${mod}-v,s: t = tags.grep(/^s/i).first and focus_view(t)
-    ${mod}-v,t: t = tags.grep(/^t/i).first and focus_view(t)
-    ${mod}-v,u: t = tags.grep(/^u/i).first and focus_view(t)
-    ${mod}-v,v: t = tags.grep(/^v/i).first and focus_view(t)
-    ${mod}-v,w: t = tags.grep(/^w/i).first and focus_view(t)
-    ${mod}-v,x: t = tags.grep(/^x/i).first and focus_view(t)
-    ${mod}-v,y: t = tags.grep(/^y/i).first and focus_view(t)
-    ${mod}-v,z: t = tags.grep(/^z/i).first and focus_view(t)
+    ${view},a: t = tags.grep(/^a/i).first and focus_view(t)
+    ${view},b: t = tags.grep(/^b/i).first and focus_view(t)
+    ${view},c: t = tags.grep(/^c/i).first and focus_view(t)
+    ${view},d: t = tags.grep(/^d/i).first and focus_view(t)
+    ${view},e: t = tags.grep(/^e/i).first and focus_view(t)
+    ${view},f: t = tags.grep(/^f/i).first and focus_view(t)
+    ${view},g: t = tags.grep(/^g/i).first and focus_view(t)
+    ${view},h: t = tags.grep(/^h/i).first and focus_view(t)
+    ${view},i: t = tags.grep(/^i/i).first and focus_view(t)
+    ${view},j: t = tags.grep(/^j/i).first and focus_view(t)
+    ${view},k: t = tags.grep(/^k/i).first and focus_view(t)
+    ${view},l: t = tags.grep(/^l/i).first and focus_view(t)
+    ${view},m: t = tags.grep(/^m/i).first and focus_view(t)
+    ${view},n: t = tags.grep(/^n/i).first and focus_view(t)
+    ${view},o: t = tags.grep(/^o/i).first and focus_view(t)
+    ${view},p: t = tags.grep(/^p/i).first and focus_view(t)
+    ${view},q: t = tags.grep(/^q/i).first and focus_view(t)
+    ${view},r: t = tags.grep(/^r/i).first and focus_view(t)
+    ${view},s: t = tags.grep(/^s/i).first and focus_view(t)
+    ${view},t: t = tags.grep(/^t/i).first and focus_view(t)
+    ${view},u: t = tags.grep(/^u/i).first and focus_view(t)
+    ${view},v: t = tags.grep(/^v/i).first and focus_view(t)
+    ${view},w: t = tags.grep(/^w/i).first and focus_view(t)
+    ${view},x: t = tags.grep(/^x/i).first and focus_view(t)
+    ${view},y: t = tags.grep(/^y/i).first and focus_view(t)
+    ${view},z: t = tags.grep(/^z/i).first and focus_view(t)
 
     #---------------------------------------------------------------------------
     # move
     #---------------------------------------------------------------------------
 
-    ${mod}-m,${up}: | # move grouping toward the top
+    ${move},${up}: | # move grouping toward the top
       grouping.each {|c| c.send(:up) rescue nil }
 
-    ${mod}-m,${down}: | # move grouping toward the bottom
+    ${move},${down}: | # move grouping toward the bottom
       grouping.each {|c| c.send(:down) rescue nil }
 
-    ${mod}-m,${left}: | # move grouping toward the left
+    ${move},${left}: | # move grouping toward the left
       grouping.each {|c| c.send(:left) rescue nil }
 
-    ${mod}-m,${right}: | # move grouping toward the right
+    ${move},${right}: | # move grouping toward the right
       grouping.each {|c| c.send(:right) rescue nil }
 
-    ${mod}-m,space: | # move grouping to floating area (toggle)
+    ${move},space: | # move grouping to floating area (toggle)
       grouping.each {|c| c.send(:toggle) rescue nil }
 
-    ${mod}-m,v: | # move grouping to chosen view
+    ${move},v: | # move grouping to chosen view
       #
       # Changes the tag (according to a menu choice) of
       # each grouped client and returns the chosen tag.
@@ -316,73 +324,73 @@ control:
         end
       end
 
-    ${mod}-m,Delete: | # kill all clients in grouping
+    ${move},Delete: | # kill all clients in grouping
       grouping.each {|c| c.kill }
 
     # move grouping to the view whose index or name equals the pressed number
-    ${mod}-m,1: grouping.each {|c| c.tags = tags[0] || 1  }
-    ${mod}-m,2: grouping.each {|c| c.tags = tags[1] || 2  }
-    ${mod}-m,3: grouping.each {|c| c.tags = tags[2] || 3  }
-    ${mod}-m,4: grouping.each {|c| c.tags = tags[3] || 4  }
-    ${mod}-m,5: grouping.each {|c| c.tags = tags[4] || 5  }
-    ${mod}-m,6: grouping.each {|c| c.tags = tags[5] || 6  }
-    ${mod}-m,7: grouping.each {|c| c.tags = tags[6] || 7  }
-    ${mod}-m,8: grouping.each {|c| c.tags = tags[7] || 8  }
-    ${mod}-m,9: grouping.each {|c| c.tags = tags[8] || 9  }
-    ${mod}-m,0: grouping.each {|c| c.tags = tags[9] || 10 }
+    ${move},1: grouping.each {|c| c.tags = tags[0] || 1  }
+    ${move},2: grouping.each {|c| c.tags = tags[1] || 2  }
+    ${move},3: grouping.each {|c| c.tags = tags[2] || 3  }
+    ${move},4: grouping.each {|c| c.tags = tags[3] || 4  }
+    ${move},5: grouping.each {|c| c.tags = tags[4] || 5  }
+    ${move},6: grouping.each {|c| c.tags = tags[5] || 6  }
+    ${move},7: grouping.each {|c| c.tags = tags[6] || 7  }
+    ${move},8: grouping.each {|c| c.tags = tags[7] || 8  }
+    ${move},9: grouping.each {|c| c.tags = tags[8] || 9  }
+    ${move},0: grouping.each {|c| c.tags = tags[9] || 10 }
 
     #---------------------------------------------------------------------------
     # swap
     #---------------------------------------------------------------------------
 
-    ${mod}-w,${up}: | # swap with above client
+    ${swap},${up}: | # swap with above client
       curr_client.swap(:up) rescue nil
 
-    ${mod}-w,${down}: | # swap with below client
+    ${swap},${down}: | # swap with below client
       curr_client.swap(:down) rescue nil
 
-    ${mod}-w,${left}: | # swap with left client
+    ${swap},${left}: | # swap with left client
       curr_client.swap(:left) rescue nil
 
-    ${mod}-w,${right}: | # swap with right client
+    ${swap},${right}: | # swap with right client
       curr_client.swap(:right) rescue nil
 
     # swap current client with the column whose index equals the pressed number
-    ${mod}-w,1: curr_client.swap 1
-    ${mod}-w,2: curr_client.swap 2
-    ${mod}-w,3: curr_client.swap 3
-    ${mod}-w,4: curr_client.swap 4
-    ${mod}-w,5: curr_client.swap 5
-    ${mod}-w,6: curr_client.swap 6
-    ${mod}-w,7: curr_client.swap 7
-    ${mod}-w,8: curr_client.swap 8
-    ${mod}-w,9: curr_client.swap 9
-    ${mod}-w,0: curr_client.swap 10
+    ${swap},1: curr_client.swap 1
+    ${swap},2: curr_client.swap 2
+    ${swap},3: curr_client.swap 3
+    ${swap},4: curr_client.swap 4
+    ${swap},5: curr_client.swap 5
+    ${swap},6: curr_client.swap 6
+    ${swap},7: curr_client.swap 7
+    ${swap},8: curr_client.swap 8
+    ${swap},9: curr_client.swap 9
+    ${swap},0: curr_client.swap 10
 
     #---------------------------------------------------------------------------
     # column
     #---------------------------------------------------------------------------
 
-    ${mod}-z,w: | # apply equal-spacing layout to current column
+    ${layout},w: | # apply equal-spacing layout to current column
       curr_area.layout = :default
 
-    ${mod}-z,Shift-w: | # apply equal-spacing layout to all columns
+    ${layout},Shift-w: | # apply equal-spacing layout to all columns
       curr_view.columns.each do |a|
         a.layout = :default
       end
 
-    ${mod}-z,v: | # apply stacked layout to current column
+    ${layout},v: | # apply stacked layout to current column
       curr_area.layout = 'stack-max'
 
-    ${mod}-z,Shift-v: | # apply stacked layout to all columns
+    ${layout},Shift-v: | # apply stacked layout to all columns
       curr_view.columns.each do |a|
         a.layout = 'stack-max'
       end
 
-    ${mod}-z,m: | # apply maximized layout to current column
+    ${layout},m: | # apply maximized layout to current column
       curr_area.layout = 'stack+max'
 
-    ${mod}-z,Shift-m: | # apply maximized layout to all columns
+    ${layout},Shift-m: | # apply maximized layout to all columns
       curr_view.columns.each do |a|
         a.layout = 'stack+max'
       end
@@ -391,40 +399,40 @@ control:
     # group
     #---------------------------------------------------------------------------
 
-    ${mod}-g,g: | # toggle current client from grouping
+    ${group},g: | # toggle current client from grouping
       curr_client.group!
 
-    ${mod}-g,c: | # add clients in current area to grouping
+    ${group},c: | # add clients in current area to grouping
       curr_area.group
 
-    ${mod}-g,Shift-c: | # remove clients in current area from grouping
+    ${group},Shift-c: | # remove clients in current area from grouping
       curr_area.ungroup
 
-    ${mod}-g,f: | # add clients in floating area to grouping
+    ${group},f: | # add clients in floating area to grouping
       Area.floating.group
 
-    ${mod}-g,Shift-f: | # remove clients in floating area from grouping
+    ${group},Shift-f: | # remove clients in floating area from grouping
       Area.floating.ungroup
 
-    ${mod}-g,m: | # add clients in managed areas to grouping
+    ${group},m: | # add clients in managed areas to grouping
       curr_view.managed_areas.each {|a| a.group }
 
-    ${mod}-g,Shift-m: | # remove clients in managed areas from grouping
+    ${group},Shift-m: | # remove clients in managed areas from grouping
       curr_view.managed_areas.each {|a| a.ungroup }
 
-    ${mod}-g,v: | # add clients in current view to grouping
+    ${group},v: | # add clients in current view to grouping
       curr_view.group
 
-    ${mod}-g,Shift-v: | # remove clients in current view from grouping
+    ${group},Shift-v: | # remove clients in current view from grouping
       curr_view.ungroup
 
-    ${mod}-g,i: | # invert the grouping in the current view
+    ${group},i: | # invert the grouping in the current view
       curr_view.group!
 
-    ${mod}-g,Shift-i: | # invert the grouping in all views
+    ${group},Shift-i: | # invert the grouping in all views
       Rumai.group!
 
-    ${mod}-g,n: | # remove all clients everywhere from grouping
+    ${group},n: | # remove all clients everywhere from grouping
       Rumai.ungroup
 
     #---------------------------------------------------------------------------
@@ -516,26 +524,26 @@ control:
     # arrange
     #---------------------------------------------------------------------------
 
-    ${mod}-z,t: | # arrange clients in current view like LarsWM does
+    ${layout},t: | # arrange clients in current view like LarsWM does
       curr_view.arrange_as_larswm
 
-    ${mod}-z,g: | # arrange clients in current view like a grid
+    ${layout},g: | # arrange clients in current view like a grid
       curr_view.arrange_in_grid
 
-    ${mod}-z,d: | # arrange clients in current view like a diamond
+    ${layout},d: | # arrange clients in current view like a diamond
       curr_view.arrange_in_diamond
 
     # apply grid layout with the pressed number of clients per column
-    ${mod}-z,1: curr_view.arrange_in_grid 1
-    ${mod}-z,2: curr_view.arrange_in_grid 2
-    ${mod}-z,3: curr_view.arrange_in_grid 3
-    ${mod}-z,4: curr_view.arrange_in_grid 4
-    ${mod}-z,5: curr_view.arrange_in_grid 5
-    ${mod}-z,6: curr_view.arrange_in_grid 6
-    ${mod}-z,7: curr_view.arrange_in_grid 7
-    ${mod}-z,8: curr_view.arrange_in_grid 8
-    ${mod}-z,9: curr_view.arrange_in_grid 9
-    ${mod}-z,0: curr_view.arrange_in_grid 9999 # make one giant column
+    ${layout},1: curr_view.arrange_in_grid 1
+    ${layout},2: curr_view.arrange_in_grid 2
+    ${layout},3: curr_view.arrange_in_grid 3
+    ${layout},4: curr_view.arrange_in_grid 4
+    ${layout},5: curr_view.arrange_in_grid 5
+    ${layout},6: curr_view.arrange_in_grid 6
+    ${layout},7: curr_view.arrange_in_grid 7
+    ${layout},8: curr_view.arrange_in_grid 8
+    ${layout},9: curr_view.arrange_in_grid 9
+    ${layout},0: curr_view.arrange_in_grid 9999 # make one giant column
 
     #---------------------------------------------------------------------------
     # menu
