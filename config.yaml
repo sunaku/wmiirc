@@ -12,6 +12,16 @@
 
 
 ##
+# Program preferences.
+#
+program:
+  terminal: urxvt
+  browser: firefox
+  editor: mousepad
+  filer: thunar
+
+
+##
 # Appearance settings.
 #
 display:
@@ -589,17 +599,17 @@ control:
 
       require 'fileutils'
       FileUtils.cd work do
-        launch 'urxvt'
+        launch CONFIG['program']['terminal']
       end
 
     ${mod}-k: | # launch a web browser
-      launch 'firefox'
+      launch CONFIG['program']['browser']
 
     ${mod}-j: | # launch a file manager
-      launch 'thunar'
+      launch CONFIG['program']['filer']
 
     ${mod}-q: | # launch a note taker
-      launch 'mousepad'
+      launch CONFIG['program']['editor']
 
     #---------------------------------------------------------------------------
     # music
