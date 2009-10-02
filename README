@@ -29,6 +29,19 @@ Installation:
     mv ~/.wmii-hg ~/.wmii-hg.backup
     git clone git://github.com/sunaku/wmiirc.git ~/.wmii-hg
 
+    # choose
+    cd ~/.wmii-hg
+    git checkout -b CHOICE --track      # possible choices are:
+
+    +--------+------------------------------------------------+
+    | CHOICE | DESCRIPTION                                    |
+    +--------+------------------------------------------------+
+    | dvorak | sunaku's personal configuration; DSK friendly! |
+    | qwerty | QWERTY port of sunaku's personal configuration |
+    | strict | port of the default wmiirc shipped with wmii   |
+    | master | barebones template for starting from scratch   |
+    +--------+------------------------------------------------+
+
     # run
     ~/.wmii-hg/wmiirc
 
