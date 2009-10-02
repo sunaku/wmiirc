@@ -31,9 +31,7 @@ begin
       base_dirs = ENV['WMII_CONFPATH'].to_s.split(/:+/)
       ruby_dirs = base_dirs.map {|dir| File.join(dir, 'ruby') }
 
-      Dir["{#{(base_dirs + ruby_dirs).join(',')}}/#{file}"].find do |path|
-        File.file? path and File.readable_real? path
-      end
+      Dir["{#{base_dirs.zip(ruby_dirs).join(',')}}/#{file}"].first
     end
 
     require find_config('config.rb')
