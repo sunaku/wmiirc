@@ -632,15 +632,15 @@ control:
     # music
     #---------------------------------------------------------------------------
 
-    Mod1-Control-Prior: | # previous song
+    ${mod}-Prior: | # previous song
       @music.previous rescue nil
       status 'music'
 
-    Mod1-Control-Next: | # next song
+    ${mod}-Next: | # next song
       @music.next rescue nil
       status 'music'
 
-    Mod1-Control-Return: | # pause song (toggle)
+    ${mod}-Return: | # pause song (toggle)
       begin
         if @music.stopped?
           @music.play
@@ -653,14 +653,14 @@ control:
 
       status 'music'
 
-    Mod1-Control-Home: | # load a playlist
+    ${mod}-Home: | # load a playlist
       if list = key_menu(@music.playlists, 'load playlist:')
         @music.clear
         @music.load list
         @music.play
       end
 
-    Mod1-Control-End: | # add current song to a playlist
+    ${mod}-End: | # add current song to a playlist
       if list = key_menu(@music.playlists, 'add current song to playlist:')
         file = File.join(File.expand_path('~/.mpd/playlists'), list + '.m3u')
 
