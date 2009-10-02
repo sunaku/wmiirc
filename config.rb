@@ -260,7 +260,6 @@ def load_config config_file
       'bar on'      => CONFIG['display']['bar'],
       'colmode'     => CONFIG['display']['column']['mode'],
       'grabmod'     => CONFIG['control']['grab'],
-      'modkey'      => CONFIG['control']['mod'],
     }
 
     begin
@@ -273,7 +272,7 @@ def load_config config_file
       # applied.  but a "bad command" error is raised nevertheless!
       #
       warn e.inspect
-      warn e.backtrace
+      warn e.backtrace.join("\n")
     end
 
     launch 'xsetroot', '-solid', CONFIG['display']['background']
