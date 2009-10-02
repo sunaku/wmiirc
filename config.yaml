@@ -818,8 +818,6 @@ script:
     ZOOMED_SUFFIX = /~(\d+)$/
 
   after: |
-    action 'rehash'
-
     # desktop wallpaper
     system 'test -f ~/.fehbg && sh ~/.fehbg'
 

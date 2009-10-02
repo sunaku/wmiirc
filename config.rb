@@ -347,7 +347,7 @@ def load_config config_file
 
         @status_button_by_name.each_value {|b| b.refresh }
 
-      end.call
+      end
 
       ##
       # Returns the status button associated with the given name.
@@ -422,6 +422,9 @@ def load_config config_file
     end
 
   # script
+    action 'status'
+    action 'rehash'
+
     eval CONFIG['script']['after'].to_s, TOPLEVEL_BINDING,
          "#{config_file}:script:after"
 
