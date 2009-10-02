@@ -188,10 +188,19 @@ control:
   group:  Mod1-Control-g
   layout: Mod1-Control-z
 
+  ##
+  # Direction keys.
+  #
   up:    t
   down:  n
   left:  h
   right: s
+
+  ##
+  # Sequence keys.
+  #
+  prev: comma
+  next: period
 
   ##
   # Key bindings.
@@ -238,10 +247,10 @@ control:
     ${mod}-space: | # focus floating area (toggle)
       curr_view.select(:toggle)
 
-    ${mod}-b: | # focus previous view
+    ${mod}-${prev}: | # focus previous view
       prev_view.focus
 
-    ${mod}-n: | # focus next view
+    ${mod}-${next}: | # focus next view
       next_view.focus
 
     # focus the view whose index or name equals the pressed number
