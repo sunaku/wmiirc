@@ -182,12 +182,12 @@ control:
   ##
   # Key sequence prefixes.
   #
-  mod:    Mod1-Control
-  move:   Mod1-Control-m
-  swap:   Mod1-Control-w
-  view:   Mod1-Control-v
-  group:  Mod1-Control-g
-  layout: Mod1-Control-z
+  mod:    Mod1
+  move:   Mod1-Shift
+  swap:   Mod1-w
+  view:   Mod1-v
+  group:  Mod1-g
+  layout: Mod1-z
 
   ##
   # Direction keys.
@@ -298,22 +298,22 @@ control:
     # move
     #---------------------------------------------------------------------------
 
-    ${move},${up}: | # move grouping toward the top
+    ${move}-${up}: | # move grouping toward the top
       grouping.each {|c| c.send(:up) rescue nil }
 
-    ${move},${down}: | # move grouping toward the bottom
+    ${move}-${down}: | # move grouping toward the bottom
       grouping.each {|c| c.send(:down) rescue nil }
 
-    ${move},${left}: | # move grouping toward the left
+    ${move}-${left}: | # move grouping toward the left
       grouping.each {|c| c.send(:left) rescue nil }
 
-    ${move},${right}: | # move grouping toward the right
+    ${move}-${right}: | # move grouping toward the right
       grouping.each {|c| c.send(:right) rescue nil }
 
-    ${move},space: | # move grouping to floating area (toggle)
+    ${move}-space: | # move grouping to floating area (toggle)
       grouping.each {|c| c.send(:toggle) rescue nil }
 
-    ${move},v: | # move grouping to chosen view
+    ${move}-t: | # move grouping to chosen view
       #
       # Changes the tag (according to a menu choice) of
       # each grouped client and returns the chosen tag.
@@ -334,20 +334,20 @@ control:
         end
       end
 
-    ${move},Delete: | # kill all clients in grouping
+    ${move}-Delete: | # kill all clients in grouping
       grouping.each {|c| c.kill }
 
     # move grouping to the view whose index or name equals the pressed number
-    ${move},1: grouping.each {|c| c.tags = tags[0] || 1  }
-    ${move},2: grouping.each {|c| c.tags = tags[1] || 2  }
-    ${move},3: grouping.each {|c| c.tags = tags[2] || 3  }
-    ${move},4: grouping.each {|c| c.tags = tags[3] || 4  }
-    ${move},5: grouping.each {|c| c.tags = tags[4] || 5  }
-    ${move},6: grouping.each {|c| c.tags = tags[5] || 6  }
-    ${move},7: grouping.each {|c| c.tags = tags[6] || 7  }
-    ${move},8: grouping.each {|c| c.tags = tags[7] || 8  }
-    ${move},9: grouping.each {|c| c.tags = tags[8] || 9  }
-    ${move},0: grouping.each {|c| c.tags = tags[9] || 10 }
+    ${move}-1: grouping.each {|c| c.tags = tags[0] || 1  }
+    ${move}-2: grouping.each {|c| c.tags = tags[1] || 2  }
+    ${move}-3: grouping.each {|c| c.tags = tags[2] || 3  }
+    ${move}-4: grouping.each {|c| c.tags = tags[3] || 4  }
+    ${move}-5: grouping.each {|c| c.tags = tags[4] || 5  }
+    ${move}-6: grouping.each {|c| c.tags = tags[5] || 6  }
+    ${move}-7: grouping.each {|c| c.tags = tags[6] || 7  }
+    ${move}-8: grouping.each {|c| c.tags = tags[7] || 8  }
+    ${move}-9: grouping.each {|c| c.tags = tags[8] || 9  }
+    ${move}-0: grouping.each {|c| c.tags = tags[9] || 10 }
 
     #---------------------------------------------------------------------------
     # swap
@@ -391,26 +391,26 @@ control:
     # column
     #---------------------------------------------------------------------------
 
-    ${layout},w: | # apply equal-spacing layout to current column
-      curr_area.layout = :default
+    ${layout}-d: | # apply equal-spacing layout to current column
+      curr_area.layout = 'default-max'
 
-    ${layout},Shift-w: | # apply equal-spacing layout to all columns
+    ${layout}-Shift-w: | # apply equal-spacing layout to all columns
       curr_view.columns.each do |a|
-        a.layout = :default
+        a.layout = 'default-max'
       end
 
-    ${layout},v: | # apply stacked layout to current column
+    ${layout}-v: | # apply stacked layout to current column
       curr_area.layout = 'stack-max'
 
-    ${layout},Shift-v: | # apply stacked layout to all columns
+    ${layout}-Shift-v: | # apply stacked layout to all columns
       curr_view.columns.each do |a|
         a.layout = 'stack-max'
       end
 
-    ${layout},m: | # apply maximized layout to current column
+    ${layout}-m: | # apply maximized layout to current column
       curr_area.layout = 'stack+max'
 
-    ${layout},Shift-m: | # apply maximized layout to all columns
+    ${layout}-Shift-m: | # apply maximized layout to all columns
       curr_view.columns.each do |a|
         a.layout = 'stack+max'
       end
@@ -566,22 +566,22 @@ control:
     # menu
     #---------------------------------------------------------------------------
 
-    ${mod}-i: | # run internal action chosen from a menu
+    ${mod}-a: | # run internal action chosen from a menu
       if choice = key_menu(actions, 'run action:')
         action choice
       end
 
-    ${mod}-e: | # run external program chosen from a menu
+    ${mod}-p: | # run external program chosen from a menu
       if choice = key_menu(@programs, 'run program:')
         launch choice
       end
 
-    ${mod}-u: | # focus view chosen from a menu
+    ${mod}-t: | # focus view chosen from a menu
       if choice = key_menu(tags, 'show view:')
         focus_view choice
       end
 
-    ${mod}-a: | # focus client chosen from a menu
+    ${mod}-c: | # focus client chosen from a menu
       choices = []
 
       clients.each_with_index do |c, i|
