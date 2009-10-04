@@ -56,7 +56,7 @@ Installation:
 
     # choose
     cd ~/.wmii-hg
-    git checkout -b CHOICE --track      # possible choices are:
+    git checkout --track -b CHOICE origin/CHOICE # choices are:
 
     +--------+------------------------------------------------+
     | CHOICE | DESCRIPTION                                    |
@@ -84,7 +84,11 @@ Configuration:
 
     Run ~/.wmii-hg/wmiirc to apply your changes.
 
+Contribution:
+
+    Fork this project on GitHub and send pull requests.
+
 Questions:
 
-    Send me an e-mail; see LICENSE for my address.
+    Send me an e-mail (see LICENSE for my address).
 
