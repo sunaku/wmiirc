@@ -48,7 +48,7 @@ Installation:
 Documentation:
 
     # see list of all key bindings
-    grep '\${mod}.*#' ~/.wmii-hg/config.yaml
+    egrep '^ +\$\{\w+\}' ~/.wmii-hg/config.yaml
 
     # read the configuration file
     less ~/.wmii-hg/config.yaml
