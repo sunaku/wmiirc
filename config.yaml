@@ -582,15 +582,8 @@ control:
       end
 
     ${mod}-c: | # focus client chosen from a menu
-      choices = []
-
-      clients.each_with_index do |c, i|
-        choices << "%d. [%s] %s" % [i, c[:tags].read, c[:label].read.downcase]
-      end
-
-      if target = key_menu(choices, 'show client:')
-        i = target.scan(/\d+/).first.to_i
-        clients[i].focus
+      if client = client_menu('show client:')
+        client.focus
       end
 
     #---------------------------------------------------------------------------

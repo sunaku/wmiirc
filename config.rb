@@ -148,7 +148,7 @@ end
 #   The choice that should be initially selected.
 #
 #   If this choice is not included in the list
-#   of cohices, then this item will be made
+#   of choices, then this item will be made
 #   into a makeshift title-bar for the menu.
 #
 def click_menu choices, initial = nil
@@ -170,6 +170,36 @@ def click_menu choices, initial = nil
 
   choice = `#{command}`.chomp
   choice unless choice.empty?
+end
+
+##
+# Shows a key_menu() containing the given
+# clients and returns the chosen client.
+#
+# If nothing was chosen, then nil is returned.
+#
+# ==== Parameters
+#
+# [prompt]
+#   Instruction on what the user should enter or choose.
+#
+# [clients]
+#   List of clients to present as choices to the user.
+#
+#   If this parameter is not specified,
+#   its default value will be a list of
+#   all currently available clients.
+#
+def client_menu prompt = nil, clients = Rumai.clients
+  choices = []
+
+  clients.each_with_index do |c, i|
+    choices << "%d. [%s] %s" % [i, c[:tags].read, c[:label].read.downcase]
+  end
+
+  if target = key_menu(choices, prompt)
+    clients[target.scan(/\d+/).first.to_i]
+  end
 end
 
 ##
