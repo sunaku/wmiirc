@@ -192,10 +192,10 @@ control:
   ##
   # Direction keys.
   #
-  up:    t
-  down:  n
+  up:    k
+  down:  j
   left:  h
-  right: s
+  right: l
 
   ##
   # Sequence keys.
