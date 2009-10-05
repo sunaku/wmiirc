@@ -627,13 +627,13 @@ control:
         launch CONFIG['program']['terminal']
       end
 
-    ${mod}-k: | # launch a web browser
+    ${mod}-i: | # launch a web browser
       launch CONFIG['program']['browser']
 
-    ${mod}-j: | # launch a file manager
+    ${mod}-m: | # launch a file manager
       launch CONFIG['program']['filer']
 
-    ${mod}-q: | # launch a note taker
+    ${mod}-n: | # launch a note taker
       launch CONFIG['program']['editor']
 
     #---------------------------------------------------------------------------
