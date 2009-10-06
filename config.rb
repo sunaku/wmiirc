@@ -447,7 +447,7 @@ def load_config config_file
       CONFIG['control'][param].each do |name, code|
         # expand ${...} expressions in key sequences
         if param == 'key'
-          name = name.gsub(/\$\{(.+?)}/) { CONFIG['control'][$1] }
+          name = name.gsub(/\$\{(.+?)\}/) { CONFIG['control'][$1] }
         end
 
         eval "#{param}(#{name.inspect}) {|*argv| #{code} }",
