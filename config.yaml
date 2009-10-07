@@ -99,6 +99,7 @@ display:
     - /^pidgin:|:WeeChat\b/                             : chat
     - /\b(Liferea|GMail|Thunderbird)\b/                 : mail
     - /:(Firefox|Shiretoko):.*\bRestore\b.*\bSession\b/ : web
+    - /sun-awt-X11-XFramePeer:.+jEdit/                  : '~+!'
 
   ##
   # Self-refreshing buttons on the status bar.
