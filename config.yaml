@@ -436,8 +436,6 @@ control:
   #   <action name>: <Ruby code to execute>
   #
   action:
-    quit: | # kill the window manager only; do not touch the clients!
-      fs.ctl.write 'quit'
 
 
 ##
