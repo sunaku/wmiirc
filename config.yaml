@@ -374,47 +374,6 @@ control:
     RightBarClick: |
       status_click *argv.reverse
 
-    Unresponsive: |
-      client_id = argv[0]
-      client = Client.new(client_id)
-
-      IO.popen('xmessage -nearmouse -file - -buttons Kill,Wait -print', 'w+') do |f|
-        f.puts 'The following client is not responding.', ''
-        f.puts client.inspect
-        f.puts client.label.read
-
-        f.puts '', 'What would you like to do?'
-        f.close_write
-
-        if f.read.chomp == 'Kill'
-          client.slay
-        end
-      end
-
-    Notice: |
-      unless defined? @notice_mutex
-        require 'thread'
-        @notice_mutex = Mutex.new
-      end
-
-      Thread.new do
-        # prevent notices from overwriting each other
-        @notice_mutex.synchronize do
-          button = fs.rbar['!notice']
-          button.create unless button.exist?
-
-          # display the notice
-          message = argv.join(' ')
-
-          LOG.info message # also log it in case the user is AFK
-          button.write "#{CONFIG['display']['color']['notice']} #{message}"
-
-          # clear the notice
-          sleep [1, CONFIG['display']['notice'].to_i].max
-          button.remove
-        end
-      end
-
     ClientMouseDown: |
       client_id, mouse_button = argv
 
