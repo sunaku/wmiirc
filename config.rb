@@ -473,6 +473,48 @@ def load_config config_file
       action 'kill'
     end
 
+    event 'Unresponsive' do |client_id|
+      client = Client.new(client_id)
+
+      IO.popen('xmessage -nearmouse -file - -buttons Kill,Wait -print', 'w+') do |f|
+        f.puts 'The following client is not responding.', ''
+        f.puts client.inspect
+        f.puts client.label.read
+
+        f.puts '', 'What would you like to do?'
+        f.close_write
+
+        if f.read.chomp == 'Kill'
+          client.slay
+        end
+      end
+    end
+
+    event 'Notice' do |*argv|
+      unless defined? @notice_mutex
+        require 'thread'
+        @notice_mutex = Mutex.new
+      end
+
+      Thread.new do
+        # prevent notices from overwriting each other
+        @notice_mutex.synchronize do
+          button = fs.rbar['!notice']
+          button.create unless button.exist?
+
+          # display the notice
+          message = argv.join(' ')
+
+          LOG.info message # also log it in case the user is AFK
+          button.write "#{CONFIG['display']['color']['notice']} #{message}"
+
+          # clear the notice
+          sleep [1, CONFIG['display']['notice'].to_i].max
+          button.remove
+        end
+      end
+    end
+
     %w[key action event].each do |param|
       CONFIG['control'][param].each do |name, code|
         # expand ${...} expressions in key sequences
