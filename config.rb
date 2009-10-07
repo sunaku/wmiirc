@@ -443,6 +443,36 @@ def load_config config_file
       @programs = find_programs(ENV['PATH'].squeeze(':').split(':'))
     end
 
+    # kill all currently open clients
+    action 'clear' do
+      # firefox's restore session feature does not
+      # work unless the whole process is killed.
+      system 'killall firefox firefox-bin thunderbird thunderbird-bin'
+
+      # gnome-panel refuses to die by any other means
+      system 'killall -s TERM gnome-panel'
+
+      Thread.pass until clients.each do |c|
+        begin
+          c.focus # XXX: client must be on current view in order to be killed
+          c.kill
+        rescue
+          # ignore
+        end
+      end.empty?
+    end
+
+    # kill the window manager only; do not touch the clients!
+    action 'kill' do
+      fs.ctl.write 'quit'
+    end
+
+    # kill both clients and window manager
+    action 'quit' do
+      action 'clear'
+      action 'kill'
+    end
+
     %w[key action event].each do |param|
       CONFIG['control'][param].each do |name, code|
         # expand ${...} expressions in key sequences
