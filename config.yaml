@@ -808,29 +808,6 @@ control:
   #   <action name>: <Ruby code to execute>
   #
   action:
-    clear: | # kill all clients
-      # firefox's restore session feature does not
-      # work unless the whole process is killed.
-      system 'killall firefox firefox-bin thunderbird thunderbird-bin'
-
-      # gnome-panel refuses to die by any other means
-      system 'killall -s TERM gnome-panel'
-
-      Thread.pass until clients.each do |c|
-        begin
-          c.focus # XXX: client must be on current view in order to be killed
-          c.kill
-        rescue
-          # ignore
-        end
-      end.empty?
-
-    kill: | # kill the window manager only; do not touch the clients!
-      fs.ctl.write 'quit'
-
-    quit: | # kill both clients and window manager
-      action 'clear'
-      action 'kill'
 
 
 ##
