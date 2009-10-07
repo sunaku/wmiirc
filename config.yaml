@@ -391,26 +391,26 @@ control:
     # column
     #---------------------------------------------------------------------------
 
-    ${layout}-d: | # apply equal-spacing layout to current column
+    ${layout},d: | # apply equal-spacing layout to current column
       curr_area.layout = 'default-max'
 
-    ${layout}-Shift-w: | # apply equal-spacing layout to all columns
+    ${layout},Shift-w: | # apply equal-spacing layout to all columns
       curr_view.columns.each do |a|
         a.layout = 'default-max'
       end
 
-    ${layout}-v: | # apply stacked layout to current column
+    ${layout},v: | # apply stacked layout to current column
       curr_area.layout = 'stack-max'
 
-    ${layout}-Shift-v: | # apply stacked layout to all columns
+    ${layout},Shift-v: | # apply stacked layout to all columns
       curr_view.columns.each do |a|
         a.layout = 'stack-max'
       end
 
-    ${layout}-m: | # apply maximized layout to current column
+    ${layout},m: | # apply maximized layout to current column
       curr_area.layout = 'stack+max'
 
-    ${layout}-Shift-m: | # apply maximized layout to all columns
+    ${layout},Shift-m: | # apply maximized layout to all columns
       curr_view.columns.each do |a|
         a.layout = 'stack+max'
       end
