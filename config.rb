@@ -516,14 +516,16 @@ def load_config config_file
     end
 
     %w[key action event].each do |param|
-      CONFIG['control'][param].each do |name, code|
-        # expand ${...} expressions in key sequences
-        if param == 'key'
-          name = name.gsub(/\$\{(.+?)\}/) { CONFIG['control'][$1] }
-        end
+      if settings = CONFIG['control'][param]
+        settings.each do |name, code|
+          if param == 'key'
+            # expand ${...} expressions in shortcut key sequences
+            name = name.gsub(/\$\{(.+?)\}/) { CONFIG['control'][$1] }
+          end
 
-        eval "#{param}(#{name.inspect}) {|*argv| #{code} }",
-             TOPLEVEL_BINDING, "#{config_file}:control:#{param}:#{name}"
+          eval "#{param}(#{name.inspect}) {|*argv| #{code} }",
+               TOPLEVEL_BINDING, "#{config_file}:control:#{param}:#{name}"
+        end
       end
     end
 
