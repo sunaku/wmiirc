@@ -254,6 +254,9 @@ control:
     ${mod}-${next}: | # focus next view
       next_view.focus
 
+    ${mod}-s: | # focus most recently focused view
+      $last_view.focus if $last_view
+
     # focus the view whose index or name equals the pressed number
     ${mod}-1: focus_view tags[0] || 1
     ${mod}-2: focus_view tags[1] || 2
@@ -780,6 +783,18 @@ script:
   before: |
     DETACHED_TAG  = '|'
     ZOOMED_SUFFIX = /~(\d+)$/
+
+    # keep track of most recently focused view
+    $last_view = nil
+
+    class Rumai::View
+      alias __focus__ focus
+
+      def focus
+        $last_view = View.curr
+        __focus__
+      end
+    end
 
   after: |
     # desktop wallpaper
