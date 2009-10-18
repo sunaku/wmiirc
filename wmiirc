@@ -68,6 +68,11 @@ begin
 rescue SystemExit
   # ignore it; the program wants to terminate
 
+rescue Errno::EPIPE => e
+  LOG.error e
+  LOG.info 'Lost connection to wmii.  Attempting to reconnect...'
+  reload_config
+
 rescue Exception => e
   LOG.error e
 
