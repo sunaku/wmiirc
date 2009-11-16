@@ -28,7 +28,9 @@ begin
 
   # load configuration library
     def find_config file
-      base_dirs = ENV['WMII_CONFPATH'].to_s.split(/:+/)
+      base_dirs = ENV['WMII_CONFPATH'].to_s.split(/:+/).
+                  push(File.dirname(__FILE__)) # failsafe
+
       ruby_dirs = base_dirs.map {|dir| File.join(dir, 'ruby') }
 
       Dir["{#{base_dirs.zip(ruby_dirs).join(',')}}/#{file}"].first
