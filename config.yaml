@@ -403,19 +403,19 @@ control:
       end
 
     ${layout},v: | # apply stacked layout to current column
-      curr_area.layout = 'stack-max'
+      curr_area.layout = :stack
 
     ${layout},Shift-v: | # apply stacked layout to all columns
       curr_view.columns.each do |a|
-        a.layout = 'stack-max'
+        a.layout = :stack
       end
 
     ${layout},m: | # apply maximized layout to current column
-      curr_area.layout = 'stack+max'
+      curr_area.layout = :max
 
     ${layout},Shift-m: | # apply maximized layout to all columns
       curr_view.columns.each do |a|
-        a.layout = 'stack+max'
+        a.layout = :max
       end
 
     #---------------------------------------------------------------------------
