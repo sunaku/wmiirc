@@ -550,6 +550,9 @@ control:
     ${layout},g: | # arrange clients in current view like a grid
       curr_view.arrange_in_grid
 
+    ${layout},s: | # arrange clients in current view in two stacks
+      curr_view.arrange_in_stacks 2
+
     ${layout},d: | # arrange clients in current view like a diamond
       curr_view.arrange_in_diamond
 
@@ -563,7 +566,19 @@ control:
     ${layout},7: curr_view.arrange_in_grid 7
     ${layout},8: curr_view.arrange_in_grid 8
     ${layout},9: curr_view.arrange_in_grid 9
-    ${layout},0: curr_view.arrange_in_grid 9999 # make one giant column
+    ${layout},0: curr_view.arrange_in_grid 9999 # all clients in one column
+
+    # apply stacking layout with the pressed number of columns
+    ${layout},Shift-1: curr_view.arrange_in_stacks 1
+    ${layout},Shift-2: curr_view.arrange_in_stacks 2
+    ${layout},Shift-3: curr_view.arrange_in_stacks 3
+    ${layout},Shift-4: curr_view.arrange_in_stacks 4
+    ${layout},Shift-5: curr_view.arrange_in_stacks 5
+    ${layout},Shift-6: curr_view.arrange_in_stacks 6
+    ${layout},Shift-7: curr_view.arrange_in_stacks 7
+    ${layout},Shift-8: curr_view.arrange_in_stacks 8
+    ${layout},Shift-9: curr_view.arrange_in_stacks 9
+    ${layout},Shift-0: curr_view.arrange_in_stacks 9999 # one client per column
 
     #---------------------------------------------------------------------------
     # menu
