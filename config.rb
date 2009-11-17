@@ -9,7 +9,7 @@ require 'pathname'
 require 'yaml'
 
 require 'rubygems'
-gem 'rumai', '~> 3'
+gem 'rumai', '>= 3.2.0', '< 4'
 require 'rumai'
 
 include Rumai
