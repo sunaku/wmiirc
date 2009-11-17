@@ -258,10 +258,10 @@ control:
       curr_area.layout = 'default-max'
 
     ${mod}-v: | # apply stacked layout to current column
-      curr_area.layout = 'stack-max'
+      curr_area.layout = :stack
 
     ${mod}-m: | # apply maximized layout to current column
-      curr_area.layout = 'stack+max'
+      curr_area.layout = :max
 
     #---------------------------------------------------------------------------
     # menu
