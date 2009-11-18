@@ -11,17 +11,27 @@
 require 'logger'
 LOG = Logger.new(__FILE__ + '.log', 5)
 
-class << LOG
-  # emulate IO.write
-  alias write <<
+# capture standard outputs in logger
+[STDOUT, STDERR].each do |stream|
+  original = stream.method(:write)
 
-  def flush
-    # ignore
+  (class << stream; self; end).class_eval do
+    define_method :write do |s|
+      LOG << s
+      original.call s
+    end
+
+    alias_method :<<, :write
   end
 end
 
-# capture standard output in logger
-$stdout = $stderr = LOG
+##
+# Reloads the entire wmii configuration.
+#
+def reload_config
+  LOG.info 'reload'
+  exec $0
+end
 
 begin
   LOG.info 'birth'
