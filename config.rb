@@ -537,11 +537,3 @@ def load_config config_file
          "#{config_file}:script:after"
 
 end
-
-##
-# Reloads the entire wmii configuration.
-#
-def reload_config
-  LOG.info 'reload'
-  exec $0
-end
