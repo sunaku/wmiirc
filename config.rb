@@ -9,7 +9,7 @@ require 'pathname'
 require 'yaml'
 
 require 'rubygems'
-gem 'rumai', '~> 3'
+gem 'rumai', '>= 3.2.0', '< 4'
 require 'rumai'
 
 include Rumai
@@ -536,12 +536,4 @@ def load_config config_file
     eval CONFIG['script']['after'].to_s, TOPLEVEL_BINDING,
          "#{config_file}:script:after"
 
-end
-
-##
-# Reloads the entire wmii configuration.
-#
-def reload_config
-  LOG.info 'reload'
-  exec $0
 end
