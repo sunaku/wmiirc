@@ -125,7 +125,7 @@ display:
           [color, *load_averages]
 
     - clock:
-        refresh: 5
+        refresh: 1
         content: Time.now.to_s
 
 
