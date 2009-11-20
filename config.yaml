@@ -55,7 +55,7 @@ display:
   #
   # You can find more color schemes here:
   #
-  #   http://wmii.suckless.org/scripts_n_snips/themes
+  #   http://wmii.suckless.org/themes
   #
   color:
     normal:   "#c0c0c0 #0a0a0a #202020"
