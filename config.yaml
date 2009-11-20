@@ -55,7 +55,7 @@ display:
   #
   # You can find more color schemes here:
   #
-  #   http://wmii.suckless.org/scripts_n_snips/themes
+  #   http://wmii.suckless.org/themes
   #
   color:
     normal:   "#000000 #c1c48b #81654f"
