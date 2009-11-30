@@ -229,7 +229,7 @@ display:
 
     - clock:
         refresh: 1
-        content: Time.now.to_s
+        content: Time.now.strftime("%A %Y-%m-%d %H:%M:%S %Z")
         click: |
           dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '*' * s.length }
 
