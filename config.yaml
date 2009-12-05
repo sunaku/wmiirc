@@ -58,16 +58,20 @@ display:
   #   http://wmii.suckless.org/themes
   #
   color:
-    normal:   "#c0c0c0 #0a0a0a #202020"
-    focus:    "#ffffff #285577 #4c7899"
-    error:    "#8a1f11 #FBE3E4 #FBC2C4" # from http://www.blueprintcss.org
-    notice:   "#514721 #FFF6BF #FFD324" # from http://www.blueprintcss.org
-    success:  "#264409 #E6EFC2 #C6D880" # from http://www.blueprintcss.org
+    #
+    # The following colors are from the Wombat color scheme for Vim:
+    # http://dengmao.wordpress.com/2007/01/22/vim-color-scheme-wombat/
+    #
+    focus:    "#000000 #cae682 #303030"
+    normal:   "#f6f3e8 #242424 #303030"
+    error:    "#e5786d #242424 #303030"
+    notice:   "#8ac6f2 #242424 #303030"
+    success:  "#95e454 #242424 #303030"
 
   ##
   # Color of desktop background.
   #
-  background: "#333333"
+  background: "#000000"
 
   ##
   # Settings for columns drawn by wmii.
