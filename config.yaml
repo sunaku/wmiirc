@@ -182,7 +182,35 @@ display:
     - volume:
         refresh: 60
         content: |
-          ['volume', `amixer get Master`.scan(/\d+%/).first]
+          volume = status_button('volume')
+          unless volume.respond_to? :level
+            def volume.mixer
+              'Master'
+            end
+
+            def volume.level
+              `amixer get #{mixer}`[/\d+%/]
+            end
+
+            def volume.level= amount
+              `amixer set #{mixer} #{amount}`
+            end
+          end
+
+          ['volume', volume.level]
+
+        click: |
+          volume = status_button('volume')
+
+          current = volume.level
+          levels = (0 .. 10).map {|i| i * 10 }.
+                   push(current.to_i).sort.uniq.
+                   map {|i| "#{i}%" }.reverse
+
+          if level = click_menu(levels, current)
+            volume.level = level
+            status 'volume'
+          end
 
     - disk_space:
         refresh: 600 # 10 minutes
