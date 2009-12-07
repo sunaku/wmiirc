@@ -119,7 +119,7 @@ display:
   #
   status:
     - music:
-        refresh: 15
+        refresh: 5
         content: |
           unless defined? @music
             require 'rubygems'
@@ -129,11 +129,8 @@ display:
             @music = MPD.new
           end
 
-          unless @music.connected?
-            @music.connect
-          end
-
-          music_state = (@music.stopped? || @music.paused?) ? '(-)' : '(>)'
+          @music.connect unless @music.connected?
+          status 'music_play'
 
           if song = @music.current_song
             artist    = song.artist
@@ -141,7 +138,46 @@ display:
             song_name = [artist, title].compact.join(': ')
           end
 
-          [music_state, song_name].compact
+          song_name.to_s
+
+    - music_prev:
+        refresh: 0
+        content: |
+          '<'
+        click: |
+          @music.previous rescue nil
+          status 'music'
+
+    - music_play:
+        refresh: 0
+        content: |
+          if @music.stopped?
+            'x_x'
+          elsif @music.paused?
+            [CONFIG['display']['color']['notice'], '-_-']
+          else
+            [CONFIG['display']['color']['success'], '^_^']
+          end
+        click: |
+          begin
+            if @music.stopped?
+              @music.play
+            else
+              @music.pause = !@music.paused?
+            end
+          rescue
+            # ignore
+          end
+
+          status 'music'
+
+    - music_next:
+        refresh: 0
+        content: |
+          '>'
+        click: |
+          @music.next rescue nil
+          status 'music'
 
     - volume:
         refresh: 60
@@ -656,25 +692,13 @@ control:
     #---------------------------------------------------------------------------
 
     ${mod}-Prior: | # previous song
-      @music.previous rescue nil
-      status 'music'
+      status_click 'music_prev'
 
     ${mod}-Next: | # next song
-      @music.next rescue nil
-      status 'music'
+      status_click 'music_next'
 
     ${mod}-Return: | # pause song (toggle)
-      begin
-        if @music.stopped?
-          @music.play
-        else
-          @music.pause = !@music.paused?
-        end
-      rescue
-        # ignore
-      end
-
-      status 'music'
+      status_click 'music_play'
 
     ${mod}-Home: | # load a playlist
       if list = key_menu(@music.playlists, 'load playlist:')
