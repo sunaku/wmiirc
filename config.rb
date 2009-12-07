@@ -424,7 +424,7 @@ def load_config config_file
       #   the mouse button (as defined
       #   by X server) that was clicked.
       #
-      def status_click name, mouse_button
+      def status_click name, mouse_button = nil
         if button = status_button(name) and
            handle = @on_click_by_status_button[button]
         then
