@@ -215,8 +215,10 @@ display:
     - disk_space:
         refresh: 600 # 10 minutes
         content: |
-          free, used, path = `df -h ~`.split.last(3)
+          free, used, path = `df -h ~ || df ~`.split.last(3)
           [path, used, 'used', free, 'free']
+        click: |
+          dialog `df -h || df`
 
     - system_load:
         refresh: 10
@@ -232,9 +234,14 @@ display:
 
           [color, *load_averages]
 
+        click: |
+          dialog `ps u --sort=-pcpu,-vsz || ps u`
+
     - clock:
         refresh: 1
         content: Time.now.to_s
+        click: |
+          dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '*' * s.length }
 
 
 ##
