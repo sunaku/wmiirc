@@ -212,10 +212,34 @@ def find_programs *dirs
 end
 
 ##
-# Launches the command built from the given words in the background.
+# Launches the given command in the background.
 #
-def launch *words
-  command = words.shelljoin
+# ==== Parameters
+#
+# [command]
+#   The name or path to the program you want
+#   to launch.  This can be a self-contained
+#   shell command if no arguments are given.
+#
+# [arguments]
+#   Command-line arguments for the command being launched.
+#
+# ==== Examples
+#
+# Launch a self-contained shell command (while making sure that
+# the arguments within the shell command are properly quoted):
+#
+#   launch "xmessage 'hello world' '#{Time.now}'"
+#
+# Launch a command with explicit arguments (while not
+# having to worry about shell-quoting those arguments):
+#
+#   launch 'xmessage', 'hello world', Time.now.to_s
+#
+def launch command, *arguments
+  unless arguments.empty?
+    command = [command, *arguments].shelljoin
+  end
   system "#{command} &"
 end
 
