@@ -143,7 +143,7 @@ display:
     - music_prev:
         refresh: 0
         content: |
-          '<'
+          '<-'
         click: |
           @music.previous rescue nil
           status 'music'
@@ -152,11 +152,11 @@ display:
         refresh: 0
         content: |
           if @music.stopped?
-            'x_x'
+            '--'
           elsif @music.paused?
-            [CONFIG['display']['color']['notice'], '-_-']
+            [CONFIG['display']['color']['notice'], '::']
           else
-            [CONFIG['display']['color']['success'], '^_^']
+            [CONFIG['display']['color']['success'], '>>']
           end
         click: |
           begin
@@ -174,7 +174,7 @@ display:
     - music_next:
         refresh: 0
         content: |
-          '>'
+          '->'
         click: |
           @music.next rescue nil
           status 'music'
