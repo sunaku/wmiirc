@@ -244,6 +244,28 @@ def launch command, *arguments
 end
 
 ##
+# Shows a dialog box containing the given message.
+#
+# This is a "fire and forget" operation.  The result of
+# the launched dialog box is NOT returned by this method!
+#
+# ==== Parameters
+#
+# [message]
+#   The message to be displayed.
+#
+# [arguments]
+#   Additional command-line arguments for `xmessage`.
+#
+def dialog message, *arguments
+  # show dialog in floating area
+  curr_view.floating_area.focus
+
+  arguments << message
+  launch 'xmessage', '-nearmouse', *arguments
+end
+
+##
 # A button on a bar.
 #
 class Button < Thread
