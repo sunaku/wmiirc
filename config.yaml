@@ -135,6 +135,21 @@ display:
 control:
 
   ##
+  # Mapping from X mouse button codes to named
+  # actions, which are compiled into Ruby symbols
+  # by the configuration and are passed to various
+  # mouse click handlers within this configuration.
+  #
+  mouse:
+    1: left_click
+    2: wheel_click
+    3: right_click
+    4: wheel_up
+    5: wheel_down
+    6: wheel_left
+    7: wheel_right
+
+  ##
   # The wmii "grabmod" setting.
   #
   grab: Mod1
@@ -359,8 +374,9 @@ control:
 
     LeftBarClick: &LeftBarClick |
       mouse_button, view_id = argv
+      mouse_action = mouse_button_to_action(mouse_button)
 
-      if mouse_button == '1' # primary button
+      if mouse_action == :left_click
         focus_view view_id
       end
 
@@ -376,8 +392,9 @@ control:
 
     ClientMouseDown: |
       client_id, mouse_button = argv
+      mouse_action = mouse_button_to_action(mouse_button)
 
-      if mouse_button == '3' # secondary button
+      if mouse_action == :right_click
         client = Client.new(client_id)
 
         case click_menu %w[stick group fullscreen kill slay], 'client'
