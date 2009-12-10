@@ -105,6 +105,14 @@ display:
 control:
 
   ##
+  # Mapping from X mouse button codes to named
+  # actions, which are compiled into Ruby symbols
+  # by the configuration and are passed to various
+  # mouse click handlers within this configuration.
+  #
+  mouse:
+
+  ##
   # The wmii "grabmod" setting.
   #
   grab:
