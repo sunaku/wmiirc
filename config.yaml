@@ -225,7 +225,7 @@ display:
           [color, *load_averages]
 
         click: |
-          dialog `ps u --sort=-pcpu,-vsz || ps u`
+          dialog `ps ux --sort=-pcpu,-vsz || ps ux`
 
     - clock:
         refresh: 1
