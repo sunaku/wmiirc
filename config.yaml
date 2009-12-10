@@ -130,7 +130,15 @@ display:
           end
 
           @music.connect unless @music.connected?
-          status 'music_play'
+
+          color =
+            if @music.stopped?
+              nil
+            elsif @music.paused?
+              CONFIG['display']['color']['notice']
+            else
+              CONFIG['display']['color']['success']
+            end
 
           if song = @music.current_song
             artist    = song.artist
@@ -138,45 +146,27 @@ display:
             song_name = [artist, title].compact.join(': ')
           end
 
-          song_name.to_s
+          [color, '(mpd)', song_name].compact
 
-    - music_prev:
-        refresh: 0
-        content: |
-          '<-'
         click: |
-          @music.previous rescue nil
-          status 'music'
-
-    - music_play:
-        refresh: 0
-        content: |
-          if @music.stopped?
-            '--'
-          elsif @music.paused?
-            [CONFIG['display']['color']['notice'], '::']
-          else
-            [CONFIG['display']['color']['success'], '>>']
-          end
-        click: |
-          begin
+          case mouse_button
+          when :left_click
             if @music.stopped?
               @music.play
             else
               @music.pause = !@music.paused?
             end
-          rescue
-            # ignore
+
+          when :right_click
+            @music.stop
+
+          when :wheel_up
+            @music.previous
+
+          when :wheel_down
+            @music.next
           end
 
-          status 'music'
-
-    - music_next:
-        refresh: 0
-        content: |
-          '->'
-        click: |
-          @music.next rescue nil
           status 'music'
 
     - volume:
@@ -742,13 +732,13 @@ control:
     #---------------------------------------------------------------------------
 
     ${mod}-Prior: | # previous song
-      status_click 'music_prev'
+      status_click 'music', :wheel_up
 
     ${mod}-Next: | # next song
-      status_click 'music_next'
+      status_click 'music', :wheel_down
 
     ${mod}-Return: | # pause song (toggle)
-      status_click 'music_play'
+      status_click 'music', :left_click
 
     ${mod}-Home: | # load a playlist
       if list = key_menu(@music.playlists, 'load playlist:')
