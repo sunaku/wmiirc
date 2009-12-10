@@ -466,19 +466,42 @@ def load_config config_file
       #   of the status button's IXP file.
       #
       # [mouse_button]
-      #   The identification number of
-      #   the mouse button (as defined
-      #   by X server) that was clicked.
+      #   Either the identification number of the mouse button (as defined by
+      #   X server) or a named action corresponding to such as identification
+      #   number (see the mouse_button_to_action method) that was clicked.
       #
       def status_click name, mouse_button = nil
-        if button = status_button(name) and
-           handle = @on_click_by_status_button[button]
+        if status_button = status_button(name) and
+           click_handler = @on_click_by_status_button[status_button]
         then
-          handle.call mouse_button.to_i
+          # convert button code into Ruby symbol, if given
+          if mouse_button
+            mouse_button = mouse_button_to_action(mouse_button)
+          end
+
+          click_handler.call mouse_button
         end
       end
 
   # control
+    # compile mouse action names into Ruby symbols
+    h = CONFIG['control']['mouse']
+    h.each {|k,v| h[k] = v.to_sym }
+
+    ##
+    # Converts the given button code into a Ruby symbol according to the
+    # "control:mouse" mapping defined in the config.yaml configuration file.
+    #
+    def mouse_button_to_action mouse_button
+      unless mouse_button.is_a? Symbol
+        code = mouse_button.to_i
+        symbol = CONFIG['control']['mouse'][code]
+        mouse_button = symbol || code
+      end
+
+      mouse_button
+    end
+
     action 'reload' do
       # reload this wmii configuration
       reload_config
