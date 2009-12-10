@@ -126,7 +126,7 @@ display:
 
     - clock:
         refresh: 1
-        content: Time.now.strftime("%A %Y-%m-%d %H:%M:%S %Z")
+        content: Time.now.strftime('%c')
 
 
 ##
