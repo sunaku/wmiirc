@@ -150,20 +150,20 @@ display:
 
         click: |
           case mouse_button
-          when :left_click
+          when :left_click # play song (toggle)
             if @music.stopped?
               @music.play
             else
               @music.pause = !@music.paused?
             end
 
-          when :right_click
+          when :right_click # stop playing
             @music.stop
 
-          when :wheel_up
+          when :wheel_up # previous song
             @music.previous
 
-          when :wheel_down
+          when :wheel_down # next song
             @music.next
           end
 
