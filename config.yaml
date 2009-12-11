@@ -162,8 +162,8 @@ display:
             end
 
           when :right_click then @music.stop
-          when :wheel_up    then @music.previous
-          when :wheel_down  then @music.next
+          when :wheel_up    then @music.next
+          when :wheel_down  then @music.previous
           end
 
           refresh
