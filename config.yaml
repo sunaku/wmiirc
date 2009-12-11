@@ -97,10 +97,14 @@ display:
   #
   #   - <button name>:
   #       refresh:  <number of seconds to wait before refreshing the content>
+  #       script:   <Ruby code to evaluate within the Button
+  #                  object that corresponds to this definition.>
   #       content:  <Ruby code whose result is displayed as the content>
   #       click:    <Ruby code to handle mouse clicks on the status button.
-  #                  This code has access to a "mouse_button" variable which is
-  #                  an integer representing the mouse button that was clicked.>
+  #                  This code is evaluated within the Button object that
+  #                  corresponds to this definition.  In addition, it has
+  #                  access to a "mouse_button" variable which is an integer
+  #                  representing the mouse button that was clicked.>
   #
   # You can refresh a particular status button in Ruby using:
   #
