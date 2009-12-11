@@ -270,26 +270,43 @@ end
 #
 class Button < Thread
   ##
-  # Creates a new button at the given node and updates its label
-  # according to the given refresh rate (measured in seconds).  The
-  # given block is invoked to calculate the label of the button.
+  # Creates a new status bar button.
   #
-  # The return value of the given block can be either an
-  # array (whose first item is a wmii color sequence for the
-  # button, and the remaining items compose the label of the
-  # button) or a string containing the label of the button.
+  # ==== Parameters
   #
-  # If the given block raises a standard exception, then that will be
-  # rescued and displayed (using error colors) as the button's label.
+  # [fs_bar_node]
+  #   The IXP node which is to be used as a status button.
   #
-  def initialize fs_bar_node, refresh_rate, &button_label
+  # [refresh_rate]
+  #   Number of seconds to wait before recalculating the status button label.
+  #
+  # [init_script]
+  #   Ruby code to instance_eval() inside the status button.
+  #
+  # [init_filename]
+  #   Name of the source file from which init_script originates.
+  #
+  # [button_label]
+  #   Required block that is called periodically
+  #   to calculate a label for the status button.
+  #
+  #   The return value of this block can be either an array (whose first item
+  #   is a wmii color sequence for the button, and the remaining items compose
+  #   the label of the button) or a string containing the label of the button.
+  #
+  #   If this block raises a standard exception, then that exception will
+  #   be rescued and displayed (using error colors) as the button's label.
+  #
+  def initialize fs_bar_node, refresh_rate, init_script = nil, init_filename = nil, &button_label
     raise ArgumentError, 'block must be given' unless block_given?
+
+    instance_eval init_script, init_filename if init_script
 
     super(fs_bar_node) do |button|
       while true
         label =
           begin
-            Array(button_label.call)
+            Array(instance_eval(&button_label))
           rescue Exception => e
             LOG.error e
             [CONFIG['display']['color']['error'], e]
@@ -402,18 +419,20 @@ def load_config config_file
             # buttons appear in ASCII order of their IXP file name
             file = "#{position}-#{name}"
 
-            button = eval(
-              "Button.new(fs.rbar[#{file.inspect}], #{defn['refresh']}) { #{defn['content']} }",
-              TOPLEVEL_BINDING, "#{config_file}:display:status:#{name}"
-            )
+            button = eval %{
+              Button.new(
+                fs.rbar[#{file.inspect}], #{defn['refresh']},
+                #{defn['script'].inspect}, "#{config_file}:display:status:script"
+              ) { #{defn['content']} }
+            }, TOPLEVEL_BINDING, "#{config_file}:display:status:#{name}"
 
             @status_button_by_name[name] = button
             @status_button_by_file[file] = button
 
             # mouse click handler
             if code = defn['click']
-              @on_click_by_status_button[button] = eval(
-                "lambda {|mouse_button| #{code} }", TOPLEVEL_BINDING,
+              @on_click_by_status_button[button] = button.instance_eval(
+                "lambda {|mouse_button| #{code} }",
                 "#{config_file}:display:status:#{name}:click"
               )
             end
