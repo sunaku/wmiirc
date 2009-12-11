@@ -131,20 +131,21 @@ display:
 
           @music.connect unless @music.connected?
 
+          if song = @music.current_song
+            artist    = song.artist
+            title     = song.title || (f = song.file and File.basename(f))
+            song_name = [artist, title].compact.join(': ')
+          end
+
           color =
             if @music.stopped?
+              song_name = nil
               nil
             elsif @music.paused?
               CONFIG['display']['color']['notice']
             else
               CONFIG['display']['color']['success']
             end
-
-          if song = @music.current_song
-            artist    = song.artist
-            title     = song.title || (f = song.file and File.basename(f))
-            song_name = [artist, title].compact.join(': ')
-          end
 
           [color, '(mpd)', song_name].compact
 
