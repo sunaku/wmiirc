@@ -151,6 +151,14 @@ display:
             end
           end
 
+          def play_song_from_current_playlist_menu
+            playlist = `mpc playlist`.split("\n")
+            if index = index_menu(playlist, 'play song:')
+              # +1 because MPD uses 1..N natural numbering
+              system "mpc play #{index + 1}"
+            end
+          end
+
         content: |
           @music.connect unless @music.connected?
 
@@ -184,6 +192,7 @@ display:
           when :right_click then @music.stop
           when :wheel_up    then @music.next
           when :wheel_down  then @music.previous
+          when :wheel_click then play_song_from_current_playlist_menu
           end
 
           refresh

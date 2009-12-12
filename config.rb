@@ -191,14 +191,44 @@ end
 #   all currently available clients.
 #
 def client_menu prompt = nil, clients = Rumai.clients
-  choices = []
+  choices = clients.map do |c|
+    "[#{c[:tags].read}] #{c[:label].read.downcase}"
+  end
 
-  clients.each_with_index do |c, i|
-    choices << "%d. [%s] %s" % [i, c[:tags].read, c[:label].read.downcase]
+  if index = index_menu(choices, prompt)
+    clients[index]
+  end
+end
+
+##
+# Shows a key_menu() containing the given choices (automatically
+# prefixed with indices) and returns the index of the chosen item.
+#
+# If nothing was chosen, then nil is returned.
+#
+# ==== Parameters
+#
+# [prompt]
+#   Instruction on what the user should enter or choose.
+#
+# [choices]
+#   List of choices to present to the user.
+#
+def index_menu choices, prompt = nil
+  choices.each_with_index do |c, i|
+    # use natural 1..N numbering
+    c.insert 0, "#{i+1}. "
   end
 
   if target = key_menu(choices, prompt)
-    clients[target.scan(/\d+/).first.to_i]
+    # use array 0..N-1 numbering
+    index = target[/^\d+/].to_i-1
+
+    # ignore out of bounds index
+    # (possibly entered by user)
+    if index >= 0 && index < choices.length
+      index
+    end
   end
 end
 
