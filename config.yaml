@@ -153,9 +153,9 @@ display:
           end
 
           def play_song_from_current_playlist_menu
-            playlist = `mpc playlist`.split("\n")
-            if index = index_menu(playlist, 'play song:')
-              # +1 because MPD uses 1..N natural numbering
+            songs = `mpc playlist`.downcase.split("\n")
+            if index = index_menu(songs, 'play song:')
+              # MPD uses natural 1..N numbering
               system "mpc play #{index + 1}"
             end
           end
