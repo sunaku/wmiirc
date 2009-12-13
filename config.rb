@@ -215,12 +215,13 @@ end
 #   List of choices to present to the user.
 #
 def index_menu choices, prompt = nil
+  indices = []
   choices.each_with_index do |c, i|
     # use natural 1..N numbering
-    c.insert 0, "#{i+1}. "
+    indices << "#{i+1}. #{c}"
   end
 
-  if target = key_menu(choices, prompt)
+  if target = key_menu(indices, prompt)
     # use array 0..N-1 numbering
     index = target[/^\d+/].to_i-1
 
