@@ -16,7 +16,7 @@
 #
 program:
   terminal: urxvt
-  browser: firefox
+  browser: chromium-browser
   editor: mousepad
   filer: thunar
 
