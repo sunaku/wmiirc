@@ -17,7 +17,7 @@
 program:
   terminal: urxvt
   browser: chromium-browser
-  editor: mousepad
+  editor: gvim
   filer: thunar
 
 
