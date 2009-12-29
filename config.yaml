@@ -59,19 +59,22 @@ display:
   #
   color:
     #
-    # The following colors are from the Wombat color scheme for Vim:
-    # http://dengmao.wordpress.com/2007/01/22/vim-color-scheme-wombat/
+    # The following colors originate
+    # from the high contrast subset of
+    # the zenburn color scheme for Vim:
     #
-    focus:    "#000000 #cae682 #303030"
-    normal:   "#f6f3e8 #242424 #303030"
-    error:    "#e5786d #242424 #303030"
-    notice:   "#8ac6f2 #242424 #303030"
-    success:  "#95e454 #242424 #303030"
+    # http://slinky.imukuppi.org/zenburn/
+    #
+    focus:    "#ccdc90 #353a37 #242424" # PMenuSel
+    normal:   "#dcdccc #1f1f1f #242424" # Normal
+    error:    "#80d4aa #2f2f2f #242424" # ErrorMsg
+    notice:   "#efef8f #1f1f1f #242424" # Function
+    success:  "#8cd0d3 #1f1f1f #242424" # Number
 
   ##
   # Color of desktop background.
   #
-  background: "#000000"
+  background: "#1f1f1f"
 
   ##
   # Settings for columns drawn by wmii.
