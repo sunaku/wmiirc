@@ -797,10 +797,10 @@ control:
     #---------------------------------------------------------------------------
 
     ${mod}-Prior: | # previous song
-      status_click 'music', :wheel_up
+      status_click 'music', :wheel_down
 
     ${mod}-Next: | # next song
-      status_click 'music', :wheel_down
+      status_click 'music', :wheel_up
 
     ${mod}-Return: | # pause song (toggle)
       status_click 'music', :left_click
