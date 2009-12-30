@@ -358,7 +358,9 @@ class Button < Thread
   ##
   # Refreshes the label of this button.
   #
-  alias refresh wakeup
+  def refresh
+    wakeup if alive?
+  end
 end
 
 ##
