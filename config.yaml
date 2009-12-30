@@ -269,9 +269,16 @@ display:
           MESSAGES = {:low => "Battery LOW", :critical => "Battery CRITICAL"}
           @last_message = :high # no message
 
+          BAT_INFO_FILE = "/proc/acpi/battery/#{BAT}/info"
+          BAT_STATE_FILE = "/proc/acpi/battery/#{BAT}/state"
+
+          def exist?
+            File.exist? BAT_INFO_FILE and File.exist? BAT_STATE_FILE
+          end
+
           def read
-            @bat_info = IO.read "/proc/acpi/battery/#{BAT}/info"
-            @bat_state = IO.read "/proc/acpi/battery/#{BAT}/state"
+            @bat_info = IO.read(BAT_INFO_FILE)
+            @bat_state = IO.read(BAT_STATE_FILE)
           end
 
           def present?
@@ -315,6 +322,11 @@ display:
           end
 
         content: |
+          unless exist?
+            # there is no battery, so terminate this status button
+            Thread.exit
+          end
+
           read
           if present?
             symbol = case state
