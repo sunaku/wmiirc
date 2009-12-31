@@ -1,0 +1,17 @@
+display:
+  status:
+    - storage:
+        refresh: 600 # 10 minutes
+
+        script: |
+          def usage disk
+            `df -h #{disk} || df #{disk}`
+          end
+
+        content: |
+          free, used, path = usage('~').split.last(3)
+          [path, used, 'used', free, 'free']
+
+        click: |
+          dialog usage(nil)
+

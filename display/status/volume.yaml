@@ -1,0 +1,76 @@
+display:
+  status:
+    - volume:
+        refresh: 60
+
+        script: |
+          MIXER = 'Master'
+
+          def get
+            `amixer get #{MIXER}`
+          end
+
+          def level
+            get[/\d+%/]
+          end
+
+          def set value
+            system "amixer set #{MIXER} #{value}"
+          end
+
+          alias level= set
+
+          def increase
+            set '3dB+'
+          end
+
+          def decrease
+            set '3dB-'
+          end
+
+          def mute!
+            set 'toggle'
+          end
+
+          def mute?
+            get.include? '[off]'
+          end
+
+        content: |
+          color = CONFIG['display']['color']['notice'] if mute?
+          [color, 'volume', level]
+
+        click: |
+          case mouse_button
+          when :left_click # choose volume from menu
+            current = self.level
+            levels = (0 .. 10).map {|i| i * 10 }.
+                     push(current.to_i).sort.uniq.
+                     map {|i| "#{i}%" }.reverse
+
+            if level = click_menu(levels, current)
+              self.level = level
+            end
+
+          when :right_click then mute!
+          when :wheel_up    then increase
+          when :wheel_down  then decrease
+          end
+
+          refresh
+
+control:
+  action:
+    increase_volume: |
+      status_click 'volume', :wheel_up
+
+    decrease_volume: |
+      status_click 'volume', :wheel_down
+
+    mute_volume_toggle: |
+      status_click 'volume', :right_click
+
+  keyboard_action:
+    ${mod}-Shift-Prior: increase_volume
+    ${mod}-Shift-Next: decrease_volume
+    ${mod}-Shift-Return: mute_volume_toggle

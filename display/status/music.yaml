@@ -1,0 +1,100 @@
+display:
+  status:
+    - music:
+        refresh: 5
+
+        script: |
+          require 'rubygems'
+          gem 'librmpd', '~> 0.1'
+          require 'librmpd'
+          @music = MPD.new
+
+          def load_playlist_from_menu
+            if list = key_menu(@music.playlists, 'load playlist:')
+              @music.clear
+              @music.load list
+              @music.play
+            end
+          end
+
+          def add_current_song_to_playlist_from_menu
+            if list = key_menu(@music.playlists, 'add current song to playlist:')
+              file = File.join(File.expand_path('~/.mpd/playlists'), list + '.m3u')
+
+              songs = File.readlines(file) rescue []
+              songs << @music.current_song.file
+              songs.uniq!
+
+              File.open(file, 'w') {|f| f.puts songs }
+            end
+          end
+
+          def play_song_from_current_playlist_menu
+            songs = `mpc playlist`.downcase.split("\n")
+            if index = index_menu(songs, 'play song:')
+              # MPD uses natural 1..N numbering
+              system "mpc play #{index + 1}"
+            end
+          end
+
+        content: |
+          @music.connect unless @music.connected?
+
+          if song = @music.current_song
+            artist    = song.artist
+            title     = song.title || (f = song.file and File.basename(f))
+            song_name = [artist, title].compact.join(': ')
+          end
+
+          color =
+            if @music.stopped?
+              song_name = nil
+              nil
+            elsif @music.paused?
+              CONFIG['display']['color']['notice']
+            else
+              CONFIG['display']['color']['success']
+            end
+
+          [color, '(mpd)', song_name].compact
+
+        click: |
+          case mouse_button
+          when :left_click # play song (toggle)
+            if @music.stopped?
+              @music.play
+            else
+              @music.pause = !@music.paused?
+            end
+
+          when :right_click then @music.stop
+          when :wheel_up    then @music.next
+          when :wheel_down  then @music.previous
+          when :wheel_click then play_song_from_current_playlist_menu
+          end
+
+          refresh
+
+control:
+  action:
+    play_previous_song: |
+      status_click 'music', :wheel_down
+
+    play_next_song: |
+      status_click 'music', :wheel_up
+
+    pause_current_song_toggle: |
+      status_click 'music', :left_click
+
+    load_playlist_from_menu: |
+      status_button('music').load_playlist_from_menu
+
+    add_current_song_to_playlist_from_menu: |
+      status_button('music').add_current_song_to_playlist_from_menu
+
+  keyboard_action:
+    ${mod}-Prior: play_previous_song
+    ${mod}-Next: play_next_song
+    ${mod}-Return: pause_current_song_toggle
+    ${mod}-Home: load_playlist_from_menu
+    ${mod}-End: add_current_song_to_playlist_from_menu

@@ -1,0 +1,8 @@
+display:
+  status:
+    - time:
+        refresh: 1
+        content: Time.now.strftime('%c')
+        click: |
+          dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '*' * s.length }
+

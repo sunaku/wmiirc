@@ -363,15 +363,25 @@ class Button < Thread
   end
 end
 
+$: << File.dirname(__FILE__)
+require 'import'
+
 ##
 # Loads the given YAML configuration file.
 #
 def load_config config_file
-  Object.const_set :CONFIG, YAML.load_file(config_file)
+  Object.const_set :CONFIG, Wmii::Config.new('sunaku')
 
   # script
-    eval CONFIG['script']['before'].to_s, TOPLEVEL_BINDING,
-         "#{config_file}:script:before"
+  eval_script = lambda do |key|
+    Array(CONFIG['script']).each do |hash|
+      if script = hash[key]
+        eval script.to_s, TOPLEVEL_BINDING, "#{config_file}:script:#{key}"
+      end
+    end
+  end
+
+  eval_script.call 'before'
 
   # display
     fo = ENV['WMII_FONT']        = CONFIG['display']['font']
@@ -385,7 +395,7 @@ def load_config config_file
       'border'      => CONFIG['display']['border'],
       'bar on'      => CONFIG['display']['bar'],
       'colmode'     => CONFIG['display']['column']['mode'],
-      'grabmod'     => CONFIG['control']['grab'],
+      'grabmod'     => CONFIG['control']['keyboard']['grabmod'],
     }
 
     begin
@@ -636,15 +646,22 @@ def load_config config_file
       end
     end
 
-    %w[key action event].each do |param|
+    %w[event action keyboard_action].each do |param|
       if settings = CONFIG['control'][param]
         settings.each do |name, code|
-          if param == 'key'
+          if param == 'keyboard_action'
             # expand ${...} expressions in shortcut key sequences
-            name = name.gsub(/\$\{(.+?)\}/) { CONFIG['control'][$1] }
+            name = name.gsub(/\$\{(.+?)\}/) do
+              CONFIG['control']['keyboard'][$1]
+            end
+
+            meth = 'key'
+            code = CONFIG['control']['action'][code]
+          else
+            meth = param
           end
 
-          eval "#{param}(#{name.inspect}) {|*argv| #{code} }",
+          eval "#{meth}(#{name.inspect}) {|*argv| #{code} }",
                TOPLEVEL_BINDING, "#{config_file}:control:#{param}:#{name}"
         end
       end
@@ -654,7 +671,6 @@ def load_config config_file
     action 'status'
     action 'rehash'
 
-    eval CONFIG['script']['after'].to_s, TOPLEVEL_BINDING,
-         "#{config_file}:script:after"
+  eval_script.call 'after'
 
 end

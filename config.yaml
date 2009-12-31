@@ -5,21 +5,19 @@
 # to a CONFIG constant which contains
 # the data in this configuration file.
 #
-#--
-# Copyright protects this work.
-# See LICENSE file for details.
-#++
-
 
 ##
-# Program preferences.
+# A list of configuration files (partials) to import before
+# evaluating this configuration file.  Imported partials
+# may import other partials, recursively.  The contents of
+# each successive partial are merged with the previous one.
 #
-program:
-  terminal: xterm
-  browser: chromium-browser
-  editor: gvim
-  filer: thunar
+import:
 
+##
+# Arbitrary preferences.
+#
+prefer:
 
 ##
 # Appearance settings.
@@ -31,22 +29,22 @@ display:
   #
   # Possible choices are "top" and "bottom".
   #
-  bar: bottom
+  bar:
 
   ##
-  # The font to use in all text drawn by wmii.
+  # Font to use in all text drawn by wmii.
   #
-  font: -*-fixed-medium-r-*-*-18-*-*-*-*-*-*-*
+  font:
 
   ##
   # Thickness of client border (measured in pixels).
   #
-  border: 1
+  border:
 
   ##
   # Number of seconds a notice should be displayed.
   #
-  notice: 5
+  notice:
 
   ##
   # Color schemes for everything drawn by wmii.
@@ -58,23 +56,6 @@ display:
   #   http://wmii.suckless.org/themes
   #
   color:
-    #
-    # The following colors originate
-    # from the high contrast subset of
-    # the zenburn color scheme for Vim:
-    #
-    # http://slinky.imukuppi.org/zenburn/
-    #
-    focus:    "#ccdc90 #353a37 #242424" # PMenuSel
-    normal:   "#dcdccc #1f1f1f #242424" # Normal
-    error:    "#80d4aa #2f2f2f #242424" # ErrorMsg
-    notice:   "#efef8f #1f1f1f #242424" # Function
-    success:  "#8cd0d3 #1f1f1f #242424" # Number
-
-  ##
-  # Color of desktop background.
-  #
-  background: "#1f1f1f"
 
   ##
   # Settings for columns drawn by wmii.
@@ -83,10 +64,6 @@ display:
   #   rule: <the wmii "colrules" setting>
   #
   column:
-    mode: default
-    rule: |
-      /gimp/ -> 17+83+41
-      /.*/   -> 50+50
 
   ##
   # Mapping of clients to views they must appear on.
@@ -97,12 +74,6 @@ display:
   # Processing stops after the first matching mapping is applied.
   #
   client:
-    - /MPlayer|VLC/                                     : ~
-    - /\b(xconsole|alsamixer|XMMS|Sonata)\b/            : 1
-    - /^pidgin:|:WeeChat\b/                             : chat
-    - /\b(Liferea|GMail|Thunderbird)\b/                 : mail
-    - /:(Firefox|Shiretoko):.*\bRestore\b.*\bSession\b/ : web
-    - /sun-awt-X11-XFramePeer:.+jEdit/                  : '~+!'
 
   ##
   # Self-refreshing buttons on the status bar.
@@ -126,268 +97,28 @@ display:
   # bar reflects the vertical order in which they are defined below.
   #
   status:
-    - music:
-        refresh: 5
-
-        script: |
-          require 'rubygems'
-          gem 'librmpd', '~> 0.1'
-          require 'librmpd'
-          @music = MPD.new
-
-          def load_playlist_from_menu
-            if list = key_menu(@music.playlists, 'load playlist:')
-              @music.clear
-              @music.load list
-              @music.play
-            end
-          end
-
-          def add_current_song_to_playlist_from_menu
-            if list = key_menu(@music.playlists, 'add current song to playlist:')
-              file = File.join(File.expand_path('~/.mpd/playlists'), list + '.m3u')
-
-              songs = File.readlines(file) rescue []
-              songs << @music.current_song.file
-              songs.uniq!
-
-              File.open(file, 'w') {|f| f.puts songs }
-            end
-          end
-
-          def play_song_from_current_playlist_menu
-            songs = `mpc playlist`.downcase.split("\n")
-            if index = index_menu(songs, 'play song:')
-              # MPD uses natural 1..N numbering
-              system "mpc play #{index + 1}"
-            end
-          end
-
-        content: |
-          @music.connect unless @music.connected?
-
-          if song = @music.current_song
-            artist    = song.artist
-            title     = song.title || (f = song.file and File.basename(f))
-            song_name = [artist, title].compact.join(': ')
-          end
-
-          color =
-            if @music.stopped?
-              song_name = nil
-              nil
-            elsif @music.paused?
-              CONFIG['display']['color']['notice']
-            else
-              CONFIG['display']['color']['success']
-            end
-
-          [color, '(mpd)', song_name].compact
-
-        click: |
-          case mouse_button
-          when :left_click # play song (toggle)
-            if @music.stopped?
-              @music.play
-            else
-              @music.pause = !@music.paused?
-            end
-
-          when :right_click then @music.stop
-          when :wheel_up    then @music.next
-          when :wheel_down  then @music.previous
-          when :wheel_click then play_song_from_current_playlist_menu
-          end
-
-          refresh
-
-    - volume:
-        refresh: 60
-
-        script: |
-          MIXER = 'Master'
-
-          def get
-            `amixer get #{MIXER}`
-          end
-
-          def level
-            get[/\d+%/]
-          end
-
-          def set value
-            system "amixer set #{MIXER} #{value}"
-          end
-
-          alias level= set
-
-          def increase
-            set '3dB+'
-          end
-
-          def decrease
-            set '3dB-'
-          end
-
-          def mute!
-            set 'toggle'
-          end
-
-          def mute?
-            get.include? '[off]'
-          end
-
-        content: |
-          color = CONFIG['display']['color']['notice'] if mute?
-          [color, 'volume', level]
-
-        click: |
-          case mouse_button
-          when :left_click # choose volume from menu
-            current = self.level
-            levels = (0 .. 10).map {|i| i * 10 }.
-                     push(current.to_i).sort.uniq.
-                     map {|i| "#{i}%" }.reverse
-
-            if level = click_menu(levels, current)
-              self.level = level
-            end
-
-          when :right_click then mute!
-          when :wheel_up    then increase
-          when :wheel_down  then decrease
-          end
-
-          refresh
-
-    - acpi:
-        refresh: 15
-
-        script: |
-          BAT = 'BAT1'
-          LEVELS = {:high => 80, :low => 10, :critical => 5}
-          MESSAGES = {:low => "Battery LOW", :critical => "Battery CRITICAL"}
-          @last_message = :high # no message
-
-          BAT_INFO_FILE = "/proc/acpi/battery/#{BAT}/info"
-          BAT_STATE_FILE = "/proc/acpi/battery/#{BAT}/state"
-
-          def exist?
-            File.exist? BAT_INFO_FILE and File.exist? BAT_STATE_FILE
-          end
-
-          def read
-            @bat_info = IO.read(BAT_INFO_FILE)
-            @bat_state = IO.read(BAT_STATE_FILE)
-          end
-
-          def present?
-            bat_present = @bat_info[/present:\s*([a-z]+)/,1]
-            (bat_present == 'yes')
-          end
-
-          def state
-            @bat_state[/charging state:\s*([a-z]+)/,1]
-          end
-
-          def percent
-            last_full_capacity = @bat_info[/last full capacity:\s*([0-9]+)/, 1]
-            remaining_capacity = @bat_state[/remaining capacity:\s*([0-9]+)/, 1]
-            ((remaining_capacity.to_f / last_full_capacity.to_f) * 100).to_i
-          end
-
-          def level
-            case
-              when percent < LEVELS[:critical] then :critical
-              when percent < LEVELS[:low] then :low
-              when percent > LEVELS[:high] then :high
-            end
-          end
-
-          def color
-            case level
-              when :critical then CONFIG['display']['color']['error']
-              when :low then CONFIG['display']['color']['notice']
-              when :high then CONFIG['display']['color']['success']
-            end
-          end
-
-          def message
-            current = level || :high
-            if LEVELS[current] < LEVELS[@last_message]
-              xmessage = MESSAGES[current]
-            end
-            @last_message = current
-            return xmessage
-          end
-
-        content: |
-          unless exist?
-            # there is no battery, so terminate this status button
-            Thread.exit
-          end
-
-          read
-          if present?
-            symbol = case state
-              when "charged" then "="
-              when "charging" then "^"
-              when "discharging" then "v"
-            end
-            xmessage = message
-            if xmessage
-              `xkbbell -force`
-              dialog xmessage
-            end
-            [color, symbol, percent.to_s+'%', symbol]
-          end
-
-        click: |
-          dialog `acpi`
-
-    - disk_space:
-        refresh: 600 # 10 minutes
-
-        script: |
-          def usage disk
-            `df -h #{disk} || df #{disk}`
-          end
-
-        content: |
-          free, used, path = usage('~').split.last(3)
-          [path, used, 'used', free, 'free']
-
-        click: |
-          dialog usage(nil)
-
-    - system_load:
-        refresh: 10
-        content: |
-          load_averages = File.read('/proc/loadavg').split.first(3)
-          current_load  = load_averages.first.to_f
-
-          # visually indicate the intensity of system load
-          color = case
-            when current_load > 1.5 then CONFIG['display']['color']['error']
-            when current_load > 0.75 then CONFIG['display']['color']['notice']
-          end
-
-          [color, *load_averages]
-
-        click: |
-          dialog `ps ux --sort=-pcpu,-vsz || ps ux`
-
-    - clock:
-        refresh: 1
-        content: Time.now.strftime('%c')
-        click: |
-          dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '*' * s.length }
-
 
 ##
 # Interaction settings.
 #
 control:
+
+  ##
+  # Internal scripts.
+  #
+  #   <action name>: <Ruby code to execute>
+  #
+  action:
+
+  ##
+  # Event handlers.
+  #
+  #   <event name>: <Ruby code to execute>
+  #
+  # The Ruby code has access to an "argv" variable which
+  # is a list of arguments that were passed to the event.
+  #
+  event:
 
   ##
   # Mapping from X mouse button codes to named
@@ -396,47 +127,21 @@ control:
   # mouse click handlers within this configuration.
   #
   mouse:
-    1: left_click
-    2: wheel_click
-    3: right_click
-    4: wheel_up
-    5: wheel_down
-    6: wheel_left
-    7: wheel_right
 
   ##
-  # The wmii "grabmod" setting.
+  # Keyboard settings.
   #
-  grab: Mod1
+  keyboard:
+
+    ##
+    # The wmii "grabmod" setting.
+    #
+    grabmod:
 
   ##
-  # Key sequence prefixes.
+  # Keyboard shortcuts.
   #
-  mod:    Mod1-Control
-  move:   Mod1-Control-m
-  swap:   Mod1-Control-w
-  view:   Mod1-Control-v
-  group:  Mod1-Control-g
-  layout: Mod1-Control-z
-
-  ##
-  # Direction keys.
-  #
-  up:    t
-  down:  n
-  left:  h
-  right: s
-
-  ##
-  # Sequence keys.
-  #
-  prev: comma
-  next: period
-
-  ##
-  # Key bindings.
-  #
-  #   <key sequence>: <Ruby code to execute>
+  #   <key sequence>: <name of action>
   #
   # A key sequence may contain ${...} expressions which
   # are replaced with the value corresponding to '...'
@@ -458,565 +163,15 @@ control:
   #
   #   Mod4-y,y
   #
-  key:
-    #---------------------------------------------------------------------------
-    # focus
-    #---------------------------------------------------------------------------
-
-    ${mod}-${up}: | # focus above client
-      curr_view.select(:up) rescue nil
-
-    ${mod}-${down}: | # focus below client
-      curr_view.select(:down) rescue nil
-
-    ${mod}-${left}: | # focus left client
-      curr_view.select(:left) rescue nil
-
-    ${mod}-${right}: | # focus right client
-      curr_view.select(:right) rescue nil
-
-    ${mod}-space: | # focus floating area (toggle)
-      curr_view.select(:toggle)
-
-    ${mod}-${prev}: | # focus previous view
-      prev_view.focus
-
-    ${mod}-${next}: | # focus next view
-      next_view.focus
-
-    ${mod}-o: | # focus most recently focused view
-      $last_view.focus if $last_view
-
-    # focus the view whose index or name equals the pressed number
-    ${mod}-1: focus_view tags[0] || 1
-    ${mod}-2: focus_view tags[1] || 2
-    ${mod}-3: focus_view tags[2] || 3
-    ${mod}-4: focus_view tags[3] || 4
-    ${mod}-5: focus_view tags[4] || 5
-    ${mod}-6: focus_view tags[5] || 6
-    ${mod}-7: focus_view tags[6] || 7
-    ${mod}-8: focus_view tags[7] || 8
-    ${mod}-9: focus_view tags[8] || 9
-    ${mod}-0: focus_view tags[9] || 10
-
-    # focus the view whose name begins with the pressed alphabet
-    ${view},a: t = tags.grep(/^a/i).first and focus_view(t)
-    ${view},b: t = tags.grep(/^b/i).first and focus_view(t)
-    ${view},c: t = tags.grep(/^c/i).first and focus_view(t)
-    ${view},d: t = tags.grep(/^d/i).first and focus_view(t)
-    ${view},e: t = tags.grep(/^e/i).first and focus_view(t)
-    ${view},f: t = tags.grep(/^f/i).first and focus_view(t)
-    ${view},g: t = tags.grep(/^g/i).first and focus_view(t)
-    ${view},h: t = tags.grep(/^h/i).first and focus_view(t)
-    ${view},i: t = tags.grep(/^i/i).first and focus_view(t)
-    ${view},j: t = tags.grep(/^j/i).first and focus_view(t)
-    ${view},k: t = tags.grep(/^k/i).first and focus_view(t)
-    ${view},l: t = tags.grep(/^l/i).first and focus_view(t)
-    ${view},m: t = tags.grep(/^m/i).first and focus_view(t)
-    ${view},n: t = tags.grep(/^n/i).first and focus_view(t)
-    ${view},o: t = tags.grep(/^o/i).first and focus_view(t)
-    ${view},p: t = tags.grep(/^p/i).first and focus_view(t)
-    ${view},q: t = tags.grep(/^q/i).first and focus_view(t)
-    ${view},r: t = tags.grep(/^r/i).first and focus_view(t)
-    ${view},s: t = tags.grep(/^s/i).first and focus_view(t)
-    ${view},t: t = tags.grep(/^t/i).first and focus_view(t)
-    ${view},u: t = tags.grep(/^u/i).first and focus_view(t)
-    ${view},v: t = tags.grep(/^v/i).first and focus_view(t)
-    ${view},w: t = tags.grep(/^w/i).first and focus_view(t)
-    ${view},x: t = tags.grep(/^x/i).first and focus_view(t)
-    ${view},y: t = tags.grep(/^y/i).first and focus_view(t)
-    ${view},z: t = tags.grep(/^z/i).first and focus_view(t)
-
-    #---------------------------------------------------------------------------
-    # move
-    #---------------------------------------------------------------------------
-
-    ${move},${up}: | # move grouping toward the top
-      grouping.each {|c| c.send(:up) rescue nil }
-
-    ${move},${down}: | # move grouping toward the bottom
-      grouping.each {|c| c.send(:down) rescue nil }
-
-    ${move},${left}: | # move grouping toward the left
-      grouping.each {|c| c.send(:left) rescue nil }
-
-    ${move},${right}: | # move grouping toward the right
-      grouping.each {|c| c.send(:right) rescue nil }
-
-    ${move},space: | # move grouping to floating area (toggle)
-      grouping.each {|c| c.send(:toggle) rescue nil }
-
-    ${move},v: | # move grouping to chosen view
-      #
-      # Changes the tag (according to a menu choice) of
-      # each grouped client and returns the chosen tag.
-      #
-      # The +tag -tag idea is from Jonas Pfenniger:
-      #
-      #   http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby
-      #
-      choices = tags.map {|t| [t, "+#{t}", "-#{t}"] }.flatten
-
-      if target = key_menu(choices, 'tag as:')
-        grouping.each do |c|
-          case target
-          when /^\+/ then c.tag $'
-          when /^\-/ then c.untag $'
-          else c.tags = target
-          end
-        end
-      end
-
-    ${move},Delete: | # kill all clients in grouping
-      grouping.each {|c| c.kill }
-
-    # move grouping to the view whose index or name equals the pressed number
-    ${move},1: grouping.each {|c| c.tags = tags[0] || 1  }
-    ${move},2: grouping.each {|c| c.tags = tags[1] || 2  }
-    ${move},3: grouping.each {|c| c.tags = tags[2] || 3  }
-    ${move},4: grouping.each {|c| c.tags = tags[3] || 4  }
-    ${move},5: grouping.each {|c| c.tags = tags[4] || 5  }
-    ${move},6: grouping.each {|c| c.tags = tags[5] || 6  }
-    ${move},7: grouping.each {|c| c.tags = tags[6] || 7  }
-    ${move},8: grouping.each {|c| c.tags = tags[7] || 8  }
-    ${move},9: grouping.each {|c| c.tags = tags[8] || 9  }
-    ${move},0: grouping.each {|c| c.tags = tags[9] || 10 }
-
-    #---------------------------------------------------------------------------
-    # swap
-    #---------------------------------------------------------------------------
-
-    ${swap},${up}: | # swap with above client
-      curr_client.swap(:up) rescue nil
-
-    ${swap},${down}: | # swap with below client
-      curr_client.swap(:down) rescue nil
-
-    ${swap},${left}: | # swap with left client
-      curr_client.swap(:left) rescue nil
-
-    ${swap},${right}: | # swap with right client
-      curr_client.swap(:right) rescue nil
-
-    # swap current client with the column whose index equals the pressed number
-    ${swap},1: curr_client.swap 1
-    ${swap},2: curr_client.swap 2
-    ${swap},3: curr_client.swap 3
-    ${swap},4: curr_client.swap 4
-    ${swap},5: curr_client.swap 5
-    ${swap},6: curr_client.swap 6
-    ${swap},7: curr_client.swap 7
-    ${swap},8: curr_client.swap 8
-    ${swap},9: curr_client.swap 9
-    ${swap},0: curr_client.swap 10
-
-    #---------------------------------------------------------------------------
-    # client
-    #---------------------------------------------------------------------------
-
-    ${mod}-f: | # zoom client to fullscreen (toggle)
-      curr_client.fullscreen!
-
-    ${mod}-Shift-c: | # kill the current client
-      curr_client.kill
-
-    #---------------------------------------------------------------------------
-    # column
-    #---------------------------------------------------------------------------
-
-    ${layout},w: | # apply equal-spacing layout to current column
-      curr_area.layout = :default
-
-    ${layout},Shift-w: | # apply equal-spacing layout to all columns
-      curr_view.columns.each do |a|
-        a.layout = :default
-      end
-
-    ${layout},v: | # apply stacked layout to current column
-      curr_area.layout = :stack
-
-    ${layout},Shift-v: | # apply stacked layout to all columns
-      curr_view.columns.each do |a|
-        a.layout = :stack
-      end
-
-    ${layout},m: | # apply maximized layout to current column
-      curr_area.layout = :max
-
-    ${layout},Shift-m: | # apply maximized layout to all columns
-      curr_view.columns.each do |a|
-        a.layout = :max
-      end
-
-    #---------------------------------------------------------------------------
-    # group
-    #---------------------------------------------------------------------------
-
-    ${group},g: | # toggle current client from grouping
-      curr_client.group!
-
-    ${group},c: | # add clients in current area to grouping
-      curr_area.group
-
-    ${group},Shift-c: | # remove clients in current area from grouping
-      curr_area.ungroup
-
-    ${group},f: | # add clients in floating area to grouping
-      Area.floating.group
-
-    ${group},Shift-f: | # remove clients in floating area from grouping
-      Area.floating.ungroup
-
-    ${group},m: | # add clients in managed areas to grouping
-      curr_view.managed_areas.each {|a| a.group }
-
-    ${group},Shift-m: | # remove clients in managed areas from grouping
-      curr_view.managed_areas.each {|a| a.ungroup }
-
-    ${group},v: | # add clients in current view to grouping
-      curr_view.group
-
-    ${group},Shift-v: | # remove clients in current view from grouping
-      curr_view.ungroup
-
-    ${group},i: | # invert the grouping in the current view
-      curr_view.group!
-
-    ${group},Shift-i: | # invert the grouping in all views
-      Rumai.group!
-
-    ${group},n: | # remove all clients everywhere from grouping
-      Rumai.ungroup
-
-    #---------------------------------------------------------------------------
-    # detach
-    #---------------------------------------------------------------------------
-
-    ${mod}-d: | # detach grouping from current view
-      grouping.each do |c|
-        c.with_tags do
-          delete curr_tag
-          push DETACHED_TAG
-        end
-      end
-
-    ${mod}-Shift-d: | # attach most recently detached client
-      v = View.new DETACHED_TAG
-
-      if v.exist? and c = v.clients.last
-        c.with_tags do
-          delete DETACHED_TAG
-          push curr_tag
-        end
-      end
-
-    #---------------------------------------------------------------------------
-    # zoom
-    #---------------------------------------------------------------------------
-
-    ${mod}-b: | # copy grouping to temporary view
-      clients = grouping
-
-      unless clients.empty?
-        # determine new view
-        if curr_tag =~ ZOOMED_SUFFIX
-          src, num = $`, $1.to_i
-          dst = "#{src}~#{num+1}"
-        else
-          dst = "#{curr_tag}~1"
-        end
-
-        # add clients to new view
-        clients.each {|c| c.tag dst }
-
-        # focus new view
-        v = View.new dst
-        v.focus
-        v.arrange_in_grid
-
-        # propagate focus into new view
-        clients.first.focus v
-      end
-
-    ${mod}-Shift-b: | # return grouping to original view
-      clients = grouping
-
-      unless clients.empty?
-        src = curr_tag
-
-        if src =~ ZOOMED_SUFFIX
-          # determine new view
-          dst = $`
-
-          # remove clients from old view
-          clients.each do |c|
-            c.with_tags do
-              delete src
-
-              if empty?
-                push dst
-              else
-                dst = last
-              end
-            end
-          end
-
-          # focus new view
-          v = View.new dst
-          v.focus
-
-          # propagate focus into original view
-          clients.first.focus v
-        end
-      end
-
-    #---------------------------------------------------------------------------
-    # arrange
-    #---------------------------------------------------------------------------
-
-    ${layout},t: | # arrange clients in current view like LarsWM does
-      curr_view.arrange_as_larswm
-
-    ${layout},g: | # arrange clients in current view like a grid
-      curr_view.arrange_in_grid
-
-    ${layout},s: | # arrange clients in current view in two stacks
-      curr_view.arrange_in_stacks 2
-
-    ${layout},d: | # arrange clients in current view like a diamond
-      curr_view.arrange_in_diamond
-
-    # apply grid layout with the pressed number of clients per column
-    ${layout},1: curr_view.arrange_in_grid 1
-    ${layout},2: curr_view.arrange_in_grid 2
-    ${layout},3: curr_view.arrange_in_grid 3
-    ${layout},4: curr_view.arrange_in_grid 4
-    ${layout},5: curr_view.arrange_in_grid 5
-    ${layout},6: curr_view.arrange_in_grid 6
-    ${layout},7: curr_view.arrange_in_grid 7
-    ${layout},8: curr_view.arrange_in_grid 8
-    ${layout},9: curr_view.arrange_in_grid 9
-    ${layout},0: curr_view.arrange_in_grid 9999 # all clients in one column
-
-    # apply stacking layout with the pressed number of columns
-    ${layout},Shift-1: curr_view.arrange_in_stacks 1
-    ${layout},Shift-2: curr_view.arrange_in_stacks 2
-    ${layout},Shift-3: curr_view.arrange_in_stacks 3
-    ${layout},Shift-4: curr_view.arrange_in_stacks 4
-    ${layout},Shift-5: curr_view.arrange_in_stacks 5
-    ${layout},Shift-6: curr_view.arrange_in_stacks 6
-    ${layout},Shift-7: curr_view.arrange_in_stacks 7
-    ${layout},Shift-8: curr_view.arrange_in_stacks 8
-    ${layout},Shift-9: curr_view.arrange_in_stacks 9
-    ${layout},Shift-0: curr_view.arrange_in_stacks 9999 # one client per column
-
-    #---------------------------------------------------------------------------
-    # menu
-    #---------------------------------------------------------------------------
-
-    ${mod}-i: | # run internal action chosen from a menu
-      if choice = key_menu(actions, 'run action:')
-        action choice
-      end
-
-    ${mod}-e: | # run external program chosen from a menu
-      if choice = key_menu(@programs, 'run program:')
-        launch choice
-      end
-
-    ${mod}-u: | # focus view chosen from a menu
-      if choice = key_menu(tags, 'show view:')
-        focus_view choice
-      end
-
-    ${mod}-a: | # focus client chosen from a menu
-      if client = client_menu('show client:')
-        client.focus
-      end
-
-    #---------------------------------------------------------------------------
-    # launcher
-    #---------------------------------------------------------------------------
-
-    ${mod}-x: | # launch a terminal
-      #
-      # Launch a new terminal and set its
-      # working directory to be the same
-      # as the currently focused terminal.
-      #
-      work = ENV['HOME']
-
-      label = curr_client.label.read rescue ''
-
-      # iterate in reverse order because
-      # paths are usually at end of label
-      label.split(' ').reverse_each do |s|
-        path = File.expand_path(s)
-
-        if File.exist? path
-          unless File.directory? path
-            path = File.dirname(path)
-          end
-
-          work = path
-          break
-        end
-      end
-
-      require 'fileutils'
-      FileUtils.cd work do
-        launch CONFIG['program']['terminal']
-      end
-
-    ${mod}-k: | # launch a web browser
-      launch CONFIG['program']['browser']
-
-    ${mod}-j: | # launch a file manager
-      launch CONFIG['program']['filer']
-
-    ${mod}-q: | # launch a note taker
-      launch CONFIG['program']['editor']
-
-    #---------------------------------------------------------------------------
-    # music
-    #---------------------------------------------------------------------------
-
-    ${mod}-Prior: | # previous song
-      status_click 'music', :wheel_down
-
-    ${mod}-Next: | # next song
-      status_click 'music', :wheel_up
-
-    ${mod}-Return: | # pause song (toggle)
-      status_click 'music', :left_click
-
-    ${mod}-Home: | # load a playlist
-      status_button('music').load_playlist_from_menu
-
-    ${mod}-End: | # add current song to a playlist
-      status_button('music').add_current_song_to_playlist_from_menu
-
-    #---------------------------------------------------------------------------
-    # volume
-    #---------------------------------------------------------------------------
-
-    ${mod}-Shift-Prior: | # increase volume
-      status_click 'volume', :wheel_up
-
-    ${mod}-Shift-Next: | # decrease volume
-      status_click 'volume', :wheel_down
-
-    ${mod}-Shift-Return: | # mute volume (toggle)
-      status_click 'volume', :right_click
-
-  ##
-  # Event handlers.
-  #
-  #   <event name>: <Ruby code to execute>
-  #
-  # The Ruby code has access to an "argv" variable which
-  # is a list of arguments that were passed to the event.
-  #
-  event:
-    CreateTag: |
-      tag = argv[0]
-      but = fs.lbar[tag]
-      but.create unless but.exist?
-      but.write "#{CONFIG['display']['color']['normal']} #{tag}"
-
-    DestroyTag: |
-      tag = argv[0]
-      but = fs.lbar[tag]
-      but.remove if but.exist?
-
-    FocusTag: |
-      tag = argv[0]
-      but = fs.lbar[tag]
-      but.write "#{CONFIG['display']['color']['focus']} #{tag}" if but.exist?
-
-    UnfocusTag: |
-      tag = argv[0]
-      but = fs.lbar[tag]
-      but.write "#{CONFIG['display']['color']['normal']} #{tag}" if but.exist?
-
-    UrgentTag: |
-      tag = argv[1]
-      but = fs.lbar[tag]
-      but.write "#{CONFIG['display']['color']['notice']} #{tag}" if but.exist?
-
-    NotUrgentTag: |
-      tag = argv[1]
-      but = fs.lbar[tag]
-      color = curr_view.id == tag ? 'focus' : 'normal'
-      but.write "#{CONFIG['display']['color'][color]} #{tag}" if but.exist?
-
-    LeftBarClick: &LeftBarClick |
-      mouse_button, view_id = argv
-      mouse_action = mouse_button_to_action(mouse_button)
-
-      if mouse_action == :left_click
-        focus_view view_id
-      end
-
-    ##
-    # allows the user to drag a file over a
-    # view button and activate that view while
-    # still holding on to their dragged file!
-    #
-    LeftBarDND: *LeftBarClick
-
-    RightBarClick: |
-      status_click *argv.reverse
-
-    ClientMouseDown: |
-      client_id, mouse_button = argv
-      mouse_action = mouse_button_to_action(mouse_button)
-
-      if mouse_action == :right_click
-        client = Client.new(client_id)
-
-        case click_menu %w[stick group fullscreen kill slay], 'client'
-        when 'stick'      then client.stick!
-        when 'group'      then client.group!
-        when 'fullscreen' then client.fullscreen!
-        when 'kill'       then client.kill
-        when 'slay'       then client.slay
-        end
-      end
-
-  ##
-  # Internal scripts.
-  #
-  #   <action name>: <Ruby code to execute>
-  #
-  action:
-
+  keyboard_action:
 
 ##
-# Arbitrary logic.
+# Arbitrary logic to execute either before or after processing this file.  Any
+# number of "before" and "after" subsections may be defined within this section.
 #
 #   script:
-#     before: <Ruby code to execute before processing this file>
-#     after:  <Ruby code to execute after processing this file>
+#     - before: <Ruby code to execute before processing this file>
+#     - after:  <Ruby code to execute after processing this file>
+#     # ...
 #
 script:
-  before: |
-    DETACHED_TAG  = '|'
-    ZOOMED_SUFFIX = /~(\d+)$/
-
-    # keep track of most recently focused view
-    $last_view = nil
-
-    class Rumai::View
-      alias __focus__ focus
-
-      def focus
-        $last_view = View.curr
-        __focus__
-      end
-    end
-
-  after: |
-    # desktop wallpaper
-    system 'test -f ~/.fehbg && sh ~/.fehbg'
-

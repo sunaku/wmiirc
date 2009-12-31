@@ -1,0 +1,34 @@
+# sunaku's personal configuration
+
+import:
+ - display/wallpaper
+ - display/color/zenburn
+ - display/status/music
+ - display/status/volume
+ - display/status/storage
+ - display/status/system
+ - display/status/time
+ - control/event
+ - control/action
+ - control/mouse
+ - control/keyboard/dvorak
+
+prefer:
+  terminal: xterm
+  browser: chromium-browser
+  editor: gvim
+  filer: thunar
+
+display:
+  bar: bottom
+  font: "-*-fixed-medium-r-*-*-18-*-*-*-*-*-*-*"
+  border: 1
+  notice: 5
+  column:
+    mode: default
+    rule: |
+      /.*/ -> 50+50
+  client:
+    - /\b(xconsole|alsamixer|XMMS|Sonata)\b/ : 1
+    - /^chrome:Chrome:(feedly|.*GMail)/      : mail
+    - /^pidgin:|:WeeChat\b/                  : chat

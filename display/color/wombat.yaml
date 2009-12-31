@@ -1,0 +1,14 @@
+#
+# The following colors are from the Wombat color scheme for Vim:
+#
+# http://dengmao.wordpress.com/2007/01/22/vim-color-scheme-wombat/
+#
+display:
+  color:
+    focus:    "#000000 #cae682 #303030"
+    normal:   "#f6f3e8 #242424 #303030"
+    error:    "#e5786d #242424 #303030"
+    notice:   "#8ac6f2 #242424 #303030"
+    success:  "#95e454 #242424 #303030"
+
+  background: "#000000"

@@ -1,0 +1,17 @@
+control:
+
+  ##
+  # Mapping from X mouse button codes to named
+  # actions, which are compiled into Ruby symbols
+  # by the configuration and are passed to various
+  # mouse click handlers within this configuration.
+  #
+  mouse:
+    1: left_click
+    2: wheel_click
+    3: right_click
+    4: wheel_up
+    5: wheel_down
+    6: wheel_left
+    7: wheel_right
+

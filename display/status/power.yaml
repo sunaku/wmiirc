@@ -1,0 +1,86 @@
+display:
+  status:
+    - power:
+        refresh: 15
+
+        script: |
+          BAT = 'BAT1'
+          LEVELS = {:high => 80, :low => 10, :critical => 5}
+          MESSAGES = {:low => "Battery LOW", :critical => "Battery CRITICAL"}
+          @last_message = :high # no message
+
+          BAT_INFO_FILE = "/proc/acpi/battery/#{BAT}/info"
+          BAT_STATE_FILE = "/proc/acpi/battery/#{BAT}/state"
+
+          def exist?
+            File.exist? BAT_INFO_FILE and File.exist? BAT_STATE_FILE
+          end
+
+          def read
+            @bat_info = IO.read(BAT_INFO_FILE)
+            @bat_state = IO.read(BAT_STATE_FILE)
+          end
+
+          def present?
+            bat_present = @bat_info[/present:\s*([a-z]+)/,1]
+            (bat_present == 'yes')
+          end
+
+          def state
+            @bat_state[/charging state:\s*([a-z]+)/,1]
+          end
+
+          def percent
+            last_full_capacity = @bat_info[/last full capacity:\s*([0-9]+)/, 1]
+            remaining_capacity = @bat_state[/remaining capacity:\s*([0-9]+)/, 1]
+            ((remaining_capacity.to_f / last_full_capacity.to_f) * 100).to_i
+          end
+
+          def level
+            case
+              when percent < LEVELS[:critical] then :critical
+              when percent < LEVELS[:low] then :low
+              when percent > LEVELS[:high] then :high
+            end
+          end
+
+          def color
+            case level
+              when :critical then CONFIG['display']['color']['error']
+              when :low then CONFIG['display']['color']['notice']
+              when :high then CONFIG['display']['color']['success']
+            end
+          end
+
+          def message
+            current = level || :high
+            if LEVELS[current] < LEVELS[@last_message]
+              xmessage = MESSAGES[current]
+            end
+            @last_message = current
+            return xmessage
+          end
+
+        content: |
+          unless exist?
+            # there is no battery, so terminate this status button
+            Thread.exit
+          end
+
+          read
+          if present?
+            symbol = case state
+              when "charged" then "="
+              when "charging" then "^"
+              when "discharging" then "v"
+            end
+            xmessage = message
+            if xmessage
+              `xkbbell -force`
+              dialog xmessage
+            end
+            [color, symbol, percent.to_s+'%', symbol]
+          end
+
+        click: |
+          dialog `acpi`
