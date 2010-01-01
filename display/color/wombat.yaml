@@ -5,10 +5,9 @@
 #
 display:
   color:
+    desktop:  "#000000"
     focus:    "#000000 #cae682 #303030"
     normal:   "#f6f3e8 #242424 #303030"
     error:    "#e5786d #242424 #303030"
     notice:   "#8ac6f2 #242424 #303030"
     success:  "#95e454 #242424 #303030"
-
-  background: "#000000"

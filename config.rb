@@ -411,7 +411,7 @@ def load_config config_file
       warn e.backtrace.join("\n")
     end
 
-    launch 'xsetroot', '-solid', CONFIG['display']['background']
+    launch 'xsetroot', '-solid', CONFIG['display']['color']['desktop']
 
     # column
       fs.colrules.write CONFIG['display']['column']['rule']

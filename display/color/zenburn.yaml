@@ -7,10 +7,9 @@
 #
 display:
   color:
+    desktop:  "#1f1f1f"
     focus:    "#ccdc90 #353a37 #242424" # PMenuSel
     normal:   "#dcdccc #1f1f1f #242424" # Normal
     error:    "#80d4aa #2f2f2f #242424" # ErrorMsg
     notice:   "#efef8f #1f1f1f #242424" # Function
     success:  "#8cd0d3 #1f1f1f #242424" # Number
-
-  background: "#1f1f1f"
