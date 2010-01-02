@@ -43,7 +43,7 @@ control:
       button.write "#{CONFIG['display']['color'][color]} #{tag}" if button.exist?
 
     LeftBarClick: &LeftBarClick |
-      view_id, mouse_code = argv
+      mouse_code, view_id = argv
       mouse_event = Mouse[mouse_code]
 
       if mouse_event == 'left_click'
