@@ -24,7 +24,6 @@ display:
   bar: bottom
   font: "-*-fixed-medium-r-*-*-18-*-*-*-*-*-*-*"
   border: 1
-  notice: 5
   column:
     mode: default
     rule: |

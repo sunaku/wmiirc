@@ -1,10 +1,12 @@
+display:
+  notice: 5
+
 script:
   - after: |
-      require 'thread'
-
       module Notice
         extend self
 
+        require 'thread'
         @mutex = Mutex.new
 
         ##
@@ -30,9 +32,6 @@ script:
           end
         end
       end
-
-display:
-  notice: 5
 
 control:
   event:
