@@ -22,7 +22,7 @@ module Wmiirc
   DIR = File.dirname(File.dirname(__FILE__))
 
   # keep a log file to aid the user in debugging
-  LOG = Logger.new(File.join(DIR, 'wmiirc.log'), 5)
+  LOG = Logger.new(File.join(DIR, 'wmiirc.log'))
 
   # insulation for code in user's configuration
   class Sandbox
