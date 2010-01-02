@@ -114,5 +114,3 @@ script:
         Status.new name, definition, position
       end
 
-      Status.each {|s| s.refresh }
-
