@@ -14,7 +14,7 @@ module Wmiirc
       # Executes the user's wmii configuration.
       #
       def run
-        LOG.info 'birth'
+        LOG.info 'start'
 
         log_standard_outputs
         terminate_other_instances
@@ -34,7 +34,7 @@ module Wmiirc
         allow_user_rescue e
 
       ensure
-        LOG.info 'death'
+        LOG.info 'stop'
       end
 
       ##
