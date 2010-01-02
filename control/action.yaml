@@ -344,20 +344,16 @@ control:
 
     detach_grouping_from_current_view: |
       grouping.each do |c|
-        c.with_tags do
-          delete curr_tag
-          push DETACHED_TAG
-        end
+        c.tag DETACHED_TAG
+        c.untag curr_tag
       end
 
     attach_most_recently_detached_client: |
-      v = View.new DETACHED_TAG
+      v = View.new(DETACHED_TAG)
 
       if v.exist? and c = v.clients.last
-        c.with_tags do
-          delete DETACHED_TAG
-          push curr_tag
-        end
+        c.tag curr_tag
+        c.untag DETACHED_TAG
       end
 
     #-------------------------------------------------------------------------
