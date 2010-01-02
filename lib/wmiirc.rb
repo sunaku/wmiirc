@@ -11,7 +11,7 @@ require 'rumai'
 
 module Rumai
   # TODO: move this upstream
-  module_function :fs
+  extend self
 end
 
 module Wmiirc
