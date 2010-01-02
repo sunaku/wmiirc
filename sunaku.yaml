@@ -31,4 +31,5 @@ display:
   client:
     - /\b(xconsole|alsamixer|XMMS|Sonata)\b/ : 1
     - /^chrome:Chrome:(feedly|.*GMail)/      : mail
+    - /^chrome:Chrome:Chromium Options$/     : '~'
     - /^pidgin:|:WeeChat\b/                  : chat
