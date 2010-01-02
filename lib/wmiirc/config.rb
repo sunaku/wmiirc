@@ -122,7 +122,7 @@ module Wmiirc
         imported.concat imports
 
         import imports, merged, imported
-        merge partial, merged, path
+        merge merged, partial, path
       end
 
       merged
@@ -141,33 +141,40 @@ module Wmiirc
       end
     end
 
-    def merge src_hash, dst_hash, src_file
+    def merge dst_hash, src_hash, src_file, key_path = []
       src_hash.each_pair do |key, src_val|
         next if src_val.nil?
+        key_path.push key
 
-        if dst_val = dst_hash[key]
-          # merge the values
-          case dst_val
-          when Hash
-            merge src_val, dst_val, src_file
+        catch :merged do
+          if dst_hash.key? key
+            dst_val = dst_hash[key]
 
-          when Array
-            case src_val
-            when Array
-              dst_val.concat src_val
-            else
-              dst_val.push src_val
+            # merge the values
+            if dst_val.is_a? Hash and src_val.is_a? Hash
+              merge dst_val, src_val, src_file, key_path
+              throw :merged
+
+            elsif dst_val.is_a? Array
+              if src_val.is_a? Array
+                dst_val.concat src_val
+              else
+                dst_val.push src_val
+              end
+
+              throw :merged
+
+            elsif dst_val != nil
+              LOG.info 'overriding value %s for section %s with value %s from file %s' %
+                [dst_val, key_path.join(':'), src_val, src_file].map {|s| s.inspect }
             end
-
-          else
-            raise NotImplementedError, 'merge %s into %s for key %s in %s' % [
-              src_val.inspect, dst_val.inspect, key.inspect, src_file.inspect
-            ]
           end
-        else
-          # inherit the value
+
+          # override destination
           dst_hash[key] = src_val
         end
+
+        key_path.pop
       end
     end
 
