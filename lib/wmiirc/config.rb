@@ -78,21 +78,23 @@ module Wmiirc
     def control
       %w[event action keyboard_action].each do |section|
         if settings = self['control'][section]
-          settings.each do |name, code|
+          settings.each do |key, code|
             if section == 'keyboard_action'
               # expand ${...} in keyboard shortcuts
-              name = name.gsub(/\$\{(.+?)\}/) do
+              key = key.gsub(/\$\{(.+?)\}/) do
                 self['control']['keyboard'][$1]
               end
 
               meth = 'key'
-              code = self['control']['action'][code]
+              name = code
+              code = self['control']['action'][name]
             else
+              name = key
               meth = section
             end
 
             SANDBOX.eval(
-              "#{meth}(#{name.inspect}) {|*argv| #{code} }",
+              "#{meth}(#{key.inspect}) {|*argv| #{code} }",
               source(code, "control:#{section}:#{name}")
             )
           end
