@@ -10,9 +10,6 @@ module Wmiirc
   module Loader
     class << self
 
-      ##
-      # Executes the user's wmii configuration.
-      #
       def run
         LOG.info 'start'
 
@@ -37,9 +34,6 @@ module Wmiirc
         LOG.info 'stop'
       end
 
-      ##
-      # Reloads the entire wmii configuration.
-      #
       def reload
         LOG.info 'reload'
         exec $0
@@ -60,17 +54,20 @@ module Wmiirc
 
       private
 
+      ##
+      # Tee standard outputs into log.
+      #
       def log_standard_outputs
-        [STDOUT, STDERR].each do |stream|
-          original = stream.method(:write)
+        [STDOUT, STDERR].each do |output|
+          (class << output; self; end).class_eval do
+            alias __write__ write
 
-          (class << stream; self; end).class_eval do
-            define_method :write do |s|
-              LOG << s
-              original.call s
+            def write string
+              Wmiirc::LOG << string
+              __write__ string
             end
 
-            alias_method :<<, :write
+            alias << write
           end
         end
       end
