@@ -122,7 +122,7 @@ module Wmiirc
         imported.concat imports
 
         import imports, merged, imported
-        merge partial, merged
+        merge partial, merged, path
       end
 
       merged
@@ -141,13 +141,15 @@ module Wmiirc
       end
     end
 
-    def merge src_hash, dst_hash
+    def merge src_hash, dst_hash, src_file
       src_hash.each_pair do |key, src_val|
+        next if src_val.nil?
+
         if dst_val = dst_hash[key]
           # merge the values
           case dst_val
           when Hash
-            merge src_val, dst_val
+            merge src_val, dst_val, src_file
 
           when Array
             case src_val
@@ -158,8 +160,8 @@ module Wmiirc
             end
 
           else
-            raise NotImplementedError, 'merge %s into %s for key %s' % [
-              src_val.inspect, dst_val.inspect, key.inspect
+            raise NotImplementedError, 'merge %s into %s for key %s in %s' % [
+              src_val.inspect, dst_val.inspect, key.inspect, src_file.inspect
             ]
           end
         else
