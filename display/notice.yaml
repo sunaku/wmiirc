@@ -1,28 +1,37 @@
+script:
+  - after: |
+      require 'thread'
+
+      module Notice
+        extend self
+
+        @mutex = Mutex.new
+
+        ##
+        # Displays the given notice in the status bar.
+        #
+        def display message
+          # prevent messages from clobbering
+          # each other before their time is up
+          @mutex.synchronize do
+            button = Rumai.fs.rbar['!notice']
+            button.create unless button.exist?
+
+            # display the message
+            button.write "#{CONFIG['display']['color']['notice']} #{message}"
+            LOG.info message # also log it in case the user is not present
+
+            # clear the notice
+            sleep [1, CONFIG['display']['notice'].to_i].max
+            button.remove
+          end
+        end
+      end
+
 display:
   notice: 5
 
 control:
   event:
     Notice: |
-      unless defined? @notice_mutex
-        require 'thread'
-        @notice_mutex = Mutex.new
-      end
-
-      Thread.new do
-        # prevent notices from overwriting each other
-        @notice_mutex.synchronize do
-          button = fs.rbar['!notice']
-          button.create unless button.exist?
-
-          # display the notice
-          message = argv.join(' ')
-
-          LOG.info message # also log it in case the user is AFK
-          button.write "#{CONFIG['display']['color']['notice']} #{message}"
-
-          # clear the notice
-          sleep [1, CONFIG['display']['notice'].to_i].max
-          button.remove
-        end
-      end
+      Notice.display argv.join(' ')
