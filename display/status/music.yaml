@@ -80,8 +80,6 @@ display:
               nil
             elsif @music.paused?
               CONFIG['display']['color']['notice']
-            else
-              CONFIG['display']['color']['success']
             end
 
           [color, '(mpd)', song_name].compact
