@@ -63,3 +63,19 @@ control:
         when 'slay'       then client.slay
         end
       end
+
+    Unresponsive: |
+      client = Client.new(argv[0])
+
+      IO.popen('xmessage -nearmouse -file - -buttons Kill,Wait -print', 'w+') do |f|
+        f.puts 'The following client is not responding.', ''
+        f.puts client.inspect
+        f.puts client.label.read
+
+        f.puts '', 'What would you like to do?'
+        f.close_write
+
+        if f.read.chomp == 'Kill'
+          client.slay
+        end
+      end

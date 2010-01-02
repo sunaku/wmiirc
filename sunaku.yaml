@@ -3,6 +3,7 @@
 import:
   - display/wallpaper
   - display/color/zenburn
+  - display/notice
   - display/client
   - display/tags
   - display/status/music
