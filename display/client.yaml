@@ -6,7 +6,11 @@ script:
       class Rumai::Client
         TAGS_BY_REGEXP = CONFIG['display']['client'].map do |hash|
           regexp, tags = hash.to_a.first
-          [eval(regexp, TOPLEVEL_BINDING, 'display:client'), tags]
+
+          regexp = Wmiirc::SANDBOX.eval(regexp,
+            Wmiirc::CONFIG.source(regexp, 'display:client'))
+
+          [regexp, tags]
         end
 
         ##

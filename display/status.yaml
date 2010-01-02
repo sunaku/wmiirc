@@ -34,11 +34,15 @@ script:
         def initialize name, definition, position
           @definition = definition
 
-          instance_eval definition['script'].to_s,
-            "display:status:#{name}:script"
+          if code = definition['script']
+            instance_eval code,
+              CONFIG.source(code, "display:status:#{name}:script")
+          end
 
-          instance_eval "def label; #{definition['label']}; end",
-            "display:status:#{name}:label"
+          if code = definition['label']
+            instance_eval "def label; #{code}; end",
+              CONFIG.source(code, "display:status:#{name}:label")
+          end
 
           # buttons appear in ASCII order of their IXP file name
           # so prepend a number to get ordered status bar applets

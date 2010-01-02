@@ -10,6 +10,7 @@ module Wmiirc
   class Config < Hash
 
     def initialize name
+      @source_by_value = {}
       import name, self
     end
 
@@ -20,12 +21,25 @@ module Wmiirc
       script 'after'
     end
 
+    ##
+    # Qualifies the given section name with the YAML file
+    # from which the given value originated.  If this is
+    # not possible, the given section name is returned.
+    #
+    def source value, section
+      if source = @source_by_value[value]
+        "#{source}:in section #{section.inspect}"
+      else
+        section
+      end
+    end
+
     private
 
     def script key
       Array(self['script']).each do |hash|
         if script = hash[key]
-          SANDBOX.eval script.to_s, "script:#{key}"
+          SANDBOX.eval script, source(script, "script:#{key}")
         end
       end
     end
@@ -79,7 +93,7 @@ module Wmiirc
 
             SANDBOX.eval(
               "#{meth}(#{name.inspect}) {|*argv| #{code} }",
-              "control:#{section}:#{name}"
+              source(code, "control:#{section}:#{name}")
             )
           end
         end
@@ -95,8 +109,10 @@ module Wmiirc
     def import paths, merged = {}, imported = []
       Array(paths).each do |path|
         path = File.join(Wmiirc::DIR, path) + '.yaml'
-
         partial = YAML.load_file(path)
+
+        trace partial, path
+
         imports = Array(partial['import'])
 
         # prevent cycles
@@ -108,6 +124,19 @@ module Wmiirc
       end
 
       merged
+    end
+
+    def trace partial, source
+      if partial.kind_of? String
+        @source_by_value[partial] = source
+
+      elsif partial.respond_to? :each
+        partial.each do |*values|
+          values.each do |v|
+            trace v, source
+          end
+        end
+      end
     end
 
     def merge src_hash, dst_hash
