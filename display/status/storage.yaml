@@ -1,3 +1,6 @@
+import:
+  - display/status
+
 display:
   status:
     - storage:
@@ -8,10 +11,15 @@ display:
             `df -h #{disk} || df #{disk}`
           end
 
-        content: |
+        label: |
           free, used, path = usage('~').split.last(3)
           [path, used, 'used', free, 'free']
 
-        click: |
-          dialog usage(nil)
+        mouse_action:
+          left_click: show_storage_stats
+
+control:
+  action:
+    show_storage_stats: |
+      dialog Status['storage'].usage(nil)
 

@@ -10,13 +10,94 @@ script:
         alias __focus__ focus
 
         def focus
-          $last_view = View.curr
+          $last_view = self.class.curr
           __focus__
         end
       end
 
+  - after: |
+      action 'rehash'
+
 control:
   action:
+
+    reload: |
+      # reload this wmii configuration
+      Wmiirc::Loader.reload
+
+    rehash: |
+      # scan for available programs and actions
+      @programs = find_programs(ENV['PATH'].squeeze(':').split(':'))
+
+    clear: |
+      # kill all currently open clients
+
+      # firefox's restore session feature does not
+      # work unless the whole process is killed.
+      system 'killall firefox firefox-bin thunderbird thunderbird-bin'
+      system 'killall chromium-browser'
+
+      # gnome-panel refuses to die by any other means
+      system 'killall -s TERM gnome-panel'
+
+      Thread.pass until clients.each do |c|
+        begin
+          c.focus # XXX: client must be on current view in order to be killed
+          c.kill
+        rescue
+          # ignore
+        end
+      end.empty?
+
+    kill: |
+      # kill the window manager only; do not touch the clients!
+      fs.ctl.write 'quit'
+
+
+    quit: |
+      # kill both clients and window manager
+      action 'clear'
+      action 'kill'
+
+    Unresponsive: |
+      client = Client.new(argv[0])
+
+      IO.popen('xmessage -nearmouse -file - -buttons Kill,Wait -print', 'w+') do |f|
+        f.puts 'The following client is not responding.', ''
+        f.puts client.inspect
+        f.puts client.label.read
+
+        f.puts '', 'What would you like to do?'
+        f.close_write
+
+        if f.read.chomp == 'Kill'
+          client.slay
+        end
+      end
+
+    Notice: |
+      unless defined? @notice_mutex
+        require 'thread'
+        @notice_mutex = Mutex.new
+      end
+
+      Thread.new do
+        # prevent notices from overwriting each other
+        @notice_mutex.synchronize do
+          button = fs.rbar['!notice']
+          button.create unless button.exist?
+
+          # display the notice
+          message = argv.join(' ')
+
+          LOG.info message # also log it in case the user is AFK
+          button.write "#{CONFIG['display']['color']['notice']} #{message}"
+
+          # clear the notice
+          sleep [1, CONFIG['display']['notice'].to_i].max
+          button.remove
+        end
+      end
 
     #-------------------------------------------------------------------------
     # focus

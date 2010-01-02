@@ -1,0 +1,58 @@
+import:
+  - control/mouse
+
+script:
+  - after: |
+      # create buttons for tags in /lbar
+      fs.lbar.clear
+      tags.each {|t| event 'CreateTag', t }
+      event 'FocusTag', curr_tag
+
+control:
+  event:
+    CreateTag: |
+      tag = argv[0]
+      button = fs.lbar[tag]
+      button.create unless button.exist?
+      button.write "#{CONFIG['display']['color']['normal']} #{tag}"
+
+    DestroyTag: |
+      tag = argv[0]
+      button = fs.lbar[tag]
+      button.remove if button.exist?
+
+    FocusTag: |
+      tag = argv[0]
+      button = fs.lbar[tag]
+      button.write "#{CONFIG['display']['color']['focus']} #{tag}" if button.exist?
+
+    UnfocusTag: |
+      tag = argv[0]
+      button = fs.lbar[tag]
+      button.write "#{CONFIG['display']['color']['normal']} #{tag}" if button.exist?
+
+    UrgentTag: |
+      tag = argv[1]
+      button = fs.lbar[tag]
+      button.write "#{CONFIG['display']['color']['notice']} #{tag}" if button.exist?
+
+    NotUrgentTag: |
+      tag = argv[1]
+      button = fs.lbar[tag]
+      color = curr_view.id == tag ? 'focus' : 'normal'
+      button.write "#{CONFIG['display']['color'][color]} #{tag}" if button.exist?
+
+    LeftBarClick: &LeftBarClick |
+      view_id, mouse_code = argv
+      mouse_event = Mouse[mouse_code]
+
+      if mouse_event == 'left_click'
+        focus_view view_id
+      end
+
+    ##
+    # allows the user to drag a file over a
+    # view button and activate that view while
+    # still holding on to their dragged file!
+    #
+    LeftBarDND: *LeftBarClick

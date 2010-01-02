@@ -18,6 +18,10 @@ import:
 # Arbitrary preferences.
 #
 prefer:
+  terminal:
+  browser:
+  editor:
+  filer:
 
 ##
 # Appearance settings.
@@ -55,7 +59,18 @@ display:
   #
   #   http://wmii.suckless.org/themes
   #
+  # Unlike the other parameters in this section, the
+  # "desktop" parameter only accepts a single color:
+  #
+  #   desktop: "<color>"
+  #
   color:
+    desktop:
+    focus:
+    normal:
+    error:
+    notice:
+    success:
 
   ##
   # Settings for columns drawn by wmii.
@@ -76,24 +91,28 @@ display:
   client:
 
   ##
-  # Self-refreshing buttons on the status bar.
+  # Status bar applets.
   #
-  #   - <button name>:
-  #       refresh:  <number of seconds to wait before refreshing the content>
-  #       script:   <Ruby code to evaluate within the Button
+  #   - <name>:
+  #
+  #       refresh:  <number of seconds to wait before updating the label>
+  #
+  #       script:   <Ruby code to evaluate in the Wmiirc::Status
   #                  object that corresponds to this definition.>
-  #       content:  <Ruby code whose result is displayed as the content>
-  #       click:    <Ruby code to handle mouse clicks on the status button.
-  #                  This code is evaluated within the Button object that
-  #                  corresponds to this definition.  In addition, it has
-  #                  access to a "mouse_button" variable which is an integer
-  #                  representing the mouse button that was clicked.>
   #
-  # You can refresh a particular status button in Ruby using:
+  #       label:    <Ruby code whose result is displayed as the
+  #                  content.  This code is placed inside a
+  #                  label() method in the Wmiirc::Status object
+  #                  that corresponds to this definition.>
   #
-  #   status "your button name"
+  #       mouse_action:
+  #         <mouse event>: <name of action>
   #
-  # The horizontal order in which these buttons appear on the status
+  # You can refresh a particular status bar applet in Ruby using:
+  #
+  #   Status["your applet name"].refresh
+  #
+  # The horizontal order in which these applets appear on the status
   # bar reflects the vertical order in which they are defined below.
   #
   status:
@@ -144,15 +163,15 @@ control:
   #   <key sequence>: <name of action>
   #
   # A key sequence may contain ${...} expressions which
-  # are replaced with the value corresponding to '...'
-  # in the 'control' section of this configuration file.
+  # are replaced with the value corresponding to '...' in
+  # the "control:keyboard" section of this configuration.
   #
-  # For example, if the 'control' section of
-  # this configuration file appeared like this:
+  # For example, if the "control:keyboard" section was:
   #
   #   control:
-  #     foo: Mod4
-  #     bar: y
+  #     keyboard:
+  #       foo: Mod4
+  #       bar: y
   #
   # and the following key sequence was used:
   #

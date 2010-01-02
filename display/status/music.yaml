@@ -1,3 +1,6 @@
+import:
+  - display/status
+
 display:
   status:
     - music:
@@ -29,15 +32,40 @@ display:
             end
           end
 
-          def play_song_from_current_playlist_menu
+          def play_song_from_menu
             songs = `mpc playlist`.downcase.split("\n")
             if index = index_menu(songs, 'play song:')
               # MPD uses natural 1..N numbering
               system "mpc play #{index + 1}"
             end
+            refresh
           end
 
-        content: |
+          def pause!
+            if @music.stopped?
+              @music.play
+            else
+              @music.pause = !@music.paused?
+            end
+            refresh
+          end
+
+          def stop
+            @music.stop
+            refresh
+          end
+
+          def next
+            @music.next
+            refresh
+          end
+
+          def prev
+            @music.previous
+            refresh
+          end
+
+        label: |
           @music.connect unless @music.connected?
 
           if song = @music.current_song
@@ -58,39 +86,35 @@ display:
 
           [color, '(mpd)', song_name].compact
 
-        click: |
-          case mouse_button
-          when :left_click # play song (toggle)
-            if @music.stopped?
-              @music.play
-            else
-              @music.pause = !@music.paused?
-            end
-
-          when :right_click then @music.stop
-          when :wheel_up    then @music.next
-          when :wheel_down  then @music.previous
-          when :wheel_click then play_song_from_current_playlist_menu
-          end
-
-          refresh
+        mouse_action:
+          left_click: pause_current_song_toggle
+          right_click: stop_music
+          wheel_up: play_next_song
+          wheel_down: play_previous_song
+          wheel_click: play_son
 
 control:
   action:
+    stop_music: |
+      Status['music'].stop
+
     play_previous_song: |
-      status_click 'music', :wheel_down
+      Status['music'].prev
 
     play_next_song: |
-      status_click 'music', :wheel_up
+      Status['music'].next
 
     pause_current_song_toggle: |
-      status_click 'music', :left_click
+      Status['music'].pause!
+
+    play_song_from_menu: |
+      Status['music'].play_song_from_menu
 
     load_playlist_from_menu: |
-      status_button('music').load_playlist_from_menu
+      Status['music'].load_playlist_from_menu
 
     add_current_song_to_playlist_from_menu: |
-      status_button('music').add_current_song_to_playlist_from_menu
+      Status['music'].add_current_song_to_playlist_from_menu
 
   keyboard_action:
     ${mod}-Prior: play_previous_song

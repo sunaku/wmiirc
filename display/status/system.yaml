@@ -1,9 +1,12 @@
+import:
+  - display/status
+
 display:
   status:
     - system:
         refresh: 10
 
-        content: |
+        label: |
           load_averages = File.read('/proc/loadavg').split.first(3)
           current_load  = load_averages.first.to_f
 
@@ -15,6 +18,11 @@ display:
 
           [color, *load_averages]
 
-        click: |
-          dialog `ps ux --sort=-pcpu,-vsz || ps ux`
+        mouse_action:
+          left_click: show_system_stats
+
+control:
+  action:
+    show_system_stats: |
+      dialog `ps ux --sort=-pcpu,-vsz || ps ux`
 

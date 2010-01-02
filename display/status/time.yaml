@@ -1,8 +1,19 @@
+import:
+  - display/status
+
 display:
   status:
     - time:
         refresh: 1
-        content: Time.now.strftime('%c')
-        click: |
-          dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '*' * s.length }
+
+        label: |
+          Time.now.strftime('%c')
+
+        mouse_action:
+          left_click: show_calendar
+
+control:
+  action:
+    show_calendar:
+      dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '*' * s.length }
 

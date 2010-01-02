@@ -1,3 +1,6 @@
+import:
+  - display/status
+
 display:
   status:
     - volume:
@@ -16,9 +19,8 @@ display:
 
           def set value
             system "amixer set #{MIXER} #{value}"
+            refresh
           end
-
-          alias level= set
 
           def increase
             set '3dB+'
@@ -36,39 +38,40 @@ display:
             get.include? '[off]'
           end
 
-        content: |
-          color = CONFIG['display']['color']['notice'] if mute?
-          [color, 'volume', level]
-
-        click: |
-          case mouse_button
-          when :left_click # choose volume from menu
+          def menu
             current = self.level
             levels = (0 .. 10).map {|i| i * 10 }.
                      push(current.to_i).sort.uniq.
                      map {|i| "#{i}%" }.reverse
 
             if level = click_menu(levels, current)
-              self.level = level
+              set level
             end
-
-          when :right_click then mute!
-          when :wheel_up    then increase
-          when :wheel_down  then decrease
           end
 
-          refresh
+        label: |
+          color = CONFIG['display']['color']['notice'] if mute?
+          [color, 'volume', level]
+
+        mouse_action:
+          left_click: set_volume_from_menu
+          right_click: mute_volume_toggle
+          wheel_up: increase_volume
+          wheel_down: decrease_volume
 
 control:
   action:
+    set_volume_from_menu: |
+      Status['volume'].menu
+
     increase_volume: |
-      status_click 'volume', :wheel_up
+      Status['volume'].increase
 
     decrease_volume: |
-      status_click 'volume', :wheel_down
+      Status['volume'].decrease
 
     mute_volume_toggle: |
-      status_click 'volume', :right_click
+      Status['volume'].mute!
 
   keyboard_action:
     ${mod}-Shift-Prior: increase_volume

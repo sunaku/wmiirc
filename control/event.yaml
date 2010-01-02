@@ -1,55 +1,5 @@
 control:
   event:
-    CreateTag: |
-      tag = argv[0]
-      but = fs.lbar[tag]
-      but.create unless but.exist?
-      but.write "#{CONFIG['display']['color']['normal']} #{tag}"
-
-    DestroyTag: |
-      tag = argv[0]
-      but = fs.lbar[tag]
-      but.remove if but.exist?
-
-    FocusTag: |
-      tag = argv[0]
-      but = fs.lbar[tag]
-      but.write "#{CONFIG['display']['color']['focus']} #{tag}" if but.exist?
-
-    UnfocusTag: |
-      tag = argv[0]
-      but = fs.lbar[tag]
-      but.write "#{CONFIG['display']['color']['normal']} #{tag}" if but.exist?
-
-    UrgentTag: |
-      tag = argv[1]
-      but = fs.lbar[tag]
-      but.write "#{CONFIG['display']['color']['notice']} #{tag}" if but.exist?
-
-    NotUrgentTag: |
-      tag = argv[1]
-      but = fs.lbar[tag]
-      color = curr_view.id == tag ? 'focus' : 'normal'
-      but.write "#{CONFIG['display']['color'][color]} #{tag}" if but.exist?
-
-    LeftBarClick: &LeftBarClick |
-      mouse_button, view_id = argv
-      mouse_action = mouse_button_to_action(mouse_button)
-
-      if mouse_action == :left_click
-        focus_view view_id
-      end
-
-    ##
-    # allows the user to drag a file over a
-    # view button and activate that view while
-    # still holding on to their dragged file!
-    #
-    LeftBarDND: *LeftBarClick
-
-    RightBarClick: |
-      status_click *argv.reverse
-
     ClientMouseDown: |
       client_id, mouse_button = argv
       mouse_action = mouse_button_to_action(mouse_button)

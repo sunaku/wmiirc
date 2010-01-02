@@ -1,3 +1,6 @@
+import:
+  - display/status
+
 display:
   status:
     - power:
@@ -61,12 +64,7 @@ display:
             return xmessage
           end
 
-        content: |
-          unless exist?
-            # there is no battery, so terminate this status button
-            Thread.exit
-          end
-
+        label: |
           read
           if present?
             symbol = case state
@@ -82,5 +80,10 @@ display:
             [color, symbol, percent.to_s+'%', symbol]
           end
 
-        click: |
-          dialog `acpi`
+        mouse_action:
+          left_click: show_power_stats
+
+control:
+  action:
+    show_power_stats: |
+      dialog `acpi`

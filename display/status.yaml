@@ -1,0 +1,114 @@
+control:
+  event:
+    RightBarClick: |
+      clicked_button, clicked_file = argv
+      Status[clicked_file].mouse clicked_button
+
+script:
+  - after: |
+      class Status < Sandbox
+        @@by_name = {}
+        @@by_file = {}
+
+        class << self
+          ##
+          # Returns the status bar applet that
+          # is associated with the given name.
+          #
+          # [name]
+          #   Either the the user-defined name of
+          #   the status bar applet or the basename
+          #   of the status bar applet's IXP file.
+          #
+          def [] name
+            @@by_name[name] || @@by_file[name]
+          end
+
+          def each &block
+            @@by_name.each_value(&block)
+          end
+
+          include Enumerable
+        end
+
+        def initialize name, definition, position
+          @definition = definition
+
+          instance_eval definition['script'].to_s,
+            "display:status:#{name}:script"
+
+          instance_eval "def label; #{definition['label']}; end",
+            "display:status:#{name}:label"
+
+          # buttons appear in ASCII order of their IXP file name
+          # so prepend a number to get ordered status bar applets
+          file = "#{position}-#{name}"
+          @button = fs.rbar[file]
+
+          @refresh = Thread.new do
+            refresh_delay = definition['refresh'].to_i
+
+            loop do
+              button_label = begin
+                Array(self.label)
+              rescue Exception => e
+                LOG.error e
+                [CONFIG['display']['color']['error'], e]
+              end
+
+              # provide default color
+              unless button_label.first =~ /(?:#[[:xdigit:]]{6} ?){3}/
+                button_label.unshift CONFIG['display']['color']['normal']
+              end
+
+              @button.create unless @button.exist?
+              @button.write button_label.join(' ')
+
+              sleep refresh_delay
+            end
+          end
+
+          # register this instance
+          @@by_name[name] = self
+          @@by_file[file] = self
+        end
+
+        ##
+        # Updates the label of this applet.
+        #
+        def refresh
+          @refresh.wakeup if @refresh.alive?
+        end
+
+        ##
+        # Invokes the mouse action associated with the given mouse button.
+        #
+        # ==== Parameters
+        #
+        # [button]
+        #   Either the identification number of the
+        #   mouse button (as defined by X server) or
+        #   a named action corresponding to such as
+        #   identification number that was clicked.
+        #
+        def mouse button
+          if action_by_mouse = @definition['mouse_action']
+            mouse = Mouse[button]
+
+            if action = action_by_mouse[mouse]
+              Wmiirc.action action
+            end
+          end
+        end
+      end
+
+      # populate the status bar
+      fs.rbar.clear
+
+      CONFIG['display']['status'].each_with_index do |hash, position|
+        name, definition = hash.to_a.first
+        Status.new name, definition, position
+      end
+
+      Status.each {|s| s.refresh }
+

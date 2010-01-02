@@ -1,10 +1,7 @@
 control:
 
   ##
-  # Mapping from X mouse button codes to named
-  # actions, which are compiled into Ruby symbols
-  # by the configuration and are passed to various
-  # mouse click handlers within this configuration.
+  # Mapping from X mouse codes to event names.
   #
   mouse:
     1: left_click
@@ -15,3 +12,16 @@ control:
     6: wheel_left
     7: wheel_right
 
+script:
+  - after: |
+      module Mouse
+        NAME_BY_CODE = CONFIG['control']['mouse']
+
+        ##
+        # Converts the given mouse code into the event
+        # name defined in the "control:mouse" section.
+        #
+        def self.[] code
+          NAME_BY_CODE[code.to_i] || code
+        end
+      end

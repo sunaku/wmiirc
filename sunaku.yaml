@@ -1,17 +1,17 @@
 # sunaku's personal configuration
 
 import:
- - display/wallpaper
- - display/color/zenburn
- - display/status/music
- - display/status/volume
- - display/status/storage
- - display/status/system
- - display/status/time
- - control/event
- - control/action
- - control/mouse
- - control/keyboard/dvorak
+  - display/wallpaper
+  - display/color/zenburn
+  - display/client
+  - display/tags
+  - display/status/music
+  - display/status/volume
+  - display/status/storage
+  - display/status/system
+  - display/status/time
+  - control/mouse
+  - control/keyboard/dvorak
 
 prefer:
   terminal: xterm
