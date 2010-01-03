@@ -35,6 +35,13 @@ Installation:
   git checkout -b personal
   cp -b ~/.wmii-hg/example.yaml ~/.wmii-hg/config.yaml
 
+Upgrading:
+
+  # assuming that origin is sunaku/wmiirc
+  git fetch origin
+  git checkout personal
+  git rebase origin/master
+
 Configuration:
 
   * Edit ~/.wmii-hg/config.yaml to your liking.
