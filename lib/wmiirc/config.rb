@@ -163,8 +163,11 @@ module Wmiirc
               throw :merged
 
             elsif dst_val != nil
-              LOG.info 'overriding value %s for section %s with value %s from file %s' %
-                [dst_val, key_path.join(':'), src_val, src_file].map {|s| s.inspect }
+              dst_file = @source_by_value[dst_val]
+              section = key_path.join(':')
+
+              LOG.warn 'value %s from %s overrides value %s from %s in section %s' %
+                [src_val, src_file, dst_val, dst_file, section].map {|s| s.inspect }
             end
           end
 
