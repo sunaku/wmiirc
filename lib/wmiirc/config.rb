@@ -45,8 +45,6 @@ module Wmiirc
     end
 
     def display
-      Wmiirc.launch 'xsetroot', '-solid', self['display']['color']['desktop']
-
       font   = ENV['WMII_FONT']        = self['display']['font']
       focus  = ENV['WMII_FOCUSCOLORS'] = self['display']['color']['focus']
       normal = ENV['WMII_NORMCOLORS']  = self['display']['color']['normal']
