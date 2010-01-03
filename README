@@ -17,8 +17,7 @@ Dependencies:
 Installation:
 
     # library
-    gem install rumai     # required
-    gem install librmpd   # optional
+    gem install rumai
 
     # install
     mv ~/.wmii-hg ~/.wmii-hg.backup

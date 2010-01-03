@@ -1,3 +1,11 @@
+#
+# Music Player Daemon (MPD) applet
+# ================================
+#
+# Dependencies:
+#
+#   gem install librmpd
+#
 #--
 # Copyright protects this work.
 # See LICENSE file for details.
