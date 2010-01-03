@@ -46,7 +46,7 @@ module Wmiirc
       # Returns nil if the file could not be found.
       #
       def find file
-        base_dirs = ENV['WMII_CONFPATH'].to_s.split(/:+/).push(DIR)
+        base_dirs = ENV['WMII_CONFPATH'].to_s.split(/:+/).unshift(DIR)
         ruby_dirs = base_dirs.map {|dir| File.join(dir, 'ruby') }
 
         Dir["{#{base_dirs.zip(ruby_dirs).join(',')}}/#{file}"].first
