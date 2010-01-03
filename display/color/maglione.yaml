@@ -1,0 +1,14 @@
+#--
+# Copyright protects this work.
+# See LICENSE file for details.
+#++
+
+##
+# Kris Maglione's color scheme,
+# extracted from cmd/rc/wmii.sh
+#
+display:
+  color:
+    desktop:  "#333333"
+    normal:   "#000000 #c1c48b #81654f"
+    focus:    "#000000 #81654f #000000"
