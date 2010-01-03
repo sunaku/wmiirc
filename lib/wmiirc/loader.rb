@@ -5,6 +5,7 @@
 
 require 'wmiirc'
 require 'wmiirc/config'
+require 'wmiirc/system'
 
 module Wmiirc
   module Loader
@@ -36,7 +37,7 @@ module Wmiirc
 
       def reload
         LOG.info 'reload'
-        system $0 + ' &'
+        Wmiirc.launch File.expand_path($0)
       end
 
       ##
