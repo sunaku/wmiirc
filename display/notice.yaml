@@ -1,0 +1,39 @@
+display:
+  notice: 5
+
+script:
+  - after: |
+      module Notice
+        extend self
+
+        require 'thread'
+        @mutex = Mutex.new
+
+        ##
+        # Displays the given notice in the status bar.
+        #
+        def display message
+          # don't block the calling thread
+          Thread.new do
+            # prevent messages from clobbering
+            # each other before their time is up
+            @mutex.synchronize do
+              button = Rumai.fs.rbar['!notice']
+              button.create unless button.exist?
+
+              # display the message
+              button.write "#{CONFIG['display']['color']['notice']} #{message}"
+              LOG.info message # also log it in case the user is not present
+
+              # clear the notice
+              sleep [1, CONFIG['display']['notice'].to_i].max
+              button.remove
+            end
+          end
+        end
+      end
+
+control:
+  event:
+    Notice: |
+      Notice.display argv.join(' ')

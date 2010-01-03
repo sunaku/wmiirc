@@ -1,0 +1,5 @@
+script:
+  - after: |
+      # desktop wallpaper
+      system 'test -f ~/.fehbg && sh ~/.fehbg'
+

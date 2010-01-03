@@ -1,0 +1,81 @@
+import:
+  - control/mouse
+
+script:
+  - after: |
+      class Rumai::Client
+        TAGS_BY_REGEXP = CONFIG['display']['client'].map do |hash|
+          regexp, tags = hash.to_a.first
+
+          regexp = Wmiirc::SANDBOX.eval(regexp,
+            Wmiirc::CONFIG.source(regexp, 'display:client'))
+
+          [regexp, tags]
+        end
+
+        ##
+        # Tags this client according to mapping specified in
+        # the "display:client" section of the configuration.
+        #
+        # If that is not possible, then this client
+        # is simply forced onto the current view.
+        #
+        def tag_by_regexp!
+          if label = (self.props.read rescue nil)
+            catch :done do
+              # try to map client to a view
+              TAGS_BY_REGEXP.each do |regexp, tags|
+                if label =~ regexp
+                  self.tags = tags
+                  throw :done
+                end
+              end
+
+              # force client onto current view
+              begin
+                self.tags = Rumai.curr_tag
+                focus
+              rescue
+                # ignore
+              end
+            end
+          end
+        end
+      end
+
+control:
+  event:
+    CreateClient: |
+      Client.new(argv[0]).tag_by_regexp!
+
+    ClientMouseDown: |
+      client_id, mouse_code = argv
+      mouse_event = Mouse[mouse_code]
+
+      if mouse_event == 'right_click'
+        client = Client.new(client_id)
+
+        case click_menu %w[stick group fullscreen kill slay], 'client'
+        when 'stick'      then client.stick!
+        when 'group'      then client.group!
+        when 'fullscreen' then client.fullscreen!
+        when 'kill'       then client.kill
+        when 'slay'       then client.slay
+        end
+      end
+
+    Unresponsive: |
+      client = Client.new(argv[0])
+
+      IO.popen('xmessage -nearmouse -file - -buttons Kill,Wait -print', 'w+') do |f|
+        f.puts 'The following client is not responding.', ''
+        f.puts client.inspect
+        f.puts client.label.read
+
+        f.puts '', 'What would you like to do?'
+        f.close_write
+
+        if f.read.chomp == 'Kill'
+          client.slay
+        end
+      end

@@ -1,0 +1,17 @@
+control:
+  event:
+    ClientMouseDown: |
+      client_id, mouse_button = argv
+      mouse_action = mouse_button_to_action(mouse_button)
+
+      if mouse_action == :right_click
+        client = Client.new(client_id)
+
+        case click_menu %w[stick group fullscreen kill slay], 'client'
+        when 'stick'      then client.stick!
+        when 'group'      then client.group!
+        when 'fullscreen' then client.fullscreen!
+        when 'kill'       then client.kill
+        when 'slay'       then client.slay
+        end
+      end

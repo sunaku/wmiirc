@@ -1,0 +1,13 @@
+#
+# The following colors are based on the Wombat color scheme for Vim:
+#
+# http://dengmao.wordpress.com/2007/01/22/vim-color-scheme-wombat/
+#
+display:
+  color:
+    desktop:  "#242424"
+    focus:    "#000000 #b4cc74 #343434" # background is #cae682 at value 80
+    normal:   "#f6f3e8 #242424 #303030" # Normal
+    error:    "#f6f3e8 #cc6b61 #343434" # background is #e5786d at value 80
+    notice:   "#000000 #8ac6f2 #343434" # background is #8ac6f2 at value 85
+    success:  "#000000 #95e454 #343434" # String
