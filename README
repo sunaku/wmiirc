@@ -23,14 +23,17 @@ Installation:
     # install
     mv ~/.wmii-hg ~/.wmii-hg.backup
     git clone git://github.com/sunaku/wmiirc.git ~/.wmii-hg
+
+    # branch
+    git checkout -b personal
     cp -b ~/.wmii-hg/example.yaml ~/.wmii-hg/config.yaml
 
 Configuration:
 
     Edit ~/.wmii-hg/config.yaml to your liking.
 
-    For a real-life example, see my config.yaml:
-    http://github.com/sunaku/wmiirc/blob/sunaku/config.yaml
+    For a real-life example, see my personal config.yaml:
+    http://github.com/sunaku/wmiirc/blob/personal/config.yaml
 
     Run ~/.wmii-hg/wmiirc to apply your changes.
 
