@@ -28,12 +28,14 @@ Installation:
   gem install rumai
 
   # install
+  mv ~/.wmii ~/.wmii.backup
   mv ~/.wmii-hg ~/.wmii-hg.backup
-  git clone git://github.com/sunaku/wmiirc.git ~/.wmii-hg
+  git clone git://github.com/sunaku/wmiirc.git ~/.wmii
+  ln -s ~/.wmii ~/.wmii-hg
 
   # branch
   git checkout -b personal
-  cp -b ~/.wmii-hg/example.yaml ~/.wmii-hg/config.yaml
+  cp -b ~/.wmii/example.yaml ~/.wmii/config.yaml
 
 Upgrading:
 
@@ -44,12 +46,12 @@ Upgrading:
 
 Configuration:
 
-  * Edit ~/.wmii-hg/config.yaml to your liking.
+  * Edit ~/.wmii/config.yaml to your liking.
 
     For a real-life example, see my personal config.yaml:
     http://github.com/sunaku/wmiirc/blob/personal/config.yaml
 
-  * Run ~/.wmii-hg/wmiirc to apply your changes.
+  * Run ~/.wmii/wmiirc to apply your changes.
 
 Contribution:
 
