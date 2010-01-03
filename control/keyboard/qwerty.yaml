@@ -190,7 +190,7 @@ control:
     # detach
     #-------------------------------------------------------------------------
 
-    ${mod}-d: detach_grouping_from_current_view
+    ${mod}-d: detach_grouping
     ${mod}-Shift-d: attach_most_recently_detached_client
 
     #-------------------------------------------------------------------------
@@ -198,7 +198,7 @@ control:
     #-------------------------------------------------------------------------
 
     ${mod}-b: copy_grouping_to_temporary_view
-    ${mod}-Shift-b: restore_grouping_to_original_view
+    ${mod}-Shift-b: restore_grouping_from_temporary_view
 
     #-------------------------------------------------------------------------
     # arrange
