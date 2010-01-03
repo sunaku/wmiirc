@@ -82,7 +82,7 @@ module Wmiirc
       end
 
       def load_user_config
-        config = Config.new('sunaku')
+        config = Config.new('config')
         Wmiirc.const_set :CONFIG, config
         config.apply
       end
