@@ -36,7 +36,8 @@ module Wmiirc
 
       def reload
         LOG.info 'reload'
-        exec $0
+        system $0 + ' &'
+        exit
       end
 
       ##
