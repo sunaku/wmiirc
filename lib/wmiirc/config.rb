@@ -108,7 +108,7 @@ module Wmiirc
 
     def import paths, merged = {}, imported = []
       Array(paths).each do |path|
-        path = File.join(Wmiirc::DIR, path) + '.yaml'
+        path = Loader.find("#{path}.yaml")
         partial = YAML.load_file(path)
 
         trace partial, path
