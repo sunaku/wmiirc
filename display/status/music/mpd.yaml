@@ -102,7 +102,7 @@ display:
           right_click: stop_playing_song
           wheel_up: play_next_song
           wheel_down: play_previous_song
-          wheel_click: play_son
+          wheel_click: play_song_from_menu
 
 control:
   action:
