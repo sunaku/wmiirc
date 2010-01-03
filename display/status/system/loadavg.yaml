@@ -8,7 +8,7 @@ import:
 
 display:
   status:
-    - system:
+    - loadavg:
         refresh: 10
 
         label: |
@@ -24,10 +24,10 @@ display:
           [color, *load_averages]
 
         mouse_action:
-          left_click: show_system_stats
+          left_click: show_loadavg_stats
 
 control:
   action:
-    show_system_stats: |
+    show_loadavg_stats: |
       dialog `ps ux --sort=-pcpu,-vsz || ps ux`
 

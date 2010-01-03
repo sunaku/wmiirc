@@ -8,7 +8,7 @@ import:
 
 display:
   status:
-    - volume:
+    - amixer:
         refresh: 60
 
         script: |
@@ -67,16 +67,16 @@ display:
 control:
   action:
     set_volume_from_menu: |
-      Status['volume'].menu
+      Status['amixer'].menu
 
     increase_volume: |
-      Status['volume'].increase
+      Status['amixer'].increase
 
     decrease_volume: |
-      Status['volume'].decrease
+      Status['amixer'].decrease
 
     mute_volume_toggle: |
-      Status['volume'].mute!
+      Status['amixer'].mute!
 
   keyboard_action:
     ${mod}-Shift-Prior: increase_volume

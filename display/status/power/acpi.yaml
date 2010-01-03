@@ -8,7 +8,7 @@ import:
 
 display:
   status:
-    - power:
+    - acpi:
         refresh: 15
 
         script: |
@@ -86,9 +86,9 @@ display:
           end
 
         mouse_action:
-          left_click: show_power_stats
+          left_click: show_acpi_stats
 
 control:
   action:
-    show_power_stats: |
+    show_acpi_stats: |
       dialog `acpi`

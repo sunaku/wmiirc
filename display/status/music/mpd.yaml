@@ -8,29 +8,29 @@ import:
 
 display:
   status:
-    - music:
+    - mpd:
         refresh: 5
 
         script: |
           require 'rubygems'
           gem 'librmpd', '~> 0.1'
           require 'librmpd'
-          @music = MPD.new
+          @mpd = MPD.new
 
           def load_playlist_from_menu
-            if list = key_menu(@music.playlists, 'load playlist:')
-              @music.clear
-              @music.load list
-              @music.play
+            if list = key_menu(@mpd.playlists, 'load playlist:')
+              @mpd.clear
+              @mpd.load list
+              @mpd.play
             end
           end
 
           def add_current_song_to_playlist_from_menu
-            if list = key_menu(@music.playlists, 'add current song to playlist:')
+            if list = key_menu(@mpd.playlists, 'add current song to playlist:')
               file = File.join(File.expand_path('~/.mpd/playlists'), list + '.m3u')
 
               songs = File.readlines(file) rescue []
-              songs << @music.current_song.file
+              songs << @mpd.current_song.file
               songs.uniq!
 
               File.open(file, 'w') {|f| f.puts songs }
@@ -47,43 +47,43 @@ display:
           end
 
           def pause!
-            if @music.stopped?
-              @music.play
+            if @mpd.stopped?
+              @mpd.play
             else
-              @music.pause = !@music.paused?
+              @mpd.pause = !@mpd.paused?
             end
             refresh
           end
 
           def stop
-            @music.stop
+            @mpd.stop
             refresh
           end
 
           def next
-            @music.next
+            @mpd.next
             refresh
           end
 
           def prev
-            @music.previous
+            @mpd.previous
             refresh
           end
 
         label: |
-          @music.connect unless @music.connected?
+          @mpd.connect unless @mpd.connected?
 
-          if song = @music.current_song
+          if song = @mpd.current_song
             artist    = song.artist
             title     = song.title || (f = song.file and File.basename(f))
             song_name = [artist, title].compact.join(': ')
           end
 
           color =
-            if @music.stopped?
+            if @mpd.stopped?
               song_name = nil
               nil
-            elsif @music.paused?
+            elsif @mpd.paused?
               CONFIG['display']['color']['notice']
             end
 
@@ -91,33 +91,33 @@ display:
 
         mouse_action:
           left_click: pause_current_song_toggle
-          right_click: stop_music
+          right_click: stop_playing_song
           wheel_up: play_next_song
           wheel_down: play_previous_song
           wheel_click: play_son
 
 control:
   action:
-    stop_music: |
-      Status['music'].stop
+    stop_playing_song: |
+      Status['mpd'].stop
 
     play_previous_song: |
-      Status['music'].prev
+      Status['mpd'].prev
 
     play_next_song: |
-      Status['music'].next
+      Status['mpd'].next
 
     pause_current_song_toggle: |
-      Status['music'].pause!
+      Status['mpd'].pause!
 
     play_song_from_menu: |
-      Status['music'].play_song_from_menu
+      Status['mpd'].play_song_from_menu
 
     load_playlist_from_menu: |
-      Status['music'].load_playlist_from_menu
+      Status['mpd'].load_playlist_from_menu
 
     add_current_song_to_playlist_from_menu: |
-      Status['music'].add_current_song_to_playlist_from_menu
+      Status['mpd'].add_current_song_to_playlist_from_menu
 
   keyboard_action:
     ${mod}-Prior: play_previous_song
