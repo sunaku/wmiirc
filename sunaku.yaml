@@ -2,7 +2,7 @@
 
 import:
   - display/wallpaper
-  - display/color/zenburn
+  - display/color/wombat
   - display/notice
   - display/client
   - display/tags
