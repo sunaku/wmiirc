@@ -1,8 +1,4 @@
 control:
-
-  ##
-  # Mapping from X mouse codes to event names.
-  #
   mouse:
     1: left_click
     2: wheel_click
