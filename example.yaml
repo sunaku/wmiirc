@@ -137,6 +137,15 @@ control:
   # The Ruby code has access to an "argv" variable which
   # is a list of arguments that were passed to the event.
   #
+  # Keep in mind that these event handlers block the
+  # wmiirc event loop---meaning that no new events are
+  # received and processed until the current one has been
+  # fully handled.  So try to keep them short and quick.
+  #
+  # If your event handler needs to perform a
+  # long-running operation, then be sure to
+  # wrap that operation inside a Ruby thread.
+  #
   event:
 
   ##
