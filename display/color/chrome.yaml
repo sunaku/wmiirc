@@ -1,0 +1,6 @@
+# Colors from the Classic theme for Google Chrome.
+display:
+  color:
+    desktop: "#34649E"
+    focus:   "#000000 #FCFDFF #6A85A7"
+    normal:  "#000000 #A0C5F3 #89ACD7"
