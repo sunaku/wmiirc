@@ -26,8 +26,8 @@ control:
     ##
     # Sequence keys.
     #
-    prev: comma
-    next: period
+    prev: b
+    next: n
 
   keyboard_action:
 
@@ -197,8 +197,8 @@ control:
     # zoom
     #-------------------------------------------------------------------------
 
-    ${mod}-b: copy_grouping_to_temporary_view
-    ${mod}-Shift-b: restore_grouping_from_temporary_view
+    ${mod}-w: copy_grouping_to_temporary_view
+    ${mod}-Shift-w: restore_grouping_from_temporary_view
 
     #-------------------------------------------------------------------------
     # arrange
