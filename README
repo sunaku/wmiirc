@@ -19,6 +19,7 @@ sunaku's Ruby wmiirc:
 Prerequisites:
 
   * wmii 3.6 or newer (preferably wmii-hg)
+  * dmenu 4.0 or newer
   * Ruby 1.8.6 or newer
   * RubyGems 1.3.1 or newer
   * Rumai 3.2.0 or newer (gem install rumai)
