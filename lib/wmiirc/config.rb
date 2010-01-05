@@ -28,7 +28,7 @@ module Wmiirc
     #
     def origin value, section
       if origin = @origin_by_value[value]
-        "#{origin}:in section #{section.inspect}"
+        "#{origin}:#{section}"
       else
         section
       end
