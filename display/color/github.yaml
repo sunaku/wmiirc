@@ -1,0 +1,8 @@
+#
+# Colors from GitHub.com
+#
+display:
+  color:
+    desktop: "#EAF2F5"
+    focus:   "#FFFFFF #447DBB #5C8AB3"
+    normal:  "#444444 #F8F8F8 #E9E9E9"
