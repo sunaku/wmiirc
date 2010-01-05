@@ -10,7 +10,7 @@ module Wmiirc
   class Config < Hash
 
     def initialize name
-      @source_by_value = {}
+      @origin_by_value = {}
       import name, self
     end
 
@@ -26,9 +26,9 @@ module Wmiirc
     # from which the given value originated.  If this is
     # not possible, the given section name is returned.
     #
-    def source value, section
-      if source = @source_by_value[value]
-        "#{source}:in section #{section.inspect}"
+    def origin value, section
+      if origin = @origin_by_value[value]
+        "#{origin}:in section #{section.inspect}"
       else
         section
       end
@@ -39,7 +39,7 @@ module Wmiirc
     def script key
       Array(self['script']).each do |hash|
         if script = hash[key]
-          SANDBOX.eval script, source(script, "script:#{key}")
+          SANDBOX.eval script, origin(script, "script:#{key}")
         end
       end
     end
@@ -93,7 +93,7 @@ module Wmiirc
 
             SANDBOX.eval(
               "#{meth}(#{key.inspect}) {|*argv| #{code} }",
-              source(code, "control:#{section}:#{name}")
+              origin(code, "control:#{section}:#{name}")
             )
           end
         end
@@ -111,7 +111,7 @@ module Wmiirc
         path = Loader.find("#{path}.yaml")
         partial = YAML.load_file(path)
 
-        trace partial, path
+        mark_origin partial, path
 
         imports = Array(partial['import'])
 
@@ -126,14 +126,14 @@ module Wmiirc
       merged
     end
 
-    def trace partial, source
+    def mark_origin partial, origin
       if partial.kind_of? String
-        @source_by_value[partial] = source
+        @origin_by_value[partial] = origin
 
       elsif partial.respond_to? :each
         partial.each do |*values|
           values.each do |v|
-            trace v, source
+            mark_origin v, origin
           end
         end
       end
@@ -163,7 +163,7 @@ module Wmiirc
               throw :merged
 
             elsif dst_val != nil
-              dst_file = @source_by_value[dst_val]
+              dst_file = @origin_by_value[dst_val]
               section = key_path.join(':')
 
               LOG.warn 'value %s from %s overrides value %s from %s in section %s' %

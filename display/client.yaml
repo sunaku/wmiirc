@@ -13,7 +13,7 @@ script:
           regexp, tags = hash.to_a.first
 
           regexp = Wmiirc::SANDBOX.eval(regexp,
-            Wmiirc::CONFIG.source(regexp, 'display:client'))
+            Wmiirc::CONFIG.origin(regexp, 'display:client'))
 
           [regexp, tags]
         end

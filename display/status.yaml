@@ -41,12 +41,12 @@ script:
 
           if code = definition['script']
             instance_eval code,
-              CONFIG.source(code, "display:status:#{name}:script")
+              CONFIG.origin(code, "display:status:#{name}:script")
           end
 
           if code = definition['label']
             instance_eval "def label; #{code}; end",
-              CONFIG.source(code, "display:status:#{name}:label")
+              CONFIG.origin(code, "display:status:#{name}:label")
           end
 
           # buttons appear in ASCII order of their IXP file name
