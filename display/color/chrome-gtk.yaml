@@ -1,4 +1,6 @@
+#
 # Colors from the GTK+ theme for Google Chrome.
+#
 display:
   color:
     desktop: "#48647E"

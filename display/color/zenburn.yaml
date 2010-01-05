@@ -1,12 +1,6 @@
-#--
-# Copyright protects this work.
-# See LICENSE file for details.
-#++
-
-##
-# The following colors originate
-# from the high contrast subset of
-# the zenburn color scheme for Vim:
+#
+# Colors from the high contrast subset
+# of the zenburn color scheme for Vim:
 #
 # http://slinky.imukuppi.org/zenburn/
 #

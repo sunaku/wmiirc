@@ -1,10 +1,5 @@
-#--
-# Copyright protects this work.
-# See LICENSE file for details.
-#++
-
-##
-# The following colors are based on the Wombat color scheme for Vim:
+#
+# Colors taken and derived from the Wombat color scheme for Vim:
 # http://dengmao.wordpress.com/2007/01/22/vim-color-scheme-wombat/
 #
 display:
