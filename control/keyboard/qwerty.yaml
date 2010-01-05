@@ -11,7 +11,7 @@ control:
     mod:    Mod1
     move:   Mod1-Shift
     swap:   Mod1-w
-    view:   Mod1-v
+    view:   Mod1-Shift-v
     group:  Mod1-g
     layout: Mod1-z
 
