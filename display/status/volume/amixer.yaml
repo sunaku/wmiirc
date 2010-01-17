@@ -37,6 +37,12 @@ display:
 
         def mute!
           set 'toggle'
+          if mute?
+            @previous = level
+            set '0%'
+          else
+            set @previous || '80%'
+          end
         end
 
         def mute?
