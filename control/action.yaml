@@ -427,6 +427,13 @@ control:
         client.focus
       end
 
+    # Show a list of clients, and if user selects one,
+    # tag it with the same tag as the current view.
+    invite_client_from_menu: |
+      if client = client_menu('invite client:')
+        client.tag curr_tag
+      end
+
     launch_terminal: |
       #
       # Launch a new terminal and set its
