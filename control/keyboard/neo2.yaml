@@ -1,0 +1,244 @@
+import:
+  - control/action
+
+control:
+  keyboard:
+    grabmod: Mod1
+
+    ##
+    # Shortcut prefixes.
+    # Alt - Mod1
+    # Super - Mod4
+    #
+    # Example:
+    #   mod:    Mod1-Control
+    mod:    Mod4
+    move:   Mod4-m
+    swap:   Mod4-w
+    view:   Mod4-v
+    group:  Mod4-g
+    layout: Mod4-z
+
+    ##
+    # Direction keys.
+    #
+    up:    r
+    down:  n
+    left:  s
+    right: t
+
+    ##
+    # Sequence keys.
+    #
+    prev: comma
+    next: period
+
+  keyboard_action:
+
+    #-------------------------------------------------------------------------
+    # focus
+    #-------------------------------------------------------------------------
+
+    ${mod}-${up}: focus_above_client
+    ${mod}-${down}: focus_below_client
+    ${mod}-${left}: focus_left_client
+    ${mod}-${right}: focus_right_client
+    ${mod}-space: focus_floating_area_toggle
+    ${mod}-${prev}: focus_previous_view
+    ${mod}-${next}: focus_next_view
+    ${mod}-o: focus_most_recently_focused_view
+
+    # focus the view whose index or name equals the pressed number
+    ${mod}-1: focus_view_1
+    ${mod}-2: focus_view_2
+    ${mod}-3: focus_view_3
+    ${mod}-4: focus_view_4
+    ${mod}-5: focus_view_5
+    ${mod}-6: focus_view_6
+    ${mod}-7: focus_view_7
+    ${mod}-8: focus_view_8
+    ${mod}-9: focus_view_9
+    ${mod}-0: focus_view_10
+
+    # focus the view whose name begins with the pressed alphabet
+    ${view},a: focus_view_a
+    ${view},b: focus_view_b
+    ${view},c: focus_view_c
+    ${view},d: focus_view_d
+    ${view},e: focus_view_e
+    ${view},f: focus_view_f
+    ${view},g: focus_view_g
+    ${view},h: focus_view_h
+    ${view},i: focus_view_i
+    ${view},j: focus_view_j
+    ${view},k: focus_view_k
+    ${view},l: focus_view_l
+    ${view},m: focus_view_m
+    ${view},n: focus_view_n
+    ${view},o: focus_view_o
+    ${view},p: focus_view_p
+    ${view},q: focus_view_q
+    ${view},r: focus_view_r
+    ${view},s: focus_view_s
+    ${view},t: focus_view_t
+    ${view},u: focus_view_u
+    ${view},v: focus_view_v
+    ${view},w: focus_view_w
+    ${view},x: focus_view_x
+    ${view},y: focus_view_y
+    ${view},z: focus_view_z
+
+    #-------------------------------------------------------------------------
+    # move
+    #-------------------------------------------------------------------------
+
+    ${move},${up}: move_grouping_up
+    ${move},${down}: move_grouping_down
+    ${move},${left}: move_grouping_left
+    ${move},${right}: move_grouping_right
+
+    ${move},space: float_grouping_toggle
+    ${move},Delete: kill_all_clients_in_grouping
+
+    ${move},v: move_grouping_to_view_from_menu
+
+    # move grouping to the view whose index or name equals the pressed number
+    ${move},1: move_grouping_to_view_1
+    ${move},2: move_grouping_to_view_2
+    ${move},3: move_grouping_to_view_3
+    ${move},4: move_grouping_to_view_4
+    ${move},5: move_grouping_to_view_5
+    ${move},6: move_grouping_to_view_6
+    ${move},7: move_grouping_to_view_7
+    ${move},8: move_grouping_to_view_8
+    ${move},9: move_grouping_to_view_9
+    ${move},0: move_grouping_to_view_10
+
+    #-------------------------------------------------------------------------
+    # swap
+    #-------------------------------------------------------------------------
+
+    ${swap},${up}: swap_above_client
+    ${swap},${down}: swap_below_client
+    ${swap},${left}: swap_left_client
+    ${swap},${right}: swap_right_client
+
+    # swap current client with the column whose index equals the pressed number
+    ${swap},1: swap_client_in_column_1
+    ${swap},2: swap_client_in_column_2
+    ${swap},3: swap_client_in_column_3
+    ${swap},4: swap_client_in_column_4
+    ${swap},5: swap_client_in_column_5
+    ${swap},6: swap_client_in_column_6
+    ${swap},7: swap_client_in_column_7
+    ${swap},8: swap_client_in_column_8
+    ${swap},9: swap_client_in_column_9
+    ${swap},0: swap_client_in_column_10
+
+    #-------------------------------------------------------------------------
+    # client
+    #-------------------------------------------------------------------------
+
+    ${mod}-f: client_fullscreen_toggle
+    ${mod}-Shift-c: kill_current_client
+
+    #-------------------------------------------------------------------------
+    # column
+    #-------------------------------------------------------------------------
+
+    ${layout},w: apply_equal_spacing_layout_to_current_column
+    ${layout},Shift-w: apply_equal_spacing_layout_to_all_columns
+
+    ${layout},v: apply_stacked_layout_to_current_column
+    ${layout},Shift-v: apply_stacked_layout_to_all_columns
+
+    ${layout},m: apply_maximized_layout_to_current_column
+    ${layout},Shift-m: apply_maximized_layout_to_all_columns
+
+    # apply stacking layout with the pressed number of columns
+    ${layout},Shift-1: apply_stacked_layout_to_all_columns_1
+    ${layout},Shift-2: apply_stacked_layout_to_all_columns_2
+    ${layout},Shift-3: apply_stacked_layout_to_all_columns_3
+    ${layout},Shift-4: apply_stacked_layout_to_all_columns_4
+    ${layout},Shift-5: apply_stacked_layout_to_all_columns_5
+    ${layout},Shift-6: apply_stacked_layout_to_all_columns_6
+    ${layout},Shift-7: apply_stacked_layout_to_all_columns_7
+    ${layout},Shift-8: apply_stacked_layout_to_all_columns_8
+    ${layout},Shift-9: apply_stacked_layout_to_all_columns_9
+    ${layout},Shift-0: apply_stacked_layout_to_all_columns_0
+
+    #-------------------------------------------------------------------------
+    # group
+    #-------------------------------------------------------------------------
+
+    ${group},g: toggle_current_client_from_grouping
+
+    ${group},c: add_clients_in_current_area_to_grouping
+    ${group},Shift-c: remove_clients_in_current_area_from_grouping
+
+    ${group},f: add_clients_in_floating_area_to_grouping
+    ${group},Shift-f: remove_clients_in_floating_area_from_grouping
+
+    ${group},m: add_clients_in_managed_areas_to_grouping
+    ${group},Shift-m: remove_clients_in_managed_areas_from_grouping
+
+    ${group},v: add_clients_in_current_view_to_grouping
+    ${group},Shift-v: remove_clients_in_current_view_from_grouping
+
+    ${group},i: invert_grouping_in_current_view
+    ${group},Shift-i: invert_grouping_in_all_views
+
+    ${group},n: remove_all_clients_from_grouping
+
+    #-------------------------------------------------------------------------
+    # detach
+    #-------------------------------------------------------------------------
+
+    ${mod}-d: detach_grouping
+    ${mod}-Shift-d: attach_most_recently_detached_client
+
+    #-------------------------------------------------------------------------
+    # zoom
+    #-------------------------------------------------------------------------
+
+    ${mod}-b: copy_grouping_to_temporary_view
+    ${mod}-Shift-b: restore_grouping_from_temporary_view
+
+    #-------------------------------------------------------------------------
+    # arrange
+    #-------------------------------------------------------------------------
+
+    ${layout},t: arrange_current_view_like_LarsWM
+    ${layout},g: arrange_current_view_in_grid
+    ${layout},s: arrange_current_view_in_stacks_2
+    ${layout},d: arrange_current_view_in_diamond
+
+    # apply grid layout with the pressed number of clients per column
+    ${layout},1: arrange_current_view_in_grid_1
+    ${layout},2: arrange_current_view_in_grid_2
+    ${layout},3: arrange_current_view_in_grid_3
+    ${layout},4: arrange_current_view_in_grid_4
+    ${layout},5: arrange_current_view_in_grid_5
+    ${layout},6: arrange_current_view_in_grid_6
+    ${layout},7: arrange_current_view_in_grid_7
+    ${layout},8: arrange_current_view_in_grid_8
+    ${layout},9: arrange_current_view_in_grid_9
+    ${layout},0: arrange_current_view_in_grid_0 # all clients in one column
+
+    #-------------------------------------------------------------------------
+    # menu
+    #-------------------------------------------------------------------------
+
+    ${mod}-i: run_action_from_menu
+    ${mod}-e: run_program_from_menu
+    ${mod}-u: focus_view_from_menu
+    ${mod}-a: focus_client_from_menu
+
+    #-------------------------------------------------------------------------
+    # launch
+    #-------------------------------------------------------------------------
+
+    ${mod}-x: launch_terminal
+    ${mod}-k: launch_browser
+    ${mod}-j: launch_filer
+    ${mod}-q: launch_editor
