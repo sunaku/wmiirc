@@ -1,0 +1,8 @@
+#
+# Colors from the GTK+ theme for Google Chrome.
+#
+display:
+  color:
+    desktop: "#48647E"
+    focus:   "#000000 #DCDAD5 #707A83"
+    normal:  "#000000 #A2B0BD #919DA9"
