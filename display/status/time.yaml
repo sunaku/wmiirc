@@ -8,14 +8,14 @@ import:
 
 display:
   status:
-    - time:
-        refresh: 1
+    time:
+      refresh: 1
 
-        label: |
-          Time.now.strftime('%c')
+      label: |
+        Time.now.strftime('%c')
 
-        mouse_action:
-          left_click: show_calendar
+      mouse_action:
+        left_click: show_calendar
 
 control:
   action:

@@ -8,20 +8,20 @@ import:
 
 display:
   status:
-    - df:
-        refresh: 600 # 10 minutes
+    df:
+      refresh: 600 # 10 minutes
 
-        script: |
-          def usage disk
-            `df -h #{disk} || df #{disk}`
-          end
+      script: |
+        def usage disk
+          `df -h #{disk} || df #{disk}`
+        end
 
-        label: |
-          free, used, path = usage('~').split.last(3)
-          [path, used, 'used', free, 'free']
+      label: |
+        free, used, path = usage('~').split.last(3)
+        [path, used, 'used', free, 'free']
 
-        mouse_action:
-          left_click: show_df_stats
+      mouse_action:
+        left_click: show_df_stats
 
 control:
   action:

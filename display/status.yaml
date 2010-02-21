@@ -114,8 +114,7 @@ script:
       # populate the status bar
       fs.rbar.clear
 
-      CONFIG['display']['status'].each_with_index do |hash, position|
-        name, definition = hash.to_a.first
+      CONFIG['display']['status'].each_with_index do |(name, definition), position|
         Status.new name, definition, position
       end
 

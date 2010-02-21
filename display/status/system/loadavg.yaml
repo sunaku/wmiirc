@@ -8,23 +8,23 @@ import:
 
 display:
   status:
-    - loadavg:
-        refresh: 10
+    loadavg:
+      refresh: 10
 
-        label: |
-          load_averages = File.read('/proc/loadavg').split.first(3)
-          current_load  = load_averages.first.to_f
+      label: |
+        load_averages = File.read('/proc/loadavg').split.first(3)
+        current_load  = load_averages.first.to_f
 
-          # visually indicate the intensity of system load
-          color = case
-            when current_load > 1.5 then CONFIG['display']['color']['error']
-            when current_load > 0.75 then CONFIG['display']['color']['notice']
-          end
+        # visually indicate the intensity of system load
+        color = case
+          when current_load > 1.5 then CONFIG['display']['color']['error']
+          when current_load > 0.75 then CONFIG['display']['color']['notice']
+        end
 
-          [color, *load_averages]
+        [color, *load_averages]
 
-        mouse_action:
-          left_click: show_loadavg_stats
+      mouse_action:
+        left_click: show_loadavg_stats
 
 control:
   action:

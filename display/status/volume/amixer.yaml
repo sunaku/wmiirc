@@ -8,61 +8,61 @@ import:
 
 display:
   status:
-    - amixer:
-        refresh: 60
+    amixer:
+      refresh: 60
 
-        script: |
-          MIXER = 'Master'
+      script: |
+        MIXER = 'Master'
 
-          def get
-            `amixer get #{MIXER}`
+        def get
+          `amixer get #{MIXER}`
+        end
+
+        def level
+          get[/\d+%/]
+        end
+
+        def set value
+          system "amixer set #{MIXER} #{value}"
+          refresh
+        end
+
+        def increase
+          set '3dB+'
+        end
+
+        def decrease
+          set '3dB-'
+        end
+
+        def mute!
+          set 'toggle'
+        end
+
+        def mute?
+          get.include? '[off]'
+        end
+
+        def menu
+          current = self.level
+          levels = (0 .. 10).map {|i| i * 10 }.
+                   push(current.to_i).sort.uniq.
+                   map {|i| "#{i}%" }.reverse
+
+          if level = click_menu(levels, current)
+            set level
           end
+        end
 
-          def level
-            get[/\d+%/]
-          end
+      label: |
+        color = CONFIG['display']['color']['notice'] if mute?
+        [color, 'volume', level]
 
-          def set value
-            system "amixer set #{MIXER} #{value}"
-            refresh
-          end
-
-          def increase
-            set '3dB+'
-          end
-
-          def decrease
-            set '3dB-'
-          end
-
-          def mute!
-            set 'toggle'
-          end
-
-          def mute?
-            get.include? '[off]'
-          end
-
-          def menu
-            current = self.level
-            levels = (0 .. 10).map {|i| i * 10 }.
-                     push(current.to_i).sort.uniq.
-                     map {|i| "#{i}%" }.reverse
-
-            if level = click_menu(levels, current)
-              set level
-            end
-          end
-
-        label: |
-          color = CONFIG['display']['color']['notice'] if mute?
-          [color, 'volume', level]
-
-        mouse_action:
-          left_click: set_volume_from_menu
-          right_click: mute_volume_toggle
-          wheel_up: increase_volume
-          wheel_down: decrease_volume
+      mouse_action:
+        left_click: set_volume_from_menu
+        right_click: mute_volume_toggle
+        wheel_up: increase_volume
+        wheel_down: decrease_volume
 
 control:
   action:

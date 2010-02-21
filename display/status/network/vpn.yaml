@@ -6,15 +6,15 @@
 
 display:
   status:
-    - vpn:
-        device: tun0
-        refresh: 15
-        label: |
-          device = @definition['device']
-          status = `ifconfig #{device} 2>&1`.split("\n").first
+    vpn:
+      device: tun0
+      refresh: 15
+      label: |
+        device = @definition['device']
+        status = `ifconfig #{device} 2>&1`.split("\n").first
 
-          if status =~ /error/
-            device
-          else
-            [CONFIG['display']['color']['success'], device]
-          end
+        if status =~ /error/
+          device
+        else
+          [CONFIG['display']['color']['success'], device]
+        end
