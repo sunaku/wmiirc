@@ -75,7 +75,12 @@ display:
         end
 
       label: |
-        @mpd.connect unless @mpd.connected?
+        unless @mpd.connected?
+          @mpd.connect
+          unless CONFIG['display']['status']['mpd']['password'].nil?
+            @mpd.password(CONFIG['display']['status']['mpd']['password'])
+          end
+        end
 
         if song = @mpd.current_song
           artist    = song.artist
