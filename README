@@ -18,12 +18,12 @@ sunaku's Ruby wmiirc:
 
 Prerequisites:
 
-  * wmii 3.6 or newer (preferably wmii-hg)
-  * dmenu 4.0 or newer
-  * Ruby 1.9 or newer
-  * Rumai 3.2.0 or newer (gem install rumai)
+  * wmii 3.6 or newer     -  http://wmii.suckless.org
+  * dmenu 4.0 or newer    -  http://tools.suckless.org/dmenu/
+  * Ruby 1.9 or newer     -  http://www.ruby-lang.org
+  * Rumai 3.2.0 or newer  -  gem install rumai
 
-Installation:
+Installing:
 
   # backup
   mv ~/.wmii ~/.wmii.backup
@@ -37,12 +37,15 @@ Installation:
   git checkout -b personal
   cp -b ~/.wmii/example.yaml ~/.wmii/config.yaml
 
-Upgrading:
+Configuring:
 
-  # assuming that origin is sunaku/wmiirc
-  git fetch origin
-  git checkout personal
-  git rebase origin/master
+  * Edit ~/.wmii/config.yaml to your liking.
+
+    For a real-life example, see my personal config.yaml file:
+    http://github.com/sunaku/wmiirc/blob/personal/config.yaml
+
+  * If wmii is already running, run ~/.wmii/wmiirc or
+    invoke the "reload" action to apply your changes.
 
 Running:
 
@@ -61,20 +64,18 @@ Running:
     This will allow you to restart wmii without losing your
     applications if it crashes or if you accidentally kill it.
 
-  * If wmii is already running, then run ~/.wmii/wmiirc to start
-    the configuration.  Otherwise, run `startx` normally and wmii
+  * If wmii is already running, run ~/.wmii/wmiirc to start the
+    configuration.  Otherwise, run `startx` normally and wmii
     will automatically recognize and apply this configuration.
 
-Configuration:
+Upgrading:
 
-  * Edit ~/.wmii/config.yaml to your liking.
+  # assuming that origin is sunaku/wmiirc
+  git fetch origin
+  git checkout personal
+  git rebase origin/master
 
-    For a real-life example, see my personal config.yaml:
-    http://github.com/sunaku/wmiirc/blob/personal/config.yaml
-
-  * Run ~/.wmii/wmiirc to apply your changes.
-
-Contribution:
+Contributing:
 
   Fork this project on GitHub and send pull requests.
 
