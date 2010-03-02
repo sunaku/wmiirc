@@ -44,10 +44,9 @@ script:
               CONFIG.origin(code, "display:status:#{name}:script")
           end
 
-          if code = definition['label']
-            instance_eval "def label; #{code}; end",
-              CONFIG.origin(code, "display:status:#{name}:label")
-          end
+          code = definition['label']
+          instance_eval "def label; #{code}; end",
+            CONFIG.origin(code, "display:status:#{name}:label")
 
           # buttons appear in ASCII order of their IXP file name
           # so prepend a number to get ordered status bar applets
