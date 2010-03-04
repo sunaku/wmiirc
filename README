@@ -34,8 +34,9 @@ Installing:
   ln -s ~/.wmii ~/.wmii-hg
 
   # branch
+  cd ~/.wmii
   git checkout -b personal
-  cp -b ~/.wmii/example.yaml ~/.wmii/config.yaml
+  cp -vb example.yaml config.yaml
 
 Configuring:
 
