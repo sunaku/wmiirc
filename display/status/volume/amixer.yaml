@@ -28,11 +28,11 @@ display:
         end
 
         def increase
-          set '3dB+'
+          set '5%+'
         end
 
         def decrease
-          set '3dB-'
+          set '5%-'
         end
 
         def mute!
