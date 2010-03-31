@@ -85,6 +85,9 @@ control:
       Status['amixer'].mute!
 
   keyboard_action:
+    XF86AudioRaiseVolume: increase_volume
+    XF86AudioLowerVolume: decrease_volume
+    XF86AudioMute: mute_volume_toggle
     ${mod}-Shift-Prior: increase_volume
     ${mod}-Shift-Next: decrease_volume
     ${mod}-Shift-Return: mute_volume_toggle
