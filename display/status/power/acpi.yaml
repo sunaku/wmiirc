@@ -54,11 +54,16 @@ display:
         end
 
         def color
-          case level
-            when :critical then CONFIG['display']['color']['error']
-            when :low then CONFIG['display']['color']['notice']
-            when :high then CONFIG['display']['color']['success']
-          end
+          case state
+            when "charged" then CONFIG['display']['color']['normal'] 
+            when "charging" then CONFIG['display']['color']['focus'] 
+            when "discharging" then case level
+                when :critical then CONFIG['display']['color']['error']
+                when :low then CONFIG['display']['color']['notice']
+                when :high then CONFIG['display']['color']['success']
+              end
+            else CONFIG['display']['color']['notice']
+            end
         end
 
         def message
@@ -77,6 +82,7 @@ display:
             when "charged" then "="
             when "charging" then "^"
             when "discharging" then "v"
+            else "?"
           end
           xmessage = message
           if xmessage
