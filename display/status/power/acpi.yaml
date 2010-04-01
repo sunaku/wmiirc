@@ -89,7 +89,7 @@ display:
             `xkbbell -force`
             dialog xmessage
           end
-          [color, symbol, percent.to_s+'%', symbol]
+          [color, symbol, [percent,99].min.to_s+'%', symbol]
         end
 
       mouse_action:
