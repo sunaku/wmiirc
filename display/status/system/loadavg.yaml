@@ -9,16 +9,22 @@ import:
 display:
   status:
     loadavg:
+      high: 0.75
+      critical: 1.5
       refresh: 10
+
+      script: |
+        @high = @definition['high'].to_f
+        @critical = @definition['critical'].to_f
 
       label: |
         load_averages = File.read('/proc/loadavg').split.first(3)
-        current_load  = load_averages.first.to_f
+        current_load = load_averages.first.to_f
 
         # visually indicate the intensity of system load
         color = case
-          when current_load > 1.5 then CONFIG['display']['color']['error']
-          when current_load > 0.75 then CONFIG['display']['color']['notice']
+          when current_load > @critical then CONFIG['display']['color']['error']
+          when current_load > @high then CONFIG['display']['color']['notice']
         end
 
         [color, *load_averages]
