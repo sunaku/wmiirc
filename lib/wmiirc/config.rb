@@ -106,24 +106,29 @@ module Wmiirc
       end
     end
 
-    def import paths, merged = {}, imported = []
-      Array(paths).each do |path|
-        path = Loader.find("#{path}.yaml")
-        partial = YAML.load_file(path)
+    def import virtual_paths, merged_result = {}, already_imported = [], importer = $0
+      Array(virtual_paths).each do |virtual_path|
+        begin
 
-        mark_origin partial, path
+          physical_path = Loader.find("#{virtual_path}.yaml")
+          config_partial = YAML.load_file(physical_path)
+          mark_origin config_partial, physical_path
 
-        imports = Array(partial['import'])
+          imports = Array(config_partial['import']) - already_imported
+          already_imported.concat imports
 
-        # prevent cycles
-        imports -= imported
-        imported.concat imports
+          import imports, merged_result, already_imported, physical_path
+          merge merged_result, config_partial, physical_path
 
-        import imports, merged, imported
-        merge merged, partial, path
+        rescue => error
+          error.message << ' when importing %s (really %s) into %s' % [
+            virtual_path.inspect, physical_path.inspect, importer.inspect
+          ]
+          raise error
+        end
       end
 
-      merged
+      merged_result
     end
 
     def mark_origin partial, origin
