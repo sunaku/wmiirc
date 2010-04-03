@@ -69,11 +69,7 @@ module Wmiirc
   #   Additional command-line arguments for `xmessage`.
   #
   def dialog message, *arguments
-    # show dialog in floating area
-    Rumai.curr_view.floating_area.focus
-
-    arguments << message
-    launch 'xmessage', '-nearmouse', *arguments
+    launch 'xmessage', '-nearmouse', *arguments, message, :type => 'DIALOG'
   end
 
   ##
