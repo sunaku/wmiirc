@@ -22,7 +22,7 @@ display:
         @mpd = MPD.new
 
         def load_playlist_from_menu
-          if list = key_menu(@mpd.playlists, 'load playlist:')
+          if list = key_menu(@mpd.playlists, 'load playlist:', :playlist)
             @mpd.clear
             @mpd.load list
             @mpd.play
@@ -30,7 +30,7 @@ display:
         end
 
         def add_current_song_to_playlist_from_menu
-          if list = key_menu(@mpd.playlists, 'add current song to playlist:')
+          if list = key_menu(@mpd.playlists, 'add current song to playlist:', :playlist)
             file = File.join(File.expand_path('~/.mpd/playlists'), list + '.m3u')
 
             songs = File.readlines(file) rescue []

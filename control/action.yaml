@@ -159,7 +159,7 @@ control:
       #
       choices = tags.map {|t| [t, "+#{t}", "-#{t}"] }.flatten
 
-      if target = key_menu(choices, 'tag as:')
+      if target = key_menu(choices, 'tag as:', :tag)
         grouping.each do |c|
           case target
           when /^\+/ then c.tag $'
@@ -408,17 +408,17 @@ control:
     #-------------------------------------------------------------------------
 
     run_action_from_menu: |
-      if choice = key_menu(actions, 'run action:')
+      if choice = key_menu(actions, 'run action:', :action)
         action choice
       end
 
     run_program_from_menu: |
-      if choice = key_menu(@programs, 'run program:')
+      if choice = key_menu(@programs, 'run program:', :program)
         launch choice
       end
 
     focus_view_from_menu: |
-      if choice = key_menu(tags, 'show view:')
+      if choice = key_menu(tags, 'show view:', :tag)
         focus_view choice
       end
 

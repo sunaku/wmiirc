@@ -2,6 +2,11 @@ require 'shellwords'
 
 module Wmiirc
 
+  HISTORY_DIR = File.join(DIR, 'history')
+
+  require 'fileutils'
+  FileUtils.mkdir_p(HISTORY_DIR)
+
   ##
   # Shows a menu (where the user must press keys on their keyboard to
   # make a choice) with the given items and returns the chosen item.
@@ -10,25 +15,33 @@ module Wmiirc
   #
   # ==== Parameters
   #
-  # [prompt]
-  #   Instruction on what the user should enter or choose.
+  # [choices]
+  #   List of choices to display in the menu.
   #
-  def key_menu choices, prompt = nil
-    command = ['dmenu', '-fn', CONFIG['display']['font']]
-
-    # show menu at the same location as the status bar
-    command << '-b' if CONFIG['display']['bar'] == 'bottom'
-
-    command.concat %w[-nf -nb -sf -sb].zip(
-      [
-        CONFIG['display']['color']['normal'],
-        CONFIG['display']['color']['focus'],
-
-      ].map {|c| c.to_s.split[0,2] }.flatten
-
-    ).flatten
-
+  # [prompt]
+  #   Instructions on what the user should enter or choose.
+  #
+  # [history_name]
+  #   Basename of the file in which the user's
+  #   choices will be stored: the history file.
+  #
+  # [history_size]
+  #   Number of items to keep in the history file.
+  #
+  def key_menu choices, prompt = nil, history_name = nil, history_size = 200
+    command = ['wimenu']
     command.push '-p', prompt if prompt
+
+    if history_name
+      history_file = File.join(HISTORY_DIR, history_name)
+      command.push '-h', history_file, '-n', history_size.to_s
+
+      # show history before actual choices
+      if File.exist? history_file
+        history = File.read(history_file).chomp.split(/\n/)
+        choices = history.reverse.concat(choices).uniq
+      end
+    end
 
     IO.popen(command.shelljoin, 'r+') do |menu|
       menu.puts choices
