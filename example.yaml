@@ -95,7 +95,10 @@ display:
   #
   #   <name of your status bar applet>:
   #
-  #       refresh:  <number of seconds to wait before updating the label>
+  #       refresh:  <Number of seconds to wait before updating the
+  #                  label.  To disable automatic refreshing, give
+  #                  this parameter a `nil` value by omitting this
+  #                  parameter completely or by omitting its value.>
   #
   #       script:   <Ruby code to evaluate in the Wmiirc::Status
   #                  object that corresponds to this definition.>
