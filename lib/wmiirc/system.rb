@@ -62,10 +62,10 @@ module Wmiirc
   end
 
   ##
-  # Returns the basenames of executable files present in the given directories.
+  # Returns the basenames of executable files found in the given directories.
   #
-  def find_programs *dirs
-    dirs.flatten.
+  def find_programs *directories
+    directories.flatten.
     map {|d| Pathname.new(d).expand_path.children rescue [] }.flatten.
     map {|f| f.basename.to_s if f.file? and f.executable? }.compact.uniq.sort
   end
