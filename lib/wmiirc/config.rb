@@ -121,9 +121,9 @@ module Wmiirc
           merge merged_result, config_partial, physical_path
 
         rescue => error
-          error.message << ' when importing %s (really %s) into %s' % [
-            virtual_path.inspect, physical_path.inspect, importer.inspect
-          ]
+          error.message << ' when importing %s (really %s) into %s' %
+          [ virtual_path, physical_path, importer ].map(&:inspect)
+
           raise error
         end
       end
@@ -172,7 +172,7 @@ module Wmiirc
               section = backtrace.join(':')
 
               LOG.warn 'value %s from %s overrides value %s from %s in section %s' %
-                [src_val, src_file, dst_val, dst_file, section].map {|s| s.inspect }
+              [src_val, src_file, dst_val, dst_file, section].map(&:inspect)
             end
           end
 
