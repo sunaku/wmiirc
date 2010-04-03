@@ -12,8 +12,10 @@ module Wmiirc
   #   to launch.  This can be a self-contained
   #   shell command if no arguments are given.
   #
-  # [arguments]
-  #   Command-line arguments for the command being launched.
+  # [arguments_then_wihack_options]
+  #   Command-line arguments for the command being launched,
+  #   optionally followed by a Hash containing command-line
+  #   option names and values for the `wihack` program.
   #
   # ==== Examples
   #
@@ -27,10 +29,28 @@ module Wmiirc
   #
   #   launch 'xmessage', 'hello world', Time.now.to_s
   #
-  def launch command, *arguments
+  # Launch a command on the floating layer (treating
+  # it as a dialog box) using the `wihack` program:
+  #
+  #   launch 'xmessage', 'hello world', Time.now.to_s, :type => 'DIALOG'
+  #
+  def launch command, *arguments_then_wihack_options
+    *arguments, wihack_options = arguments_then_wihack_options
+
+    unless wihack_options.nil? or wihack_options.kind_of? Hash
+      arguments.push wihack_options
+      wihack_options = nil
+    end
+
     unless arguments.empty?
       command = [command, *arguments].shelljoin
     end
+
+    if wihack_options
+      wihack_argv = wihack_options.map {|k,v| ["-#{k}", v] }.flatten
+      command = "wihack #{wihack_argv.shelljoin} #{command}"
+    end
+
     system "#{command} &"
   end
 
