@@ -1,8 +1,3 @@
-#--
-# Copyright protects this work.
-# See LICENSE file for details.
-#++
-
 script:
   - after: |
       system 'test -f ~/.fehbg && sh ~/.fehbg'

@@ -6,10 +6,6 @@
 #
 #   gem install librmpd
 #
-#--
-# Copyright protects this work.
-# See LICENSE file for details.
-#++
 
 import:
   - display/status

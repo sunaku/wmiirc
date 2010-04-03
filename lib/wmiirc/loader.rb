@@ -1,8 +1,3 @@
-#--
-# Copyright protects this work.
-# See LICENSE file for details.
-#++
-
 require 'wmiirc'
 require 'wmiirc/config'
 require 'wmiirc/system'

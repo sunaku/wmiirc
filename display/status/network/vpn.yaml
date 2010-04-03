@@ -1,8 +1,4 @@
 # VPN tunnel status indicator.
-#--
-# Copyright protects this work.
-# See LICENSE file for details.
-#++
 
 display:
   status:

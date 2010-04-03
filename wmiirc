@@ -1,8 +1,4 @@
 #!/usr/bin/env ruby
-#--
-# Copyright protects this work.
-# See LICENSE file for details.
-#++
 
 $LOAD_PATH << File.join(File.dirname(__FILE__), 'lib')
 require 'wmiirc/loader'

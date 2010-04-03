@@ -1,9 +1,4 @@
 # DSL for wmiirc configuration.
-#--
-# Copyright protects this work.
-# See LICENSE file for details.
-#++
-
 module Wmiirc
 
   class Handler < Hash
