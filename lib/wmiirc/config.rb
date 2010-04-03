@@ -68,8 +68,7 @@ module Wmiirc
         # are ignored, and those that are supported are (silently)
         # applied.  but a "bad command" error is raised nevertheless!
         #
-        warn error.inspect
-        warn error.backtrace.join("\n")
+        LOG.warn "could not apply some wmii settings: #{error.inspect}"
       end
     end
 
