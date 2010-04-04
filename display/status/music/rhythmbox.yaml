@@ -1,0 +1,55 @@
+#
+# Rhythmbox Client applet
+#
+
+import:
+  - display/status
+
+display:
+  status:
+    rhythmbox:
+      refresh: 5
+
+      script: |
+        def pause!
+          system 'rhythmbox-client --no-start --play-pause'
+          refresh
+        end
+
+        def stop
+          system 'rhythmbox-client --no-start --stop'
+          refresh
+        end
+
+        def next
+          system 'rhythmbox-client --no-start --next'
+          refresh
+        end
+
+        def prev
+          system 'rhythmbox-client --no-start --previous'
+          refresh
+        end
+
+      label: |
+        `rhythmbox-client --no-start --print-playing-format '(%ta) %at - %tt'`
+
+control:
+  action:
+    stop_playing_song: |
+      Status['rhythmbox'].stop
+
+    play_previous_song: |
+      Status['rhythmbox'].prev
+
+    play_next_song: |
+      Status['rhythmbox'].next
+
+    pause_current_song_toggle: |
+      Status['rhythmbox'].pause!
+
+  keyboard_action:
+    XF86AudioPlay: pause_current_song_toggle
+    XF86AudioPrev: play_previous_song
+    XF86AudioNext: play_next_song
+    XF86AudioStop: stop_playing_song
