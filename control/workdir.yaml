@@ -1,0 +1,84 @@
+script:
+  - before: |
+      require 'fileutils'
+
+      class WorkDir
+        ROOT = FileUtils.pwd
+        HOME = ENV['HOME']
+        LOCATIONS = ['.', ROOT, HOME, '/']
+
+        @@bar = Rumai.fs.lbar['|workdir|']
+        @@dirs = Hash.new
+
+        def self.locations dir
+          LOCATIONS.map do |base| 
+            d = File.absolute_path(File.expand_path(File.join(base,dir)))
+            d if File.directory?(d)
+          end.compact << dir
+        end
+
+        def self.values
+          @@dirs.values.map{|d| d.to_s}
+        end
+
+        def self.reset
+          FileUtils.cd(ROOT)
+        end
+
+        def self.[] id
+          @@dirs[id] ||= WorkDir.new(id)
+        end
+
+        def initialize id, dir=ROOT
+          @id = id
+          @dir = dir
+        end
+
+        def delete
+          @@dirs.delete(@id)
+        end
+
+        def cd dir=nil
+          @dir = WorkDir.locations(dir).first if dir
+          FileUtils.cd(@dir)
+          update_bar
+        rescue => e
+          LOG.error(e)
+          update_bar(e)
+        end
+
+        def update_bar e=nil
+          @@bar.create unless @@bar.exist?
+          col = e ? 'error' : 'normal'
+          @@bar.write("#{CONFIG['display']['color'][col]} :#{e || self}")
+        end
+
+        def to_s
+          @dir.to_s.sub(/^#{ROOT}\//,"").sub(/^#{HOME}/, '~').gsub('.\\', "")
+        end
+      end
+
+
+      # XXX to avoid overriding event handlers, use code instead of yaml
+      event('FocusTag') do |tag|
+        WorkDir[tag].cd
+      end
+
+      event('DestoryTag') do |tag|
+        WorkDir[tag].delete
+      end
+
+control:
+  action:
+    change_tagdir: |
+      if dir = key_menu(WorkDir.values, "work dir:", :workdir)
+        WorkDir[curr_tag].cd(dir)
+      end
+
+    # overriding actions to work with tagdirs
+    launch_terminal: |
+      launch CONFIG['prefer']['terminal']
+    reload: |
+      WorkDir.reset
+      Wmiirc::Loader.reload
+      
