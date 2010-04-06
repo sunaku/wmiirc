@@ -14,12 +14,12 @@ module Wmiirc
   #   Instruction on what the user should enter or choose.
   #
   def key_menu choices, prompt = nil
-    words = ['dmenu', '-fn', CONFIG['display']['font']]
+    command = ['dmenu', '-fn', CONFIG['display']['font']]
 
     # show menu at the same location as the status bar
-    words << '-b' if CONFIG['display']['bar'] == 'bottom'
+    command << '-b' if CONFIG['display']['bar'] == 'bottom'
 
-    words.concat %w[-nf -nb -sf -sb].zip(
+    command.concat %w[-nf -nb -sf -sb].zip(
       [
         CONFIG['display']['color']['normal'],
         CONFIG['display']['color']['focus'],
@@ -28,10 +28,9 @@ module Wmiirc
 
     ).flatten
 
-    words.push '-p', prompt if prompt
+    command.push '-p', prompt if prompt
 
-    command = words.shelljoin
-    IO.popen(command, 'r+') do |menu|
+    IO.popen(command.shelljoin, 'r+') do |menu|
       menu.puts choices
       menu.close_write
 
@@ -60,23 +59,22 @@ module Wmiirc
   #   into a makeshift title-bar for the menu.
   #
   def click_menu choices, initial = nil
-    words = ['wmii9menu']
+    command = ['wmii9menu']
 
     if initial
-      words << '-i'
+      command << '-i'
 
       unless choices.include? initial
         initial = "<<#{initial}>>:"
-        words << initial
+        command << initial
       end
 
-      words << initial
+      command << initial
     end
 
-    words.concat choices
-    command = words.shelljoin
+    command.concat choices
 
-    choice = `#{command}`.chomp
+    choice = `#{command.shelljoin}`.chomp
     choice unless choice.empty?
   end
 
