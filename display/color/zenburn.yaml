@@ -6,7 +6,7 @@
 display:
   color:
     desktop:  "#333333"
-    focus:    "#ccdc90 #3f3f3f #4f4f4f"
+    focus:    "#f8f893 #385f38 #688060" # IncSearch + VertSplit
     normal:   "#dcdccc #1f1f1f #242424" # Normal (high contrast)
     error:    "#3f3f3f #cc9393 #242424"
     notice:   "#3f3f3f #e3ceab #242424" # Statement (reverse video)
