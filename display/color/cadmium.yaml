@@ -1,0 +1,9 @@
+# colors to match the xfce-cadmium gtk theme
+display:
+  color:
+    desktop:  "#eeeeef"
+    focus:    "#2A2A4A #CECEDE #5A5A8A"
+    normal:   "#3A3A6A #EEEEEF #DADAEA"
+    error:    "#EF0020 #FBD3E4 #FF0020"
+    notice:   "#514721 #FFF6BF #FFD324"
+    success:  "#264409 #E6EFE2 #B6D870"
