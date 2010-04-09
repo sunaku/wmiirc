@@ -105,7 +105,7 @@ module Wmiirc
         begin
 
           physical_path = Loader.find("#{virtual_path}.yaml")
-          config_partial = YAML.load_file(physical_path)
+          config_partial = YAML.load_file(physical_path).to_hash
           mark_origin config_partial, physical_path
 
           imports = Array(config_partial['import']) - already_imported
@@ -139,32 +139,33 @@ module Wmiirc
     end
 
     def merge dst_hash, src_hash, src_file, backtrace = []
-      src_hash.each_pair do |key, src_val|
-        next if src_val.nil?
+      src_hash.each do |key, src_val|
         backtrace.push key
 
         catch :merged do
           if dst_hash.key? key
             dst_val = dst_hash[key]
 
+            dst_file = @origin_by_value[dst_val]
+            section = backtrace.join(':')
+
+            if src_val.nil?
+              LOG.warn 'empty section %s in %s removes value %s from %s' %
+              [section, src_file, dst_val, dst_file].map(&:inspect)
+
+              dst_hash.delete key
+              throw :merged
+
             # merge the values
-            if dst_val.is_a? Hash and src_val.is_a? Hash
+            elsif dst_val.is_a? Hash and src_val.is_a? Hash
               merge dst_val, src_val, src_file, backtrace
               throw :merged
 
             elsif dst_val.is_a? Array
-              if src_val.is_a? Array
-                dst_val.concat src_val
-              else
-                dst_val.push src_val
-              end
-
+              dst_val.concat Array(src_val)
               throw :merged
 
             elsif dst_val != nil
-              dst_file = @origin_by_value[dst_val]
-              section = backtrace.join(':')
-
               LOG.warn 'value %s from %s overrides value %s from %s in section %s' %
               [src_val, src_file, dst_val, dst_file, section].map(&:inspect)
             end
