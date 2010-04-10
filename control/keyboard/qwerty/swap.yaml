@@ -1,5 +1,5 @@
 import:
-  - control/keyboard/include/swap
+  - control/keyboard/generic/swap
 control:
   keyboard:
     swap:    Mod1-r
