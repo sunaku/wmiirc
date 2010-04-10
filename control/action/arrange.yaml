@@ -1,0 +1,27 @@
+control:
+  action:
+
+    arrange_current_view_like_LarsWM: |
+      curr_view.arrange_as_larswm
+
+    arrange_current_view_in_grid: |
+      curr_view.arrange_in_grid
+
+    arrange_current_view_in_stacks_2: |
+      curr_view.arrange_in_stacks 2
+
+    arrange_current_view_in_diamond: |
+      curr_view.arrange_in_diamond
+
+    # apply grid layout with the pressed number of clients per column
+    arrange_current_view_in_grid_1: curr_view.arrange_in_grid 1
+    arrange_current_view_in_grid_2: curr_view.arrange_in_grid 2
+    arrange_current_view_in_grid_3: curr_view.arrange_in_grid 3
+    arrange_current_view_in_grid_4: curr_view.arrange_in_grid 4
+    arrange_current_view_in_grid_5: curr_view.arrange_in_grid 5
+    arrange_current_view_in_grid_6: curr_view.arrange_in_grid 6
+    arrange_current_view_in_grid_7: curr_view.arrange_in_grid 7
+    arrange_current_view_in_grid_8: curr_view.arrange_in_grid 8
+    arrange_current_view_in_grid_9: curr_view.arrange_in_grid 9
+    arrange_current_view_in_grid_0: curr_view.arrange_in_grid 9999 # all clients in one column
+

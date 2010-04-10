@@ -1,0 +1,80 @@
+script:
+  - before: |
+      # keep track of most recently focused view
+      $last_view = nil
+
+      class Rumai::View
+        alias __focus__ focus
+
+        def focus
+          $last_view = self.class.curr
+          __focus__
+        end
+      end
+
+control:
+  action:
+
+    focus_above_client: |
+      curr_view.select(:up) rescue nil
+
+    focus_below_client: |
+      curr_view.select(:down) rescue nil
+
+    focus_left_client: |
+      curr_view.select(:left) rescue nil
+
+    focus_right_client: |
+      curr_view.select(:right) rescue nil
+
+    focus_floating_area_toggle: |
+      curr_view.select(:toggle)
+
+    focus_previous_view: |
+      prev_view.focus
+
+    focus_next_view: |
+      next_view.focus
+
+    focus_most_recently_focused_view: |
+      $last_view.focus if $last_view
+
+    # focus the view whose index or name equals the pressed number
+    focus_view_1:  focus_view tags[0] || 1
+    focus_view_2:  focus_view tags[1] || 2
+    focus_view_3:  focus_view tags[2] || 3
+    focus_view_4:  focus_view tags[3] || 4
+    focus_view_5:  focus_view tags[4] || 5
+    focus_view_6:  focus_view tags[5] || 6
+    focus_view_7:  focus_view tags[6] || 7
+    focus_view_8:  focus_view tags[7] || 8
+    focus_view_9:  focus_view tags[8] || 9
+    focus_view_10: focus_view tags[9] || 10
+
+    # focus the view whose name begins with the pressed letter
+    focus_view_a: t = tags.grep(/^a/i).first and focus_view(t)
+    focus_view_b: t = tags.grep(/^b/i).first and focus_view(t)
+    focus_view_c: t = tags.grep(/^c/i).first and focus_view(t)
+    focus_view_d: t = tags.grep(/^d/i).first and focus_view(t)
+    focus_view_e: t = tags.grep(/^e/i).first and focus_view(t)
+    focus_view_f: t = tags.grep(/^f/i).first and focus_view(t)
+    focus_view_g: t = tags.grep(/^g/i).first and focus_view(t)
+    focus_view_h: t = tags.grep(/^h/i).first and focus_view(t)
+    focus_view_i: t = tags.grep(/^i/i).first and focus_view(t)
+    focus_view_j: t = tags.grep(/^j/i).first and focus_view(t)
+    focus_view_k: t = tags.grep(/^k/i).first and focus_view(t)
+    focus_view_l: t = tags.grep(/^l/i).first and focus_view(t)
+    focus_view_m: t = tags.grep(/^m/i).first and focus_view(t)
+    focus_view_n: t = tags.grep(/^n/i).first and focus_view(t)
+    focus_view_o: t = tags.grep(/^o/i).first and focus_view(t)
+    focus_view_p: t = tags.grep(/^p/i).first and focus_view(t)
+    focus_view_q: t = tags.grep(/^q/i).first and focus_view(t)
+    focus_view_r: t = tags.grep(/^r/i).first and focus_view(t)
+    focus_view_s: t = tags.grep(/^s/i).first and focus_view(t)
+    focus_view_t: t = tags.grep(/^t/i).first and focus_view(t)
+    focus_view_u: t = tags.grep(/^u/i).first and focus_view(t)
+    focus_view_v: t = tags.grep(/^v/i).first and focus_view(t)
+    focus_view_w: t = tags.grep(/^w/i).first and focus_view(t)
+    focus_view_x: t = tags.grep(/^x/i).first and focus_view(t)
+    focus_view_y: t = tags.grep(/^y/i).first and focus_view(t)
+    focus_view_z: t = tags.grep(/^z/i).first and focus_view(t)

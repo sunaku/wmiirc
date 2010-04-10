@@ -1,0 +1,50 @@
+control:
+  action:
+
+    move_grouping_up: |
+      grouping.each {|c| c.send(:up) rescue nil }
+
+    move_grouping_down: |
+      grouping.each {|c| c.send(:down) rescue nil }
+
+    move_grouping_left: |
+      grouping.each {|c| c.send(:left) rescue nil }
+
+    move_grouping_right: |
+      grouping.each {|c| c.send(:right) rescue nil }
+
+    float_grouping_toggle: |
+      grouping.each {|c| c.send(:toggle) rescue nil }
+
+    move_grouping_to_view_from_menu: |
+      #
+      # Changes the tag (according to a menu choice) of
+      # each grouped client and returns the chosen tag.
+      #
+      # The +tag -tag idea is from Jonas Pfenniger:
+      #
+      #   http://zimbatm.oree.ch/articles/2006/06/15/wmii-3-and-ruby
+      #
+      choices = tags.map {|t| [t, "+#{t}", "-#{t}"] }.flatten
+
+      if target = key_menu(choices, 'tag as:', :tag)
+        grouping.each do |c|
+          case target
+          when /^\+/ then c.tag $'
+          when /^\-/ then c.untag $'
+          else c.tags = target
+          end
+        end
+      end
+
+    # move grouping to the view whose index or name equals the pressed number
+    move_grouping_to_view_1:  grouping.each {|c| c.tags = tags[0] || 1  }
+    move_grouping_to_view_2:  grouping.each {|c| c.tags = tags[1] || 2  }
+    move_grouping_to_view_3:  grouping.each {|c| c.tags = tags[2] || 3  }
+    move_grouping_to_view_4:  grouping.each {|c| c.tags = tags[3] || 4  }
+    move_grouping_to_view_5:  grouping.each {|c| c.tags = tags[4] || 5  }
+    move_grouping_to_view_6:  grouping.each {|c| c.tags = tags[5] || 6  }
+    move_grouping_to_view_7:  grouping.each {|c| c.tags = tags[6] || 7  }
+    move_grouping_to_view_8:  grouping.each {|c| c.tags = tags[7] || 8  }
+    move_grouping_to_view_9:  grouping.each {|c| c.tags = tags[8] || 9  }
+    move_grouping_to_view_10: grouping.each {|c| c.tags = tags[9] || 10 }

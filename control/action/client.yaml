@@ -1,0 +1,8 @@
+control:
+  action:
+
+    client_fullscreen_toggle: |
+      curr_client.fullscreen!
+
+    kill_current_client: |
+      curr_client.kill

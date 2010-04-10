@@ -1,0 +1,20 @@
+script:
+  - before: |
+      DETACHED_TAG = '|'
+
+control:
+  action:
+
+    detach_grouping: |
+      grouping.each do |c|
+        c.tag DETACHED_TAG
+        c.untag curr_tag
+      end
+
+    attach_most_recently_detached_client: |
+      v = View.new(DETACHED_TAG)
+
+      if v.exist? and c = v.clients.last
+        c.tag curr_tag
+        c.untag DETACHED_TAG
+      end
