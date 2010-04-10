@@ -54,7 +54,7 @@ script:
 
           # buttons appear in ASCII order of their IXP file name
           # so prepend a number to get ordered status bar applets
-          file = "#{position}-#{name}"
+          file = (name.start_with? "!" )? name : "#{position}-#{name}"
           @button = StatusBarlet.new(file)
 
           @refresh = Thread.new do
