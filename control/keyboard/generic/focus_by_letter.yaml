@@ -1,0 +1,30 @@
+control:
+  keyboard_action:
+    # focus the view whose name begins with the pressed alphabet
+    ${view},a: focus_view_a
+    ${view},b: focus_view_b
+    ${view},c: focus_view_c
+    ${view},d: focus_view_d
+    ${view},e: focus_view_e
+    ${view},f: focus_view_f
+    ${view},g: focus_view_g
+    ${view},h: focus_view_h
+    ${view},i: focus_view_i
+    ${view},j: focus_view_j
+    ${view},k: focus_view_k
+    ${view},l: focus_view_l
+    ${view},m: focus_view_m
+    ${view},n: focus_view_n
+    ${view},o: focus_view_o
+    ${view},p: focus_view_p
+    ${view},q: focus_view_q
+    ${view},r: focus_view_r
+    ${view},s: focus_view_s
+    ${view},t: focus_view_t
+    ${view},u: focus_view_u
+    ${view},v: focus_view_v
+    ${view},w: focus_view_w
+    ${view},x: focus_view_x
+    ${view},y: focus_view_y
+    ${view},z: focus_view_z
+

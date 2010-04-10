@@ -1,0 +1,14 @@
+control:
+  keyboard_action:
+    # apply stacking layout with the pressed number of columns
+    ${layout},Shift-1: apply_stacked_layout_to_all_columns_1
+    ${layout},Shift-2: apply_stacked_layout_to_all_columns_2
+    ${layout},Shift-3: apply_stacked_layout_to_all_columns_3
+    ${layout},Shift-4: apply_stacked_layout_to_all_columns_4
+    ${layout},Shift-5: apply_stacked_layout_to_all_columns_5
+    ${layout},Shift-6: apply_stacked_layout_to_all_columns_6
+    ${layout},Shift-7: apply_stacked_layout_to_all_columns_7
+    ${layout},Shift-8: apply_stacked_layout_to_all_columns_8
+    ${layout},Shift-9: apply_stacked_layout_to_all_columns_9
+    ${layout},Shift-0: apply_stacked_layout_to_all_columns_0
+

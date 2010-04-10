@@ -1,0 +1,6 @@
+import:
+  - control/keyboard/include/swap
+control:
+  keyboard:
+    swap:    Mod4-w
+

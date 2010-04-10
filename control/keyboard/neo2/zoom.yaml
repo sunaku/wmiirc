@@ -1,0 +1,5 @@
+control:
+  keyboard_action:
+    ${mod}-b: copy_grouping_to_temporary_view
+    ${mod}-Shift-b: restore_grouping_from_temporary_view
+

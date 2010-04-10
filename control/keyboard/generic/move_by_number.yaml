@@ -1,0 +1,14 @@
+control:
+  keyboard_action:
+    # move grouping to the view whose index or name equals the pressed number
+    ${move}-1: move_grouping_to_view_1
+    ${move}-2: move_grouping_to_view_2
+    ${move}-3: move_grouping_to_view_3
+    ${move}-4: move_grouping_to_view_4
+    ${move}-5: move_grouping_to_view_5
+    ${move}-6: move_grouping_to_view_6
+    ${move}-7: move_grouping_to_view_7
+    ${move}-8: move_grouping_to_view_8
+    ${move}-9: move_grouping_to_view_9
+    ${move}-0: move_grouping_to_view_10
+

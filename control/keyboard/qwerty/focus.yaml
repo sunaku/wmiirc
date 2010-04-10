@@ -1,0 +1,10 @@
+import:
+  - control/keyboard/include/focus
+
+control:
+  keyboard:
+    view:    Mod1-Shift-v
+
+  keyboard_action:
+    ${mod}-s: focus_most_recently_focused_view
+

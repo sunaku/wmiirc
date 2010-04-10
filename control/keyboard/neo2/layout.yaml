@@ -1,0 +1,14 @@
+control:
+  keyboard:
+    layout:  Mod4-z
+
+  keyboard_action:
+    ${layout},w: apply_equal_spacing_layout_to_current_column
+    ${layout},Shift-w: apply_equal_spacing_layout_to_all_columns
+
+    ${layout},v: apply_stacked_layout_to_current_column
+    ${layout},Shift-v: apply_stacked_layout_to_all_columns
+
+    ${layout},m: apply_maximized_layout_to_current_column
+    ${layout},Shift-m: apply_maximized_layout_to_all_columns
+

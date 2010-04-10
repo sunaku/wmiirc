@@ -1,0 +1,14 @@
+control:
+  keyboard_action:
+    # apply grid layout with the pressed number of clients per column
+    ${arrange},1: arrange_current_view_in_grid_1
+    ${arrange},2: arrange_current_view_in_grid_2
+    ${arrange},3: arrange_current_view_in_grid_3
+    ${arrange},4: arrange_current_view_in_grid_4
+    ${arrange},5: arrange_current_view_in_grid_5
+    ${arrange},6: arrange_current_view_in_grid_6
+    ${arrange},7: arrange_current_view_in_grid_7
+    ${arrange},8: arrange_current_view_in_grid_8
+    ${arrange},9: arrange_current_view_in_grid_9
+    ${arrange},0: arrange_current_view_in_grid_0 # all clients in one column
+

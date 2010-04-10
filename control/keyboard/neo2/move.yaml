@@ -1,0 +1,11 @@
+import:
+  - control/keyboard/include/move
+control:
+  keyboard:
+    move:    Mod4-m
+
+  keyboard_action:
+    ${move},Delete: kill_all_clients_in_grouping
+
+    ${move},v: move_grouping_to_view_from_menu
+

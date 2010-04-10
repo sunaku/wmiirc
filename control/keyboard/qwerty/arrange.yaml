@@ -1,0 +1,10 @@
+control:
+  keyboard:
+    arrange: Mod1-Shift-z
+
+  keyboard_action:
+    ${arrange},t: arrange_current_view_like_LarsWM
+    ${arrange},g: arrange_current_view_in_grid
+    ${arrange},s: arrange_current_view_in_stacks_2
+    ${arrange},d: arrange_current_view_in_diamond
+

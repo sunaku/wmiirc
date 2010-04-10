@@ -1,0 +1,5 @@
+control:
+  keyboard_action:
+    ${mod}-d: detach_grouping
+    ${mod}-Shift-d: attach_most_recently_detached_client
+
