@@ -2,7 +2,7 @@ import:
   - display/status
 display:
   status:
-    spacer:
+    "!notice":
       label: ""
       mouse_action: 
         wheel_up: focus_next_view
