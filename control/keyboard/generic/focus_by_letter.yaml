@@ -1,6 +1,37 @@
+#
+# Focus the view whose name begins with the pressed letter (A-Z).
+#
 control:
+
+  action:
+    focus_view_a: t = tags.grep(/^a/i).first and focus_view(t)
+    focus_view_b: t = tags.grep(/^b/i).first and focus_view(t)
+    focus_view_c: t = tags.grep(/^c/i).first and focus_view(t)
+    focus_view_d: t = tags.grep(/^d/i).first and focus_view(t)
+    focus_view_e: t = tags.grep(/^e/i).first and focus_view(t)
+    focus_view_f: t = tags.grep(/^f/i).first and focus_view(t)
+    focus_view_g: t = tags.grep(/^g/i).first and focus_view(t)
+    focus_view_h: t = tags.grep(/^h/i).first and focus_view(t)
+    focus_view_i: t = tags.grep(/^i/i).first and focus_view(t)
+    focus_view_j: t = tags.grep(/^j/i).first and focus_view(t)
+    focus_view_k: t = tags.grep(/^k/i).first and focus_view(t)
+    focus_view_l: t = tags.grep(/^l/i).first and focus_view(t)
+    focus_view_m: t = tags.grep(/^m/i).first and focus_view(t)
+    focus_view_n: t = tags.grep(/^n/i).first and focus_view(t)
+    focus_view_o: t = tags.grep(/^o/i).first and focus_view(t)
+    focus_view_p: t = tags.grep(/^p/i).first and focus_view(t)
+    focus_view_q: t = tags.grep(/^q/i).first and focus_view(t)
+    focus_view_r: t = tags.grep(/^r/i).first and focus_view(t)
+    focus_view_s: t = tags.grep(/^s/i).first and focus_view(t)
+    focus_view_t: t = tags.grep(/^t/i).first and focus_view(t)
+    focus_view_u: t = tags.grep(/^u/i).first and focus_view(t)
+    focus_view_v: t = tags.grep(/^v/i).first and focus_view(t)
+    focus_view_w: t = tags.grep(/^w/i).first and focus_view(t)
+    focus_view_x: t = tags.grep(/^x/i).first and focus_view(t)
+    focus_view_y: t = tags.grep(/^y/i).first and focus_view(t)
+    focus_view_z: t = tags.grep(/^z/i).first and focus_view(t)
+
   keyboard_action:
-    # focus the view whose name begins with the pressed alphabet
     ${view},a: focus_view_a
     ${view},b: focus_view_b
     ${view},c: focus_view_c

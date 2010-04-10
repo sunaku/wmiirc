@@ -1,6 +1,21 @@
+#
+# Focus the view whose index or name equals the pressed number.
+#
 control:
+
+  action:
+    focus_view_1:  focus_view tags[0] || 1
+    focus_view_2:  focus_view tags[1] || 2
+    focus_view_3:  focus_view tags[2] || 3
+    focus_view_4:  focus_view tags[3] || 4
+    focus_view_5:  focus_view tags[4] || 5
+    focus_view_6:  focus_view tags[5] || 6
+    focus_view_7:  focus_view tags[6] || 7
+    focus_view_8:  focus_view tags[7] || 8
+    focus_view_9:  focus_view tags[8] || 9
+    focus_view_10: focus_view tags[9] || 10
+
   keyboard_action:
-    # focus the view whose index or name equals the pressed number
     ${mod}-1: focus_view_1
     ${mod}-2: focus_view_2
     ${mod}-3: focus_view_3

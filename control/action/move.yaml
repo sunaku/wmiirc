@@ -36,15 +36,3 @@ control:
           end
         end
       end
-
-    # move grouping to the view whose index or name equals the pressed number
-    move_grouping_to_view_1:  grouping.each {|c| c.tags = tags[0] || 1  }
-    move_grouping_to_view_2:  grouping.each {|c| c.tags = tags[1] || 2  }
-    move_grouping_to_view_3:  grouping.each {|c| c.tags = tags[2] || 3  }
-    move_grouping_to_view_4:  grouping.each {|c| c.tags = tags[3] || 4  }
-    move_grouping_to_view_5:  grouping.each {|c| c.tags = tags[4] || 5  }
-    move_grouping_to_view_6:  grouping.each {|c| c.tags = tags[5] || 6  }
-    move_grouping_to_view_7:  grouping.each {|c| c.tags = tags[6] || 7  }
-    move_grouping_to_view_8:  grouping.each {|c| c.tags = tags[7] || 8  }
-    move_grouping_to_view_9:  grouping.each {|c| c.tags = tags[8] || 9  }
-    move_grouping_to_view_10: grouping.each {|c| c.tags = tags[9] || 10 }
