@@ -13,4 +13,3 @@ control:
   action:
     show_calendar:
       dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '*' * s.length }
-

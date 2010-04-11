@@ -11,7 +11,7 @@ script:
         @@dirs = Hash.new
 
         def self.locations dir
-          LOCATIONS.map do |base| 
+          LOCATIONS.map do |base|
             d = File.absolute_path(File.expand_path(File.join(base,dir)))
             d if File.directory?(d)
           end.compact << dir
@@ -81,4 +81,3 @@ control:
     reload: |
       WorkDir.reset
       Wmiirc::Loader.reload
-      

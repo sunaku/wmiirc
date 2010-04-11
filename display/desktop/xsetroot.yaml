@@ -1,4 +1,3 @@
 script:
   - after: |
       launch 'xsetroot', '-solid', CONFIG['display']['color']['desktop']
-

@@ -109,4 +109,3 @@ script:
       CONFIG['display']['status'].each_with_index do |(name, definition), position|
         Status.new name, definition, position
       end
-

@@ -1,4 +1,3 @@
 script:
   - after: |
       system 'test -f ~/.fehbg && sh ~/.fehbg'
-

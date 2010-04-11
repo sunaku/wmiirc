@@ -39,4 +39,3 @@ control:
 
     launch_editor: |
       launch CONFIG['prefer']['editor']
-

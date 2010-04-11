@@ -50,8 +50,8 @@ display:
 
         def color
           case state
-            when "charged" then CONFIG['display']['color']['normal'] 
-            when "charging" then CONFIG['display']['color']['focus'] 
+            when "charged" then CONFIG['display']['color']['normal']
+            when "charging" then CONFIG['display']['color']['focus']
             when "discharging" then case level
                 when :critical then CONFIG['display']['color']['error']
                 when :low then CONFIG['display']['color']['notice']

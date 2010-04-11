@@ -60,4 +60,3 @@ control:
           clients.first.focus v
         end
       end
-

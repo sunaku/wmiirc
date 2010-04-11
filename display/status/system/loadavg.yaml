@@ -31,4 +31,3 @@ control:
   action:
     show_loadavg_stats: |
       dialog `ps ux --sort=-pcpu,-vsz || ps ux`
-

@@ -22,4 +22,3 @@ control:
   action:
     show_df_stats: |
       dialog Status['df'].usage(nil)
-

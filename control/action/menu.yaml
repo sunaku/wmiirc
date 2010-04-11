@@ -27,4 +27,3 @@ control:
       if client = client_menu('invite client:')
         client.tag curr_tag
       end
-
