@@ -5,10 +5,9 @@ display:
   status:
     acpi:
       battery: BAT1   # can be overwritten in config.yaml
-      refresh: 15
 
       script: |
-        BAT = @definition['battery']
+        BAT = battery
         LEVELS = {:high => 80, :low => 10, :critical => 5}
         MESSAGES = {:low => "Battery LOW", :critical => "Battery CRITICAL"}
         @last_message = :high # no message
@@ -69,6 +68,8 @@ display:
           @last_message = current
           return xmessage
         end
+
+      refresh: 15
 
       label: |
         read

@@ -101,6 +101,19 @@ script:
             end
           end
         end
+
+        ##
+        # Provides method-call access to parameters in
+        # the YAML definition of this status bar applet.
+        #
+        def method_missing method_name
+          param_name = method_name.to_s
+          if @definition.key? param_name
+            @definition[param_name]
+          else
+            super
+          end
+        end
       end
 
       # populate the status bar
