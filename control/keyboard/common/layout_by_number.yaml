@@ -26,4 +26,3 @@ control:
     ${layout},Shift-8: apply_stacked_layout_to_all_columns_8
     ${layout},Shift-9: apply_stacked_layout_to_all_columns_9
     ${layout},Shift-0: apply_stacked_layout_to_all_columns_0
-

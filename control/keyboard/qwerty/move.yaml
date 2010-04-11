@@ -1,11 +1,8 @@
 import:
-  - control/keyboard/generic/move
-control:
-  keyboard:
-    move:    Mod1-Shift
+  - control/keyboard/common/move
 
+control:
   keyboard_action:
     ${move}-Delete: kill_all_clients_in_grouping
 
     ${move}-t: move_grouping_to_view_from_menu
-

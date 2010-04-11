@@ -1,14 +1,19 @@
 import:
-  - control/action
+  - control/keyboard/common
 
 control:
   keyboard:
-    grabmod: Mod1
 
     ##
     # Shortcut prefixes.
     #
     mod:     Mod1-Control
+    view:    Mod1-Control-v
+    move:    Mod1-Control-m
+    swap:    Mod1-Control-w
+    group:   Mod1-Control-g
+    layout:  Mod1-Control-z
+    arrange: Mod1-Control-z
 
     ##
     # Direction keys.
@@ -23,33 +28,3 @@ control:
     #
     prev: comma
     next: period
-
-    floating: space
-
-  keyboard_action:
-
-    #-------------------------------------------------------------------------
-    # client
-    #-------------------------------------------------------------------------
-
-    ${mod}-f: client_fullscreen_toggle
-    ${mod}-Shift-c: kill_current_client
-
-    #-------------------------------------------------------------------------
-    # menu
-    #-------------------------------------------------------------------------
-
-    ${mod}-i: run_action_from_menu
-    ${mod}-e: run_program_from_menu
-    ${mod}-u: focus_view_from_menu
-    ${mod}-a: focus_client_from_menu
-
-    #-------------------------------------------------------------------------
-    # launch
-    #-------------------------------------------------------------------------
-
-    ${mod}-x: launch_terminal
-    ${mod}-k: launch_browser
-    ${mod}-j: launch_filer
-    ${mod}-q: launch_editor
-

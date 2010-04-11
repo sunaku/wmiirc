@@ -26,4 +26,3 @@ control:
     ${swap},8: swap_client_in_column_8
     ${swap},9: swap_client_in_column_9
     ${swap},0: swap_client_in_column_10
-

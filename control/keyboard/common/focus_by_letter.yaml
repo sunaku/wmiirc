@@ -58,4 +58,3 @@ control:
     ${view},x: focus_view_x
     ${view},y: focus_view_y
     ${view},z: focus_view_z
-

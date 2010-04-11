@@ -26,4 +26,3 @@ control:
     ${mod}-8: focus_view_8
     ${mod}-9: focus_view_9
     ${mod}-0: focus_view_10
-

@@ -1,0 +1,9 @@
+import:
+  - control/keyboard/common/launch
+
+control:
+  keyboard_action:
+    ${mod}-x: launch_terminal
+    ${mod}-k: launch_browser
+    ${mod}-j: launch_filer
+    ${mod}-q: launch_editor

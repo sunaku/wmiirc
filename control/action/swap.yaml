@@ -1,5 +1,6 @@
 control:
   action:
+
     swap_above_client: |
       curr_client.swap(:up) rescue nil
 

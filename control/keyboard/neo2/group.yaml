@@ -1,7 +1,7 @@
-control:
-  keyboard:
-    group:   Mod4-g
+import:
+  - control/keyboard/common/group
 
+control:
   keyboard_action:
     ${group},g: toggle_current_client_from_grouping
 
@@ -21,4 +21,3 @@ control:
     ${group},Shift-i: invert_grouping_in_all_views
 
     ${group},n: remove_all_clients_from_grouping
-

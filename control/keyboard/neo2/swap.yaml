@@ -1,6 +1,2 @@
 import:
-  - control/keyboard/generic/swap
-control:
-  keyboard:
-    swap:    Mod4-w
-
+  - control/keyboard/common/swap

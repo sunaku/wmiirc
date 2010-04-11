@@ -1,0 +1,7 @@
+import:
+  - control/keyboard/common/client
+
+control:
+  keyboard:
+    ${mod}-f: client_fullscreen_toggle
+    ${mod}-Shift-c: kill_current_client
