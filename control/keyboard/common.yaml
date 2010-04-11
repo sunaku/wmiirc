@@ -10,31 +10,6 @@ control:
     grabmod: Mod1
 
     ##
-    # Shortcut prefixes.
-    #
-    mod:     Mod1
-    view:    Mod1
-    move:    Mod1
-    swap:    Mod1
-    group:   Mod1
-    layout:  Mod1
-    arrange: Mod1
-
-    ##
-    # Direction keys.
-    #
-    up:    Up
-    down:  Down
-    left:  Left
-    right: Right
-
-    ##
-    # Sequence keys.
-    #
-    prev: Left
-    next: Right
-
-    ##
     # Floating area.
     #
     floating: space
