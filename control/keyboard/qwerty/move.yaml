@@ -9,6 +9,5 @@ control:
     ${move}-${right}: move_grouping_right
     ${move}-${floating}: float_grouping_toggle
 
-    ${move}-Delete: kill_all_clients_in_grouping
     ${move}-t: move_grouping_to_view_from_menu
     ${move}-Delete: kill_all_clients_in_grouping

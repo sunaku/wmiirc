@@ -2,7 +2,7 @@ import:
   - control/keyboard/common/launch
 
 control:
-  keyboard:
+  keyboard_action:
     ${mod}-x: launch_terminal
     ${mod}-i: launch_browser
     ${mod}-m: launch_filer

@@ -1,5 +1,5 @@
 import:
-  - control/keyboard/common/launch
+  - control/keyboard/common/layout
 
 control:
   keyboard_action:
