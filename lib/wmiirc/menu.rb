@@ -92,8 +92,9 @@ module Wmiirc
   end
 
   ##
-  # Shows a key_menu() containing the given
-  # clients and returns the chosen client.
+  # Shows a key_menu() containing
+  # all currently available clients
+  # and returns the chosen client.
   #
   # If nothing was chosen, then nil is returned.
   #
@@ -102,19 +103,14 @@ module Wmiirc
   # [prompt]
   #   Instruction on what the user should enter or choose.
   #
-  # [clients]
-  #   List of clients to present as choices to the user.
-  #
-  #   If this parameter is not specified,
-  #   its default value will be a list of
-  #   all currently available clients.
-  #
-  def client_menu prompt = nil, clients = Rumai.clients
+  def client_menu prompt = nil, *history_args
+    clients = Rumai.clients
+
     choices = clients.map do |c|
-      "[#{c[:tags].read}] #{c[:label].read.downcase}"
+      "+#{c[:tags].read}: #{c[:label].read.downcase}"
     end
 
-    if index = index_menu(choices, prompt)
+    if index = index_menu(choices, prompt, *history_args)
       clients[index]
     end
   end
