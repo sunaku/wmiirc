@@ -43,7 +43,7 @@ display:
 
         def play_song_from_menu
           songs = `mpc playlist`.downcase.split("\n")
-          if index = index_menu(songs, 'play song:')
+          if index = index_menu(songs, 'play song:', :song)
             # MPD uses natural 1..N numbering
             system "mpc play #{index + 1}"
           end

@@ -19,7 +19,7 @@ module Wmiirc
   #   List of choices to display in the menu.
   #
   # [prompt]
-  #   Instructions on what the user should enter or choose.
+  #   Instruction on what the user should enter or choose.
   #
   # [history_name]
   #   Basename of the file in which the user's
@@ -120,8 +120,9 @@ module Wmiirc
   end
 
   ##
-  # Shows a key_menu() containing the given choices (automatically
-  # prefixed with indices) and returns the index of the chosen item.
+  # Shows a key_menu() containing
+  # the given choices and returns
+  # the index of the chosen item.
   #
   # If nothing was chosen, then nil is returned.
   #
@@ -133,22 +134,9 @@ module Wmiirc
   # [choices]
   #   List of choices to present to the user.
   #
-  def index_menu choices, prompt = nil
-    indices = []
-    choices.each_with_index do |c, i|
-      # use natural 1..N numbering
-      indices << "#{i+1}. #{c}"
-    end
-
-    if target = key_menu(indices, prompt)
-      # use array 0..N-1 numbering
-      index = target[/^\d+/].to_i-1
-
-      # ignore out of bounds index
-      # (possibly entered by user)
-      if index >= 0 && index < choices.length
-        index
-      end
+  def index_menu choices, prompt = nil, *history_args
+    if target = key_menu(choices, prompt, *history_args)
+      choices.index target
     end
   end
 
