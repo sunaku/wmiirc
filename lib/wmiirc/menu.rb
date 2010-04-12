@@ -38,8 +38,8 @@ module Wmiirc
 
       # show history before actual choices
       if File.exist? history_file
-        history = File.read(history_file).chomp.split(/\n/)
-        choices = history.reverse.concat(choices).uniq
+        history = File.read(history_file).split(/\n/)
+        choices = ((history & choices).reverse + choices).uniq
       end
     end
 
