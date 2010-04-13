@@ -4,13 +4,11 @@ import:
 display:
   status:
     amixer:
-      refresh: 60
+      mixer: Master
 
       script: |
-        MIXER = 'Master'
-
         def get
-          `amixer get #{MIXER}`
+          `amixer get #{mixer}`
         end
 
         def level
@@ -18,7 +16,7 @@ display:
         end
 
         def set value
-          system "amixer set #{MIXER} #{value}"
+          system "amixer set #{mixer} #{value}"
           refresh
         end
 
@@ -54,6 +52,8 @@ display:
             set level
           end
         end
+
+      refresh: 60
 
       label: |
         color = CONFIG['display']['color']['notice'] if mute?
