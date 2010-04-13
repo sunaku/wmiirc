@@ -96,8 +96,8 @@ display:
       mouse_action:
         left_click: pause_current_song_toggle
         right_click: stop_playing_song
-        wheel_up: play_next_song
-        wheel_down: play_previous_song
+        wheel_up: play_previous_song
+        wheel_down: play_next_song
         wheel_click: play_song_from_menu
 
 control:
