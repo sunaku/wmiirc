@@ -6,8 +6,8 @@
 display:
   color:
     desktop:  "#333333"
-    focus:    "#f8f893 #385f38 #688060" # IncSearch + VertSplit
-    normal:   "#dcdccc #1f1f1f #242424" # Normal (high contrast)
-    error:    "#3f3f3f #cc9393 #242424"
-    notice:   "#3f3f3f #e3ceab #242424" # Statement (reverse video)
-    success:  "#2e3330 #88b090 #242424" # StatusLineNC (reverse video)
+    focus:    "#dcdccc #5b605e #4f4f4f" # Normal, NonText, CursorColumn
+    normal:   "#dcdccc #3f3f3f #434443" # Normal, Normal, CursorLine
+    error:    "#3f3f3f #cc9393 #434443" # String (reverse video)
+    notice:   "#3f3f3f #e3ceab #434443" # Statement (reverse video)
+    success:  "#2e3330 #88b090 #434443" # StatusLineNC (reverse video)
