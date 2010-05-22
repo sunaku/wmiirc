@@ -7,9 +7,5 @@ display:
       refresh: 15
       label: |
         status = `ifconfig #{device} 2>&1`.split("\n").first
-
-        if status =~ /error/
-          [CONFIG['display']['color']['error'], device]
-        else
-          device
-        end
+        color = status =~ /error/ ? 'error' : 'success'
+        [CONFIG['display']['color'][color], device]
