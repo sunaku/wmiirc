@@ -5,9 +5,9 @@
 #
 display:
   color:
-    desktop:  "#333333"
+    desktop:  "#333333" # VisualNOS
     focus:    "#dcdccc #5b605e #4f4f4f" # Normal, NonText, CursorColumn
     normal:   "#dcdccc #3f3f3f #434443" # Normal, Normal, CursorLine
-    error:    "#3f3f3f #cc9393 #434443" # String (reverse video)
-    notice:   "#3f3f3f #e3ceab #434443" # Statement (reverse video)
-    success:  "#2e3330 #88b090 #434443" # StatusLineNC (reverse video)
+    error:    "#262626 #cc9393 #434443" # LineNr, String, CursorLine
+    notice:   "#262626 #e3ceab #434443" # LineNr, Statement, CursorLine
+    success:  "#262626 #88b090 #434443" # LineNr, StatusLineNC, CursorLine
