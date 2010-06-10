@@ -1,0 +1,86 @@
+#--
+# Copyright protects this work.
+# See LICENSE file for details.
+#++
+
+import:
+    - display/status
+
+display:
+    status:
+        mixer:
+            refresh: 60
+
+            script: |
+                MIXER = 'vol'
+
+                def get
+                    `mixer #{MIXER}`.split.last(1)[0].split(":")[0]
+                end
+
+                def level
+                    get
+                end
+
+                def set value
+                    system "mixer #{MIXER} #{value}"
+                    refresh
+                end
+
+                alias level= set
+
+                def increase
+                    set '+3'
+                end
+
+                def decrease
+                    set '-3'
+                end
+
+                def mute!
+                    set 'toggle'
+                end
+
+                def mute?
+                    get.include? '[off]'
+                end
+
+                def menu
+                    current = self.level
+                    levels = (0 .. 10).map {|i| i * 10 }.
+                        push(current.to_i).sort.uniq.
+                        map {|i| "#{i}%" }.reverse
+
+                    if level = click_menu(levels, current)
+                        set level
+                    end
+                end
+
+            label: |
+                color = CONFIG['display']['color']['notice'] if mute?
+                [color, 'V:', level]
+
+            mouse_action:
+                left_click: set_volume_from_menu
+                right_click: mute_volume_toggle
+                wheel_up: increase_volume
+                wheel_down: decrease_volume
+
+control:
+    action:
+        set_volume_from_menu: |
+            Status['mixer'].menu
+
+        increase_volume: |
+            Status['mixer'].increase
+
+        decrease_volume: |
+            Status['mixer'].decrease
+
+        mute_volume_toggle: |
+            Status['mixer'].mute!
+
+    keyboard_action:
+        ${mod}-Shift-Prior: increase_volume
+        ${mod}-Shift-Next: decrease_volume
+        ${mod}-Shift-Return: mute_volume_toggle
