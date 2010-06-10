@@ -1,0 +1,31 @@
+
+import:
+  - display/status
+
+display:
+    status:
+      cpu:
+        refresh: 10
+
+        script: |
+            CPU_TEMP_FILE='/proc/acpi/thermal_zone/THRM/temperature'
+
+            def exist?
+                File.exist? CPU_TEMP_FILE
+            end
+
+        label: |
+            unless exist?
+                Thread.exit
+            end
+
+            temp,unit = File.read(CPU_TEMP_FILE).split.last(2)
+            [temp,unit]
+
+        mouse_action:
+            left_click: acpi_info
+            
+control:
+    action:
+        acpi_info: |
+            dialog `acpi -V`
