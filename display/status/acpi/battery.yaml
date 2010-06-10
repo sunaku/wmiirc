@@ -1,0 +1,72 @@
+
+import:
+  - display/status
+
+display:
+    status:
+      battery:
+        refresh: 10
+
+        script: |
+          LEVELS = {:high => 80, :low => 10, :critical => 5}
+          MESSAGES = {:low => "Battery LOW", :critical => "Battery CRITICAL"}
+          @last_message = :high # no message
+
+          def read
+            @bat_info = `acpiconf -i0`
+          end
+
+          def state
+            @bat_info[/State:\s*([a-z]+)/,1]
+          end
+
+          def percent
+            @bat_info[/Remaining capacity:\s*([0-9]+)/, 1].to_i
+          end
+
+          def level
+            case
+              when percent < LEVELS[:critical] then :critical
+              when percent < LEVELS[:low] then :low
+              when percent > LEVELS[:high] then :high
+            end
+          end
+
+          def color
+            case level
+              when :critical then CONFIG['display']['color']['error']
+              when :low then CONFIG['display']['color']['notice']
+              when :high then CONFIG['display']['color']['success']
+            end
+          end
+
+          def message
+            current = level || :high
+            if LEVELS[current] < LEVELS[@last_message]
+              xmessage = MESSAGES[current]
+            end
+            @last_message = current
+            return xmessage
+          end
+
+        label: |
+          
+          read
+          symbol = case state
+            when "charged" then "="
+            when "charging" then "^"
+            when "discharging" then "v"
+          end
+          xmessage = message
+          if xmessage
+            `xkbbell -force`
+            dialog xmessage
+          end
+          [color, symbol, percent.to_s+'%', symbol]
+
+        mouse_action:
+            left_click: acpi_info
+control:
+    action:
+        acpi_info: |
+            dialog `acpiconf -i0`
