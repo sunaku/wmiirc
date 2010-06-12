@@ -20,6 +20,8 @@ control:
       # work unless the whole process is killed.
       system 'killall firefox firefox-bin thunderbird thunderbird-bin'
       system 'killall chromium-browser'
+      # opera does not kill itself
+      system 'killall opera'
 
       # gnome-panel refuses to die by any other means
       system 'killall -s TERM gnome-panel'
