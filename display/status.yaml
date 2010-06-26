@@ -1,3 +1,6 @@
+import:
+  - display/barlet
+
 control:
   event:
     RightBarClick: |
@@ -6,6 +9,12 @@ control:
 
 script:
   - after: |
+      class StatusBarlet < Barlet
+        def initialize path
+          super path, :right
+        end
+      end
+
       class Status < Sandbox
         @@by_name = {}
         @@by_file = {}
@@ -46,7 +55,7 @@ script:
           # buttons appear in ASCII order of their IXP file name
           # so prepend a number to get ordered status bar applets
           file = "#{position}-#{name}"
-          @button = fs.rbar[file]
+          @button = StatusBarlet.new(file)
 
           @refresh = Thread.new do
             loop do
@@ -62,8 +71,8 @@ script:
                 button_label.unshift CONFIG['display']['color']['normal']
               end
 
-              @button.create unless @button.exist?
-              @button.write button_label.join(' ')
+              @button.colors = button_label.shift
+              @button.label = button_label.join(' ')
 
               sleep(*Array(definition['refresh']))
             end

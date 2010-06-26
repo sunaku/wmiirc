@@ -1,8 +1,16 @@
 import:
   - control/mouse
+  - display/barlet
 
 script:
   - after: |
+      class TagBarlet < Barlet
+        def initialize tag
+          super tag, :left
+          self.label = tag
+        end
+      end
+
       # create buttons for tags in /lbar
       fs.lbar.clear
       tags.each {|t| event 'CreateTag', t }
@@ -11,36 +19,23 @@ script:
 control:
   event:
     CreateTag: |
-      tag = argv[0]
-      button = fs.lbar[tag]
-      button.create unless button.exist?
-      button.write "#{CONFIG['display']['color']['normal']} #{tag}"
+      TagBarlet.new(argv[0])
 
     DestroyTag: |
-      tag = argv[0]
-      button = fs.lbar[tag]
-      button.remove if button.exist?
+      TagBarlet.new(argv[0]).remove
 
     FocusTag: |
-      tag = argv[0]
-      button = fs.lbar[tag]
-      button.write "#{CONFIG['display']['color']['focus']} #{tag}" if button.exist?
+      TagBarlet.new(argv[0]).colors = 'focus'
 
     UnfocusTag: |
-      tag = argv[0]
-      button = fs.lbar[tag]
-      button.write "#{CONFIG['display']['color']['normal']} #{tag}" if button.exist?
+      TagBarlet.new(argv[0]).colors = 'normal'
 
     UrgentTag: |
-      tag = argv[1]
-      button = fs.lbar[tag]
-      button.write "#{CONFIG['display']['color']['notice']} #{tag}" if button.exist?
+      TagBarlet.new(argv[0]).colors = 'notice'
 
     NotUrgentTag: |
       tag = argv[1]
-      button = fs.lbar[tag]
-      color = curr_view.id == tag ? 'focus' : 'normal'
-      button.write "#{CONFIG['display']['color'][color]} #{tag}" if button.exist?
+      TagBarlet.new(tag).colors = (curr_view.id == tag) ? 'focus' : 'normal'
 
     LeftBarClick: &LeftBarClick |
       mouse_code, view_id = argv

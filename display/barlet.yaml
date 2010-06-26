@@ -1,0 +1,16 @@
+script:
+  - after: |
+      class Barlet < Rumai::Barlet
+        def initialize *args
+          super
+
+          unless exist?
+            create
+            self.colors = 'normal'
+          end
+        end
+
+        def colors= key
+          super CONFIG['display']['color'][key] || key
+        end
+      end
