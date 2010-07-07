@@ -30,7 +30,7 @@ module Wmiirc
   #
   def key_menu choices, prompt = nil, history_name = nil, history_size = 200
     command = ['wimenu']
-    command.push '-p', prompt if prompt
+    command.push '-p', prompt.to_s if prompt
 
     if history_name
       history_file = File.join(HISTORY_DIR, history_name)
