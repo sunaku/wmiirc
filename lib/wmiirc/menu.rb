@@ -33,7 +33,7 @@ module Wmiirc
     command.push '-p', prompt.to_s if prompt
 
     if history_name
-      history_file = File.join(HISTORY_DIR, history_name)
+      history_file = File.join(HISTORY_DIR, history_name.to_s)
       command.push '-h', history_file, '-n', history_size.to_s
 
       # show history before actual choices
