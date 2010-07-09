@@ -77,6 +77,15 @@ Upgrading:
   git checkout personal
   git rebase master
 
+Hacking:
+
+  * To use the development version of Rumai directly from its source code
+    repository (instead of the currently published gem version), do this:
+
+    cd ~/.wmii
+    git clone git://github.com/sunaku/rumai.git
+    sed '2a$:.unshift File.expand_path("../rumai/lib", __FILE__)' -i wmiirc
+
 Contributing:
 
   Fork this project on GitHub and send pull requests.
