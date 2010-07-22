@@ -1,3 +1,6 @@
+import:
+  - display/status
+
 display:
   notice: 5
 
@@ -18,11 +21,11 @@ script:
             # prevent messages from clobbering
             # each other before their time is up
             @mutex.synchronize do
-              button = Rumai.fs.rbar['!notice']
-              button.create unless button.exist?
+              button = StatusBarlet.new('!notice')
+              button.colors = 'notice'
 
               # display the message
-              button.write "#{CONFIG['display']['color']['notice']} #{message}"
+              button.label = message
               LOG.info message # also log it in case the user is not present
 
               # clear the notice
