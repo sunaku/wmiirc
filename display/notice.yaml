@@ -40,3 +40,14 @@ control:
   event:
     Notice: |
       Notice.display argv.join(' ')
+
+    Urgent: |
+      id, type = argv
+
+      message =
+        case type
+        when 'Client' then Client.new(id).label.read
+        else id
+        end
+
+      Notice.display "#{type} #{message}"
