@@ -31,7 +31,8 @@ control:
       TagBarlet.new(argv[0]).colors = 'normal'
 
     UrgentTag: |
-      TagBarlet.new(argv[0]).colors = 'notice'
+      tag = argv[1]
+      TagBarlet.new(tag).colors = 'notice'
 
     NotUrgentTag: |
       tag = argv[1]
