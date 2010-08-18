@@ -1,0 +1,26 @@
+control:
+  action:
+
+    grow_client_up: |
+      curr_client.grow(:up) rescue nil
+
+    grow_client_down: |
+      curr_client.grow(:down) rescue nil
+
+    grow_client_left: |
+      curr_client.grow(:left) rescue nil
+
+    grow_client_right: |
+      curr_client.grow(:right) rescue nil
+
+    shrink_client_up: |
+      curr_client.grow('up -1') rescue nil
+
+    shrink_client_down: |
+      curr_client.grow('down -1') rescue nil
+
+    shrink_client_left: |
+      curr_client.grow('left -1') rescue nil
+
+    shrink_client_right: |
+      curr_client.grow('right -1') rescue nil
