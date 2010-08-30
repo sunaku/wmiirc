@@ -14,6 +14,7 @@ control:
     group:   Mod1-g
     layout:  Mod1-z
     arrange: Mod1-Shift-z
+    resize: Mod1-Control
 
     ##
     # Direction keys.
