@@ -1,0 +1,65 @@
+import:
+  - display/desktop/xsetroot
+  - display/color/personal
+  - display/client
+  - display/tags
+  - display/notice
+  - display/status/music/rhythmbox
+  - display/status/system/loadavg
+  - display/status/power/acpi
+  - display/status/time
+  - display/status/volume/amixer
+  - control/mouse
+  - control/keyboard/personal
+  - control/keyboard/common/client
+  - control/keyboard/personal/focus
+  - control/keyboard/common/focus_by_number
+  - control/keyboard/personal/launch
+  - control/keyboard/personal/layout
+  - control/keyboard/personal/move
+  - control/keyboard/qwerty/menu
+
+prefer:
+  terminal: xterm
+  browser:  opera
+  editor:   vim
+  filer:    thunar
+
+
+display:
+
+  font: -*-liberation sans-medium-r-*-*-14-*-*-*-*-*-*-*
+
+  bar: bottom
+
+  column:
+    mode: stack
+    rule: |
+      /mail/ -> 75+25
+      /gimp/ -> 17+83+41
+      /.*/ -> 50+50
+
+  client:
+    - /\b(XMMS|xcalc)\b/                					: ~
+    - /\b(Gimp)\b/			                                : gimp
+    - /\b(Rhythmbox)\b/                                     : music
+
+  status:
+    acpi:
+      battery: BAT0
+      levels:
+        low:      25
+        critical: 15
+
+    time:
+      refresh: 30
+      label: Time.now.strftime('%a %d %b %I:%M')
+
+control:
+  action:
+    show_calendar:
+      launch *%w[xterm -e wyrd], :type => 'DIALOG'
+      
+
+#script:
+#  after: focus_view "1:main"

@@ -1,0 +1,33 @@
+import:
+  - control/keyboard/common
+
+control:
+  keyboard:
+
+    ##
+    # Shortcut prefixes.
+    #
+    mod:     Mod4
+    view:    Mod4-v
+    move:    Mod4-Shift
+    swap:    Mod4-w
+    group:   Mod4-g
+    layout:  Mod4
+    arrange: Mod4-z
+    resize:  Mod4-Control
+
+    ##
+    # Direction keys.
+    #
+    up:    k
+    down:  j
+    left:  h
+    right: l
+
+    ##
+    # Sequence keys.
+    #
+    prev: comma
+    next: period
+
+    floating: space

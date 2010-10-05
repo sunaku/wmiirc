@@ -1,0 +1,13 @@
+import:
+  - control/keyboard/common/layout
+
+control:
+  keyboard_action:
+    ${layout}-d: apply_equal_spacing_layout_to_current_column
+    ${layout}-Shift-d: apply_equal_spacing_layout_to_all_columns
+
+    ${layout}-s: apply_stacked_layout_to_current_column
+    ${layout}-Shift-s: apply_stacked_layout_to_all_columns
+
+    ${layout}-m: apply_maximized_layout_to_current_column
+    ${layout}-Shift-m: apply_maximized_layout_to_all_columns

@@ -1,0 +1,11 @@
+import:
+  - control/keyboard/common/move
+
+control:
+  keyboard_action:
+    ${move}-${up}: move_grouping_up
+    ${move}-${down}: move_grouping_down
+    ${move}-${left}: move_grouping_left
+    ${move}-${right}: move_grouping_right
+    ${move}-${floating}: float_grouping_toggle
+
