@@ -30,7 +30,7 @@ script:
 
               # clear the notice
               sleep [1, CONFIG['display']['notice'].to_i].max
-              button.remove
+              (Status['!notice']) ? Status['!notice'].refresh : button.remove
             end
           end
         end
