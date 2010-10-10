@@ -8,4 +8,5 @@ control:
     ${move}-${left}: move_grouping_left
     ${move}-${right}: move_grouping_right
     ${move}-${floating}: float_grouping_toggle
+    ${move}-t: move_grouping_to_view_from_menu
 
