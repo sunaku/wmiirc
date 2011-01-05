@@ -1,0 +1,5 @@
+control:
+  action:
+    launch_terminal_no_cd: |
+      launch CONFIG['prefer']['terminal']
+

@@ -1,7 +1,8 @@
 import:
   - control/keyboard/common/launch
+  - control/action/personal/launch
 
 control:
   keyboard_action:
-    ${mod}-Return: launch_terminal
+    ${mod}-Return: launch_terminal_no_cd
     ${mod}-e: launch_browser
