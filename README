@@ -51,13 +51,13 @@ Running:
 
   * Ensure that your ~/.xinitrc supports crash recovery:
 
-      xterm -e tail -f ~/.wmii/wmiirc.log &
+      xterm -e tail -F ~/.wmii/wmiirc.log &
 
       while true; do
-        wmii
-        xmessage 'Restart the Window Manager?' \
-                 -buttons 'Yes:1,No:0' -center \
-                 -default 'Yes' -timeout 30    \
+        ck-launch-session wmii
+        xmessage 'Do you really want to quit wmii?' \
+                 -buttons 'Yes:0,No:1' -center \
+                 -default 'No' -timeout 30 \
         && break
       done
 
