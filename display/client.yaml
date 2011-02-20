@@ -1,53 +1,8 @@
 import:
   - control/mouse
 
-script:
-  - after: |
-      class Rumai::Client
-        TAGS_BY_REGEXP = Array(CONFIG['display']['client']).map do |hash|
-          regexp, tags = hash.to_a.first
-
-          regexp = Wmiirc::SANDBOX.eval(regexp,
-            Wmiirc::CONFIG.origin(regexp, 'display:client'))
-
-          [regexp, tags]
-        end
-
-        ##
-        # Tags this client according to mapping specified in
-        # the "display:client" section of the configuration.
-        #
-        # If that is not possible, then this client
-        # is simply forced onto the current view.
-        #
-        def tag_by_regexp!
-          if label = (self.props.read rescue nil)
-            catch :done do
-              # try to map client to a view
-              TAGS_BY_REGEXP.each do |regexp, tags|
-                if label =~ regexp
-                  self.tags = tags
-                  throw :done
-                end
-              end
-
-              # force client onto current view
-              begin
-                self.tags = Rumai.curr_tag
-                focus
-              rescue
-                # ignore
-              end
-            end
-          end
-        end
-      end
-
 control:
   event:
-    CreateClient: |
-      Client.new(argv[0]).tag_by_regexp!
-
     ClientMouseDown: |
       client_id, mouse_code = argv
       mouse_event = Mouse[mouse_code]

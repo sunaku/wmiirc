@@ -81,12 +81,9 @@ display:
   column:
 
   ##
-  # Mapping of clients to views they must appear on.
+  # Settings for clients handled by wmii.
   #
-  #   - <client props regular expression> : <tags to apply>
-  #
-  # These mappings are processed in top-to-bottom order.
-  # Processing stops after the first matching mapping is applied.
+  #   rule: <the wmii "rules" setting>
   #
   client:
 

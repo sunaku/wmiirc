@@ -57,6 +57,7 @@ module Wmiirc
       begin
         Rumai.fs.ctl.write settings.map {|pair| pair.join(' ') }.join("\n")
         Rumai.fs.colrules.write self['display']['column']['rule']
+        Rumai.fs.rules.write self['display']['client']['rule']
       rescue Rumai::IXP::Error => error
         #
         # settings that are not supported in a particular wmii version
