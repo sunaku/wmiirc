@@ -14,7 +14,17 @@ control:
       # iterate in reverse order because
       # paths are usually at end of label
       label.split(' ').reverse_each do |s|
-        path = File.expand_path(s)
+        #
+        # If the currently focused client contains non-ASCII
+        # characters in its title, then File.expand_path() raises
+        # an EncodingError saying it cannot process the non-ASCII
+        # string.  Try forcing the title's native encoding.
+        #
+        path = begin
+          File.expand_path(s)
+        rescue EncodingError => e
+          File.expand_path(s.force_encoding(e.message[/\S+\z/]))
+        end
 
         if File.exist? path
           unless File.directory? path
