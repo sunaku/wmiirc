@@ -20,6 +20,7 @@ display:
         gem 'librmpd', '~> 0.1'
         require 'librmpd'
         @mpd = MPD.new
+        at_exit { @mpd.disconnect }
 
         def load_playlist_from_menu
           if list = key_menu(@mpd.playlists, 'load playlist:', :playlist)
