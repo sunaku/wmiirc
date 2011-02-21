@@ -14,26 +14,14 @@ control:
       @programs = find_programs(ENV['PATH'].squeeze(':').split(':'))
 
     clear: |
-      # kill all currently open clients
+      # these browsers' "restore session" feature does
+      # not work unless the whole process group is killed
+      system 'killall', 'opera',
+        'chromium', 'chromium-browser',
+        'firefox', 'firefox-bin',
+        'thunderbird', 'thunderbird-bin'
 
-      # firefox's restore session feature does not
-      # work unless the whole process is killed.
-      system 'killall firefox firefox-bin thunderbird thunderbird-bin'
-      system 'killall chromium-browser'
-      # opera does not kill itself
-      system 'killall opera'
-
-      # gnome-panel refuses to die by any other means
-      system 'killall -s TERM gnome-panel'
-
-      Thread.pass until clients.each do |c|
-        begin
-          c.focus # XXX: client must be on current view in order to be killed
-          c.kill
-        rescue
-          # ignore
-        end
-      end.empty?
+      clients.each {|c| c.kill rescue nil }
 
     kill: |
       # kill the window manager only; do not touch the clients!
