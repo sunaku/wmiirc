@@ -25,8 +25,7 @@ display:
         end
 
         def present?
-          bat_present = @bat_info[/present:\s*([a-z]+)/,1]
-          (bat_present == 'yes')
+          @bat_info =~ /present:\s*yes/
         end
 
         def state
@@ -34,9 +33,23 @@ display:
         end
 
         def percent
-          last_full_capacity = @bat_info[/last full capacity:\s*([0-9]+)/, 1]
-          remaining_capacity = @bat_state[/remaining capacity:\s*([0-9]+)/, 1]
-          ((remaining_capacity.to_f / last_full_capacity.to_f) * 100).to_i
+          (remaining_capacity.to_f / last_full_capacity.to_f) * 100
+        end
+
+        def hours_remaining
+          remaining_capacity.to_f / present_rate.to_f
+        end
+
+        def last_full_capacity
+          @bat_info[/last full capacity:\s*(\d+)/, 1]
+        end
+
+        def remaining_capacity
+          @bat_state[/remaining capacity:\s*(\d+)/, 1]
+        end
+
+        def present_rate
+          @bat_state[/present rate:\s*(\d+)/, 1]
         end
 
         def level
@@ -85,7 +98,8 @@ display:
             `xkbbell -force`
             dialog xmessage
           end
-          [color, symbol, [percent,99].min.to_s+'%', symbol]
+          label = sprintf('%0.1f%% %0.1fh', [percent, 99].min, hours_remaining)
+          [color, symbol, label, symbol]
         end
 
       mouse_action:
