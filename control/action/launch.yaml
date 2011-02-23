@@ -2,42 +2,53 @@ control:
   action:
 
     launch_terminal: |
-      #
       # Launch a new terminal and set its
       # working directory to be the same
-      # as the currently focused terminal.
-      #
-      work = ENV['HOME']
+      # as the currently focused client.
 
-      label = curr_client.label.read rescue ''
+      working_dir = ENV['HOME'] || Dir.pwd
 
-      # iterate in reverse order because
-      # paths are usually at end of label
-      label.split(' ').reverse_each do |s|
+      if label = curr_client.label.read rescue nil
         #
-        # If the currently focused client contains non-ASCII
-        # characters in its title, then File.expand_path() raises
-        # an EncodingError saying it cannot process the non-ASCII
-        # string.  Try forcing the title's native encoding.
+        # iterate in reverse order because
+        # paths are usually at end of label
         #
-        path = begin
-          File.expand_path(s)
-        rescue EncodingError => e
-          File.expand_path(s.force_encoding(e.message[/\S+\z/]))
-        end
-
-        if File.exist? path
-          unless File.directory? path
-            path = File.dirname(path)
+        label.split(/\s+/).reverse_each do |word|
+          #
+          # remove decorative boundaries that people
+          # like to add around paths in window titles
+          #
+          case word
+          when /^\((.+?)\)$/, /^\[(.+?)\]$/, /^\{(.+?)\}$/, /^<(.+?)>$/
+            word = $1
           end
 
-          work = path
-          break
+          path = begin
+            File.expand_path(word)
+          rescue EncodingError => e
+            #
+            # if the currently focused client contains
+            # non-ASCII characters in its title, then
+            # File.expand_path() raises an EncodingError,
+            # so try forcing the title's native encoding
+            # specified in the EncodingError's message
+            #
+            File.expand_path(word.force_encoding(e.message[/\S+$/]))
+          end
+
+          if File.exist? path
+            unless File.directory? path
+              path = File.dirname(path)
+            end
+
+            working_dir = path
+            break
+          end
         end
       end
 
       require 'fileutils'
-      FileUtils.cd work do
+      FileUtils.cd working_dir do
         launch CONFIG['prefer']['terminal']
       end
 
