@@ -90,31 +90,38 @@ display:
   ##
   # Status bar applets.
   #
-  #   <name of your status bar applet>:
+  #   <arbitrary number of levels ...>:
+  #     # you can nest your applet definition as deep as you like!
   #
-  #       instances:  <Array of hashes, each of which serve as
-  #                    a set of arguments for creating multiple
-  #                    instances of this status bar applet.>
+  #     <name of your status bar applet>:
   #
-  #       refresh:  <Number of seconds to wait before updating the
-  #                  label.  To disable automatic refreshing, give
-  #                  this parameter a `nil` value by omitting this
-  #                  parameter completely or by omitting its value.>
+  #         instances:  <Array of hashes, each of which serve as
+  #                      a set of arguments for creating multiple
+  #                      instances of this status bar applet.>
   #
-  #       script:   <Ruby code to evaluate in the Wmiirc::Status
-  #                  object that corresponds to this definition.>
+  #         refresh:  <Number of seconds to wait before updating the
+  #                    label.  To disable automatic refreshing, give
+  #                    this parameter a `nil` value by omitting this
+  #                    parameter completely or by omitting its value.>
   #
-  #       label:    <Ruby code whose result is displayed as the
-  #                  content.  This code is placed inside a
-  #                  label() method in the Wmiirc::Status object
-  #                  that corresponds to this definition.>
+  #         script:   <Ruby code to evaluate in the Wmiirc::Status
+  #                    object that corresponds to this definition.>
   #
-  #       mouse_action:
-  #         <mouse event>: <name of action>
+  #         label:    <Ruby code whose result is displayed as the
+  #                    content.  This code is placed inside a
+  #                    label() method in the Wmiirc::Status object
+  #                    that corresponds to this definition.>
+  #
+  #         mouse_action:
+  #           <mouse event>: <name of action>
   #
   # You can refresh a particular status bar applet in Ruby using:
   #
-  #   Status["name of your status bar applet"].refresh
+  #   Status["arbitrary levels ...:name of your status bar applet"].refresh
+  #
+  # The value passed in is a hierarchical path reflecting all the hash keys
+  # that lead from display:status (the root) down to your status bar applet.
+  # The path separator for this value is a single colon (:).
   #
   # The horizontal order in which these applets appear on the status
   # bar reflects the vertical order in which they are defined below.

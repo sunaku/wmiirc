@@ -125,10 +125,27 @@ script:
         end
       end
 
-      # populate the status bar
+      # find all status bar applet definitions, which can
+      # be nested deeply in the display:status namespace
+      applets = []
+
+      find_applets = lambda do |name, definition|
+        if definition.respond_to? :key? and definition.key? 'label'
+          applets << [name, definition]
+        elsif definition.respond_to? :each_value
+          definition.each do |child_name, child_definition|
+            child_path = [name, child_name].compact.join(':')
+            find_applets.call child_path, child_definition
+          end
+        end
+      end
+
+      find_applets.call nil, CONFIG['display']['status']
+
+      # populate the status bar with applet instances
       fs.rbar.clear
 
-      CONFIG['display']['status'].each_with_index do |(name, definition), position|
+      applets.each_with_index do |(name, definition), position|
         # TODO: recursive merge with override logging like Wmiirc::Config.merge()
         instances = Array(definition['instances']).map {|h| definition.merge h }
 
