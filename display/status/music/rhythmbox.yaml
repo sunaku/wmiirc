@@ -7,46 +7,47 @@ import:
 
 display:
   status:
-    rhythmbox:
-      refresh: 5
+    music:
+      rhythmbox:
+        refresh: 5
 
-      script: |
-        def pause!
-          system 'rhythmbox-client --no-start --play-pause'
-          refresh
-        end
+        script: |
+          def pause!
+            system 'rhythmbox-client --no-start --play-pause'
+            refresh
+          end
 
-        def stop
-          system 'rhythmbox-client --no-start --stop'
-          refresh
-        end
+          def stop
+            system 'rhythmbox-client --no-start --stop'
+            refresh
+          end
 
-        def next
-          system 'rhythmbox-client --no-start --next'
-          refresh
-        end
+          def next
+            system 'rhythmbox-client --no-start --next'
+            refresh
+          end
 
-        def prev
-          system 'rhythmbox-client --no-start --previous'
-          refresh
-        end
+          def prev
+            system 'rhythmbox-client --no-start --previous'
+            refresh
+          end
 
-      label: |
-        `rhythmbox-client --no-start --print-playing-format '(%ta) %at - %tt'`
+        label: |
+          `rhythmbox-client --no-start --print-playing-format '(%ta) %at - %tt'`
 
 control:
   action:
     stop_playing_song: |
-      Status['rhythmbox'].stop
+      Status['music:rhythmbox'].stop
 
     play_previous_song: |
-      Status['rhythmbox'].prev
+      Status['music:rhythmbox'].prev
 
     play_next_song: |
-      Status['rhythmbox'].next
+      Status['music:rhythmbox'].next
 
     pause_current_song_toggle: |
-      Status['rhythmbox'].pause!
+      Status['music:rhythmbox'].pause!
 
   keyboard_action:
     XF86AudioPlay: pause_current_song_toggle

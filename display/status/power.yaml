@@ -3,7 +3,7 @@ import:
 
 display:
   status:
-    acpi:
+    power:
       battery: BAT1   # can be overwritten in config.yaml
 
       script: |

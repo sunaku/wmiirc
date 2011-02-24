@@ -1,9 +1,9 @@
-
 import:
   - display/status
 
 display:
-    status:
+  status:
+    temperature:
       cpu:
         refresh: 30
 
@@ -39,8 +39,9 @@ display:
           [color, @temp.to_s+' C' ]
 
         mouse_action:
-            left_click: thermal_info
+          left_click: thermal_info
+
 control:
-    action:
-        thermal_info: |
-            dialog `sysctl hw.acpi.thermal`
+  action:
+    thermal_info: |
+      dialog `sysctl hw.acpi.thermal`

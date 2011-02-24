@@ -8,7 +8,7 @@ import:
 
 display:
   status:
-    loadavg:
+    load:
       refresh: 10
 
       label: |
@@ -30,4 +30,3 @@ control:
   action:
     show_loadavg_stats: |
       dialog `ps ux --sort=-pcpu,-vsz || ps ux`
-

@@ -3,7 +3,7 @@ import:
 
 display:
   status:
-    loadavg:
+    load:
       high: 0.75
       critical: 1.5
 

@@ -1,0 +1,29 @@
+import:
+  - display/status
+
+display:
+  status:
+    memory:
+      refresh: 10
+
+      script: |
+        def free_memory
+          `free -m | grep '\\-/+'`
+        end
+
+        def swapped
+          `free -m | grep 'Swap:'`
+        end
+
+      label: |
+        used,free = free_memory().split.last(2)
+        swapused,swapfree = swapped().split.last(2)
+        ['R:',used,'S:',swapused]
+
+      mouse_action:
+        left_click: show_memory_stats
+
+control:
+  action:
+    show_memory_stats: |
+      dialog `vmstat`

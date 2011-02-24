@@ -3,81 +3,82 @@ import:
 
 display:
   status:
-    amixer:
-      mixer: Master
+    volume:
+      amixer:
+        mixer: Master
 
-      script: |
-        def get
-          `amixer get #{mixer}`
-        end
-
-        def level
-          get[/\d+%/]
-        end
-
-        def set value
-          system "amixer set #{mixer} #{value}"
-          refresh
-        end
-
-        def increase
-          set '5%+'
-        end
-
-        def decrease
-          set '5%-'
-        end
-
-        def mute!
-          set 'toggle'
-          if mute?
-            @previous = level
-            set '0%'
-          else
-            set @previous || '80%'
+        script: |
+          def get
+            `amixer get #{mixer}`
           end
-        end
 
-        def mute?
-          get.include? '[off]'
-        end
-
-        def menu
-          current = self.level
-          levels = (0 .. 10).map {|i| i * 10 }.
-                   push(current.to_i).sort.uniq.
-                   map {|i| "#{i}%" }.reverse
-
-          if level = click_menu(levels, current)
-            set level
+          def level
+            get[/\d+%/]
           end
-        end
 
-      refresh: 60
+          def set value
+            system "amixer set #{mixer} #{value}"
+            refresh
+          end
 
-      label: |
-        color = CONFIG['display']['color']['notice'] if mute?
-        [color, 'volume', level]
+          def increase
+            set '5%+'
+          end
 
-      mouse_action:
-        left_click: set_volume_from_menu
-        right_click: mute_volume_toggle
-        wheel_up: increase_volume
-        wheel_down: decrease_volume
+          def decrease
+            set '5%-'
+          end
+
+          def mute!
+            set 'toggle'
+            if mute?
+              @previous = level
+              set '0%'
+            else
+              set @previous || '80%'
+            end
+          end
+
+          def mute?
+            get.include? '[off]'
+          end
+
+          def menu
+            current = self.level
+            levels = (0 .. 10).map {|i| i * 10 }.
+                     push(current.to_i).sort.uniq.
+                     map {|i| "#{i}%" }.reverse
+
+            if level = click_menu(levels, current)
+              set level
+            end
+          end
+
+        refresh: 60
+
+        label: |
+          color = CONFIG['display']['color']['notice'] if mute?
+          [color, 'volume', level]
+
+        mouse_action:
+          left_click: set_volume_from_menu
+          right_click: mute_volume_toggle
+          wheel_up: increase_volume
+          wheel_down: decrease_volume
 
 control:
   action:
     set_volume_from_menu: |
-      Status['amixer'].menu
+      Status['volume:amixer'].menu
 
     increase_volume: |
-      Status['amixer'].increase
+      Status['volume:amixer'].increase
 
     decrease_volume: |
-      Status['amixer'].decrease
+      Status['volume:amixer'].decrease
 
     mute_volume_toggle: |
-      Status['amixer'].mute!
+      Status['volume:amixer'].mute!
 
   keyboard_action:
     XF86AudioRaiseVolume: increase_volume

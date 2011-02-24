@@ -12,122 +12,123 @@ import:
 
 display:
   status:
-    mpd:
-      refresh: 5
+    music:
+      mpd:
+        refresh: 5
 
-      script: |
-        require 'rubygems'
-        gem 'librmpd', '~> 0.1'
-        require 'librmpd'
-        @mpd = MPD.new
-        at_exit { @mpd.disconnect }
+        script: |
+          require 'rubygems'
+          gem 'librmpd', '~> 0.1'
+          require 'librmpd'
+          @mpd = MPD.new
+          at_exit { @mpd.disconnect }
 
-        def load_playlist_from_menu
-          if list = key_menu(@mpd.playlists, 'load playlist:', :playlist)
-            @mpd.clear
-            @mpd.load list
-            @mpd.play
-          end
-        end
-
-        def add_current_song_to_playlist_from_menu
-          if list = key_menu(@mpd.playlists, 'add current song to playlist:', :playlist)
-            file = File.join(File.expand_path('~/.mpd/playlists'), list + '.m3u')
-
-            songs = File.readlines(file) rescue []
-            songs << @mpd.current_song.file
-            songs.uniq!
-
-            File.open(file, 'w') {|f| f.puts songs }
-          end
-        end
-
-        def play_song_from_menu
-          songs = `mpc playlist`.downcase.split("\n")
-          if index = index_menu(songs, 'play song:', :song)
-            # MPD uses natural 1..N numbering
-            system "mpc play #{index + 1}"
-          end
-          refresh
-        end
-
-        def pause!
-          if @mpd.stopped?
-            @mpd.play
-          else
-            @mpd.pause = !@mpd.paused?
-          end
-          refresh
-        end
-
-        def stop
-          @mpd.stop
-          refresh
-        end
-
-        def next
-          @mpd.next
-          refresh
-        end
-
-        def prev
-          @mpd.previous
-          refresh
-        end
-
-      label: |
-        unless @mpd.connected?
-          @mpd.connect
-          unless CONFIG['display']['status']['mpd']['password'].nil?
-            @mpd.password(CONFIG['display']['status']['mpd']['password'])
-          end
-        end
-
-        if song = @mpd.current_song
-          artist    = song.artist
-          title     = song.title || (f = song.file and File.basename(f))
-          song_name = [artist, title].compact.join(': ')
-        end
-
-        color =
-          if @mpd.stopped?
-            song_name = nil
-            nil
-          elsif @mpd.paused?
-            CONFIG['display']['color']['notice']
+          def load_playlist_from_menu
+            if list = key_menu(@mpd.playlists, 'load playlist:', :playlist)
+              @mpd.clear
+              @mpd.load list
+              @mpd.play
+            end
           end
 
-        [color, '(mpd)', song_name].compact
+          def add_current_song_to_playlist_from_menu
+            if list = key_menu(@mpd.playlists, 'add current song to playlist:', :playlist)
+              file = File.join(File.expand_path('~/.mpd/playlists'), list + '.m3u')
 
-      mouse_action:
-        left_click: pause_current_song_toggle
-        right_click: stop_playing_song
-        wheel_up: play_previous_song
-        wheel_down: play_next_song
-        wheel_click: play_song_from_menu
+              songs = File.readlines(file) rescue []
+              songs << @mpd.current_song.file
+              songs.uniq!
+
+              File.open(file, 'w') {|f| f.puts songs }
+            end
+          end
+
+          def play_song_from_menu
+            songs = `mpc playlist`.downcase.split("\n")
+            if index = index_menu(songs, 'play song:', :song)
+              # MPD uses natural 1..N numbering
+              system "mpc play #{index + 1}"
+            end
+            refresh
+          end
+
+          def pause!
+            if @mpd.stopped?
+              @mpd.play
+            else
+              @mpd.pause = !@mpd.paused?
+            end
+            refresh
+          end
+
+          def stop
+            @mpd.stop
+            refresh
+          end
+
+          def next
+            @mpd.next
+            refresh
+          end
+
+          def prev
+            @mpd.previous
+            refresh
+          end
+
+        label: |
+          unless @mpd.connected?
+            @mpd.connect
+            if password = @definition['password']
+              @mpd.password password
+            end
+          end
+
+          if song = @mpd.current_song
+            artist    = song.artist
+            title     = song.title || (f = song.file and File.basename(f))
+            song_name = [artist, title].compact.join(': ')
+          end
+
+          color =
+            if @mpd.stopped?
+              song_name = nil
+              nil
+            elsif @mpd.paused?
+              CONFIG['display']['color']['notice']
+            end
+
+          [color, '(mpd)', song_name].compact
+
+        mouse_action:
+          left_click: pause_current_song_toggle
+          right_click: stop_playing_song
+          wheel_up: play_previous_song
+          wheel_down: play_next_song
+          wheel_click: play_song_from_menu
 
 control:
   action:
     stop_playing_song: |
-      Status['mpd'].stop
+      Status['music:mpd'].stop
 
     play_previous_song: |
-      Status['mpd'].prev
+      Status['music:mpd'].prev
 
     play_next_song: |
-      Status['mpd'].next
+      Status['music:mpd'].next
 
     pause_current_song_toggle: |
-      Status['mpd'].pause!
+      Status['music:mpd'].pause!
 
     play_song_from_menu: |
-      Status['mpd'].play_song_from_menu
+      Status['music:mpd'].play_song_from_menu
 
     load_playlist_from_menu: |
-      Status['mpd'].load_playlist_from_menu
+      Status['music:mpd'].load_playlist_from_menu
 
     add_current_song_to_playlist_from_menu: |
-      Status['mpd'].add_current_song_to_playlist_from_menu
+      Status['music:mpd'].add_current_song_to_playlist_from_menu
 
   keyboard_action:
     XF86AudioPlay: pause_current_song_toggle
