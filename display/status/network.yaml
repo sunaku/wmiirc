@@ -1,0 +1,9 @@
+display:
+  status:
+    network:
+      interface: eth0
+      refresh: 15
+      label: |
+        status = `ifconfig #{interface} 2>&1`.split("\n").first
+        color = status =~ /error/ ? 'error' : 'success'
+        [CONFIG['display']['color'][color], interface]
