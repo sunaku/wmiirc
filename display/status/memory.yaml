@@ -7,18 +7,29 @@ display:
       refresh: 10
 
       script: |
-        def free_memory
-          `free -m | grep '\\-/+'`
-        end
+        def sample!
+          case ::Config::CONFIG['host_os']
+          when /linux/
 
-        def swapped
-          `free -m | grep 'Swap:'`
+            reading = `free -m`
+            @used, @free = reading[/cache:(.+)/, 1].split
+            @swap = reading[/Swap:(.+)/, 1].split[1]
+
+          when /bsd/
+
+            reading = `vmstat -h`.split("\n")[2].split
+            @swap = reading[2]
+            @used = reading[3]
+            @free = reading[4]
+
+          else
+            raise NotImplementedError, 'OS not supported'
+          end
         end
 
       label: |
-        used,free = free_memory().split.last(2)
-        swapused,swapfree = swapped().split.last(2)
-        ['R:',used,'S:',swapused]
+        sample!
+        ['R:', @used, 'F:', @free, 'S:', @swap]
 
       mouse_action:
         left_click: show_memory_stats
