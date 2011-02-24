@@ -129,5 +129,14 @@ script:
       fs.rbar.clear
 
       CONFIG['display']['status'].each_with_index do |(name, definition), position|
-        Status.new name, definition, position
+        # TODO: recursive merge with override logging like Wmiirc::Config.merge()
+        instances = Array(definition['instances']).map {|h| definition.merge h }
+
+        # user did not specify any instances, so treat the status
+        # bar applet definition as an implicit singleton instance
+        instances << definition if instances.empty?
+
+        instances.each_with_index do |instance, offset|
+          Status.new name, instance, "#{position}-#{offset}"
+        end
       end

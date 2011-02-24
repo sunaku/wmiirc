@@ -92,6 +92,10 @@ display:
   #
   #   <name of your status bar applet>:
   #
+  #       instances:  <Array of hashes, each of which serve as
+  #                    a set of arguments for creating multiple
+  #                    instances of this status bar applet.>
+  #
   #       refresh:  <Number of seconds to wait before updating the
   #                  label.  To disable automatic refreshing, give
   #                  this parameter a `nil` value by omitting this
