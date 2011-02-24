@@ -3,7 +3,19 @@ display:
     network:
       interface: # define this in your config.yaml
       refresh: 30
+      script: |
+        def sample!
+          reading = `ifconfig #{interface} 2>&1`
+          @alive = reading !~ /\A\S+ error/
+          @ip_addr = reading[/inet\d? addr:\s*(\S+)/, 1]
+          @rx_bytes, @tx_bytes = reading.scan(/\((\d+\S+ \w?b)\)/)
+        end
       label: |
-        status = `ifconfig #{interface} 2>&1`.split("\n").first
-        color = status =~ /error/ ? 'error' : 'success'
-        [CONFIG['display']['color'][color], interface]
+        sample!
+        color_key = @alive ? 'normal' : 'error'
+        [
+          CONFIG['display']['color'][color_key],
+          interface, @ip_addr,
+          'in', @rx_bytes,
+          'out', @tx_bytes
+        ]
