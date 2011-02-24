@@ -1,0 +1,124 @@
+import:
+  - display/status
+
+display:
+  status:
+    volume:
+      mixer: Master
+
+      script: |
+        case ::Config::CONFIG['host_os']
+        when /linux/
+
+          def get
+            `amixer get #{mixer}`
+          end
+
+          def level
+            get[/\d+%/]
+          end
+
+          def set value
+            system "amixer set #{mixer} #{value}"
+            refresh
+          end
+
+          def increase
+            set '5%+'
+          end
+
+          def decrease
+            set '5%-'
+          end
+
+          def mute!
+            set 'toggle'
+            if mute?
+              @previous = level
+              set '0%'
+            else
+              set @previous || '80%'
+            end
+          end
+
+        when /bsd/
+
+          def get
+            `mixer #{mixer}`
+          end
+
+          def level
+            get.split.last(1)[0].split(":")[0]
+          end
+
+          def set value
+            system "mixer #{MIXER} #{value}"
+            refresh
+          end
+
+          def increase
+            set '+3'
+          end
+
+          def decrease
+            set '-3'
+          end
+
+          def mute!
+            set 'toggle'
+          end
+
+        else
+          raise NotImplementedError, 'OS not supported'
+        end
+
+        alias level= set
+
+        def mute?
+          get.include? '[off]'
+        end
+
+        def menu
+          current = self.level
+          levels = (0 .. 10).map {|i| i * 10 }.
+                   push(current.to_i).sort.uniq.
+                   map {|i| "#{i}%" }.reverse
+
+          if level = click_menu(levels, current)
+            set level
+          end
+        end
+
+      refresh: 60
+
+      label: |
+        color = CONFIG['display']['color']['notice'] if mute?
+        [color, 'volume', level]
+
+      mouse_action:
+        left_click: set_volume_from_menu
+        right_click: mute_volume_toggle
+        wheel_up: increase_volume
+        wheel_down: decrease_volume
+
+control:
+  action:
+    set_volume_from_menu: |
+      Status['volume'].menu
+
+    increase_volume: |
+      Status['volume'].increase
+
+    decrease_volume: |
+      Status['volume'].decrease
+
+    mute_volume_toggle: |
+      Status['volume'].mute!
+
+  keyboard_action:
+    XF86AudioRaiseVolume: increase_volume
+    XF86AudioLowerVolume: decrease_volume
+    XF86AudioMute: mute_volume_toggle
+    ${mod}-Shift-Prior: increase_volume
+    ${mod}-Shift-Next: decrease_volume
+    ${mod}-Shift-Return: mute_volume_toggle
