@@ -12,10 +12,13 @@ display:
         end
       label: |
         sample!
-        color_key = @alive ? 'normal' : 'error'
-        [
-          CONFIG['display']['color'][color_key],
-          interface, @ip_addr,
-          'in', @rx_bytes,
-          'out', @tx_bytes
-        ]
+
+        if @alive && @ip_addr
+          color = 'normal'
+          details = [@ip_addr, 'in', @rx_bytes, 'out', @tx_bytes]
+        else
+          color = 'error'
+          details = []
+        end
+
+        [CONFIG['display']['color'][color], interface, details]
