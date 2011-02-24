@@ -5,27 +5,55 @@ display:
   status:
     temperature:
       cpu:
-        refresh: 10
+        refresh: 30
+
+        # threshold values for visual indication
+        high: 45
+        critical: 65
 
         script: |
-          CPU_TEMP_FILE='/proc/acpi/thermal_zone/THRM/temperature'
+          case ::Config::CONFIG['host_os']
+          when /linux/
 
-          def exist?
-            File.exist? CPU_TEMP_FILE
+            def sample!
+              reading = File.read('/proc/acpi/thermal_zone/THRM/temperature')
+              @temp, @unit = reading.split.last(2)
+            end
+
+            def show_info
+              dialog `acpi -V`
+            end
+
+          when /bsd/
+
+            def sample!
+              reading = `sysctl hw.acpi.thermal.tz0.temperature`
+              @temp = [/.*:\s*(\d+\,\d+)/, 1].to_f
+              @unit = 'C'
+            end
+
+            def show_info
+              dialog `sysctl hw.acpi.thermal`
+            end
+
+          else
+            raise NotImplementedError, 'OS not supported'
           end
 
         label: |
-          unless exist?
-            Thread.exit
+          sample!
+
+          color_key = case
+            when @temp > critical then 'error'
+            when @temp > high then 'notice'
           end
 
-          temp,unit = File.read(CPU_TEMP_FILE).split.last(2)
-          [temp,unit]
+          [CONFIG['display']['color'][color_key], @temp, @unit]
 
         mouse_action:
-          left_click: acpi_info
+          left_click: temperature_info
 
 control:
   action:
-    acpi_info: |
-      dialog `acpi -V`
+    temperature_info: |
+      Status['temperature:cpu'].show_info
