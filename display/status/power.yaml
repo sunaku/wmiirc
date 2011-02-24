@@ -4,16 +4,15 @@ import:
 display:
   status:
     power:
-      battery: BAT1   # can be overwritten in config.yaml
+      battery: # define this in your config.yaml
 
       script: |
-        BAT = battery
         LEVELS = {:high => 80, :low => 10, :critical => 5}
         MESSAGES = {:low => "Battery LOW", :critical => "Battery CRITICAL"}
         @last_message = :high # no message
 
-        BAT_INFO_FILE = "/proc/acpi/battery/#{BAT}/info"
-        BAT_STATE_FILE = "/proc/acpi/battery/#{BAT}/state"
+        BAT_INFO_FILE = "/proc/acpi/battery/#{battery}/info"
+        BAT_STATE_FILE = "/proc/acpi/battery/#{battery}/state"
 
         def exist?
           File.exist? BAT_INFO_FILE and File.exist? BAT_STATE_FILE

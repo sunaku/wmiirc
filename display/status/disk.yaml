@@ -4,9 +4,9 @@ import:
 display:
   status:
     disk:
-      refresh: 600 # 10 minutes
+      mount: # define this in your config.yaml
 
-      mount: '~' # path where the disk you want to monitor is mounted
+      refresh: 600 # 10 minutes
 
       script: |
         def usage

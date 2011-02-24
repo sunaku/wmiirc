@@ -1,8 +1,8 @@
 display:
   status:
     network:
-      interface: eth0
-      refresh: 15
+      interface: # define this in your config.yaml
+      refresh: 30
       label: |
         status = `ifconfig #{interface} 2>&1`.split("\n").first
         color = status =~ /error/ ? 'error' : 'success'

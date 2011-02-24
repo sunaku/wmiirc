@@ -4,7 +4,7 @@ import:
 display:
   status:
     volume:
-      mixer: Master
+      mixer: # define this in your config.yaml
 
       script: |
         case ::Config::CONFIG['host_os']
