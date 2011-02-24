@@ -7,24 +7,26 @@ display:
       refresh: 10
 
       script: |
-        def sample!
-          case ::Config::CONFIG['host_os']
-          when /linux/
+        case ::Config::CONFIG['host_os']
+        when /linux/
 
+          def sample!
             reading = `free -m`
             @used, @free = reading[/cache:(.+)/, 1].split
             @swap = reading[/Swap:(.+)/, 1].split[1]
+          end
 
-          when /bsd/
+        when /bsd/
 
+          def sample!
             reading = `vmstat -h`.split("\n")[2].split
             @swap = reading[2]
             @used = reading[3]
             @free = reading[4]
-
-          else
-            raise NotImplementedError, 'OS not supported'
           end
+
+        else
+          raise NotImplementedError, 'OS not supported'
         end
 
       label: |

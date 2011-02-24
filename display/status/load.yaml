@@ -11,21 +11,23 @@ display:
       refresh: 10
 
       script: |
-        def sample!
-          case ::Config::CONFIG['host_os']
-          when /linux/
+        case ::Config::CONFIG['host_os']
+        when /linux/
 
+          def sample!
             @load_averages = File.read('/proc/loadavg').split.first(3)
             @current_load = @load_averages[0].to_f
+          end
 
-          when /bsd/
+        when /bsd/
 
+          def sample!
             @load_averages = `sysctl -h -n vm.loadavg`.split
             @current_load = @load_averages[1].to_f
-
-          else
-            raise NotImplementedError, 'OS not supported'
           end
+
+        else
+          raise NotImplementedError, 'OS not supported'
         end
 
       label: |
