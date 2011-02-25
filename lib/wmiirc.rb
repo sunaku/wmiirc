@@ -1,7 +1,7 @@
 require 'logger'
 
 require 'rubygems'
-gem 'rumai', '>= 3.3.0', '< 4'
+gem 'rumai', '~> 4'
 require 'rumai'
 
 module Wmiirc
