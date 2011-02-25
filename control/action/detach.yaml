@@ -14,7 +14,7 @@ control:
     attach_most_recently_detached_client: |
       v = View.new(DETACHED_TAG)
 
-      if v.exist? and c = v.clients.last
+      if v.exist? and c = v.clients.reject(&:stick?).last
         c.tag curr_tag
         c.untag DETACHED_TAG
       end
