@@ -15,7 +15,7 @@ display:
 
       label: |
         free, used, path = usage.split.last(3)
-        [path, used, 'used', free, 'free']
+        [path, "\u25D2", used, "\u25CC", free]
 
       mouse_action:
         left_click: show_df_stats

@@ -15,7 +15,7 @@ display:
 
         if @alive && @ip_addr
           color = 'normal'
-          details = [@ip_addr, 'in', @rx_bytes, 'out', @tx_bytes]
+          details = [@ip_addr, "\u25BC", @rx_bytes, "\u25B2", @tx_bytes]
         else
           color = 'error'
           details = []

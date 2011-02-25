@@ -31,7 +31,7 @@ display:
 
       label: |
         sample!
-        ['R:', @used, 'F:', @free, 'S:', @swap]
+        "mem \u25D2 #{@used}M \u25CC #{@free}M \u25D8 #{@swap}M"
 
       mouse_action:
         left_click: show_memory_stats

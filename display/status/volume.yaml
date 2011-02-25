@@ -93,7 +93,7 @@ display:
 
       label: |
         color = CONFIG['display']['color']['notice'] if mute?
-        [color, 'volume', level]
+        [color, "\u266A", level]
 
       mouse_action:
         left_click: set_volume_from_menu

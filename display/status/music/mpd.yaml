@@ -87,7 +87,7 @@ display:
           if song = @mpd.current_song
             artist    = song.artist
             title     = song.title || (f = song.file and File.basename(f))
-            song_name = [artist, title].compact.join(': ')
+            song_name = [artist, title].compact.join(" \u2013 ")
           end
 
           color =
@@ -98,7 +98,13 @@ display:
               CONFIG['display']['color']['notice']
             end
 
-          [color, '(mpd)', song_name].compact
+          status = case
+            when @mpd.playing? then "\u25B6"
+            when @mpd.paused? then "\u25EB"
+            else "\u25A0"
+          end
+
+          [color, status, song_name].compact
 
         mouse_action:
           left_click: pause_current_song_toggle
