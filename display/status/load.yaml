@@ -39,7 +39,7 @@ display:
           when @current_load > high then 'notice'
         end
 
-        [CONFIG['display']['color'][color_key], "\u25E2", *@load_averages]
+        [CONFIG['display']['color'][color_key], "\u25E2", @current_load]
 
       mouse_action:
         left_click: show_loadavg_stats
