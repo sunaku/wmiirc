@@ -1,14 +1,15 @@
 display:
   status:
     network:
+      ifconfig: /sbin/ifconfig
       interface: # define this in your config.yaml
       refresh: 30
       script: |
         def sample!
-          reading = `ifconfig #{interface} 2>&1`
+          reading = `#{ifconfig} #{interface} 2>&1`
           @alive = reading !~ /\A\S+ error/
-          @ip_addr = reading[/inet addr:\s*(\S+)/, 1]
-          @rx_bytes, @tx_bytes = reading.scan(/\((\d+\S+ \w?b)\)/)
+          @ip_addr = reading[/inet .+?:(\S+)/, 1]
+          @rx_bytes, @tx_bytes = reading.scan(/\((\d+(?:\.\d+)? \w+)\)/)
         end
       label: |
         sample!
