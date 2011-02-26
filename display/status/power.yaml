@@ -100,8 +100,11 @@ display:
             dialog xmessage
           end
 
-          levels = '%d%% %0.1fh' % [[percent, 100].min, hours_remaining]
-          [color, battery, status, levels]
+          [color, battery, status, sprintf(
+            "%d%% \u25CC %0.1fh",
+            [percent, 100].min,
+            hours_remaining
+          )]
         end
 
       mouse_action:
