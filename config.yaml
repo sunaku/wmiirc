@@ -28,7 +28,7 @@ prefer:
 
 display:
 
-  font: -*-liberation sans-medium-r-*-*-14-*-*-*-*-*-*-*
+  font: "xft:DejaVuSans:pixelsize=13"
 
   bar: bottom
 
