@@ -5,10 +5,10 @@ import:
   - display/tags
   - display/notice
   - display/status/music/rhythmbox
-  - display/status/system/loadavg
-  - display/status/power/acpi
+  - display/status/load
+  - display/status/power
   - display/status/time
-  - display/status/volume/amixer
+  - display/status/volume
   - control/mouse
   - control/keyboard/personal
   - control/keyboard/common/client
@@ -45,21 +45,36 @@ display:
     - /\b(Rhythmbox)\b/                                     : music
 
   status:
-    acpi:
+    power:
       battery: BAT0
-      levels:
-        low:      25
-        critical: 15
+      label: |
+        read
+
+        if present?
+          status = case state
+            when 'charged' then "\u25CF"
+            when 'charging' then "\u26A1"
+            when 'discharging' then "\u25D2"
+            else '?'
+          end
+
+          xmessage = message
+          if xmessage
+            `xkbbell -force`
+            dialog xmessage
+          end
+
+          levels = '%d%%' % [[percent, 100].min]
+          [color, status, levels]
+        end
+
+    volume:
+      mixer: Master
 
     time:
       refresh: 30
       label: Time.now.strftime('%a %d %b %I:%M')
 
-control:
-  action:
-    show_calendar:
-      launch *%w[xterm -e wyrd], :type => 'DIALOG'
-      
 
 #script:
 #  after: focus_view "1:main"
