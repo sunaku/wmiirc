@@ -87,7 +87,8 @@ display:
           if song = @mpd.current_song
             artist    = song.artist
             title     = song.title || (f = song.file and File.basename(f))
-            song_name = [artist, title].compact.join(" \u2013 ")
+            song_name = [artist, title].compact.
+              map {|s| s.force_encoding('UTF-8') }.join(" \u2013 ")
           end
 
           color =
