@@ -4,12 +4,13 @@ import:
 display:
   status:
     time:
+      format: %c
       refresh: 1
-      label: Time.now.strftime('%c')
+      label: Time.now.strftime(@definition['format'])
       mouse_action:
         left_click: show_calendar
 
 control:
   action:
     show_calendar:
-      dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '*' * s.length }
+      dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '-' * s.length }
