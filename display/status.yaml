@@ -1,12 +1,6 @@
 import:
   - display/barlet
 
-control:
-  event:
-    RightBarClick: |
-      clicked_button, clicked_file = argv
-      Status[clicked_file].mouse clicked_button
-
 script:
   - before: |
       class StatusBarlet < Barlet
@@ -16,30 +10,6 @@ script:
       end
 
       class Status < Sandbox
-        @@by_name = {}
-        @@by_file = {}
-
-        class << self
-          ##
-          # Returns the status bar applet that
-          # is associated with the given name.
-          #
-          # [name]
-          #   Either the the user-defined name of
-          #   the status bar applet or the basename
-          #   of the status bar applet's IXP file.
-          #
-          def [] name
-            @@by_name[name] || @@by_file[name]
-          end
-
-          def each &block
-            @@by_name.each_value(&block)
-          end
-
-          include Enumerable
-        end
-
         def initialize name, definition, position
           @definition = definition
 
@@ -54,7 +24,7 @@ script:
 
           # buttons appear in ASCII order of their IXP file name
           # so prepend a number to get ordered status bar applets
-          file = (name.start_with? "!" )? name : "#{position}-#{name}"
+          file = name =~ /^!/ ? name : "#{position}-#{name}"
           @button = StatusBarlet.new(file)
 
           colors_hash = CONFIG['display']['color']
@@ -123,11 +93,23 @@ script:
                 end
               end
             end
-          end
 
-          # register this instance
-          @@by_name[name] = self
-          @@by_file[file] = self
+            if mouse_actions = control['mouse_action']
+              Wmiirc.event 'RightBarClick' do |clicked_button, clicked_file|
+                if clicked_file == file
+                  if action = mouse_actions[Mouse[clicked_button]]
+                    if handler = @action_by_local_name[action]
+                      # the given action is local to this status bar applet
+                      handler.call
+                    else
+                      # the given action is global to the wmii configuration
+                      Wmiirc.action action
+                    end
+                  end
+                end
+              end
+            end
+          end
         end
 
         ##
@@ -135,35 +117,6 @@ script:
         #
         def refresh
           @refresh.wakeup if @refresh.alive?
-        end
-
-        ##
-        # Invokes the mouse action associated with the given mouse button.
-        #
-        # ==== Parameters
-        #
-        # [button]
-        #   Either the identification number of the
-        #   mouse button (as defined by X server) or
-        #   a named action corresponding to such as
-        #   identification number that was clicked.
-        #
-        def mouse button
-          if control = @definition['control']
-            if action_by_mouse = control['mouse_action']
-              mouse = Mouse[button]
-
-              if action = action_by_mouse[mouse]
-                if handler = @action_by_local_name[action]
-                  # the given action is local to this status bar applet
-                  handler.call
-                else
-                  # the given action is global to the wmii configuration
-                  Wmiirc.action action
-                end
-              end
-            end
-          end
         end
 
         ##

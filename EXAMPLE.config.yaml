@@ -123,14 +123,6 @@ display:
   #           keyboard_action:
   #             <key sequence>: <name of action>
   #
-  # You can refresh a particular status bar applet in Ruby using:
-  #
-  #   Status["arbitrary levels ...:name of your status bar applet"].refresh
-  #
-  # The value passed in is a hierarchical path reflecting all the hash keys
-  # that lead from display:status (the root) down to your status bar applet.
-  # The path separator for this value is a single colon (:).
-  #
   # The horizontal order in which these applets appear on the status
   # bar reflects the vertical order in which they are defined below.
   #
