@@ -4,13 +4,13 @@ import:
 display:
   status:
     disk:
-      mount: # define this in your config.yaml
-
       refresh: 600 # 10 minutes
+
+      @path:
 
       script: |
         def usage
-          `df -h #{mount} || df #{mount}`
+          `df -h #{@path} 2>/dev/null || df #{@path}`
         end
 
       label: |

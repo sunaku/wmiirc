@@ -4,18 +4,18 @@ import:
 display:
   status:
     volume:
-      mixer: # define this in your config.yaml
-
       refresh: 30
+
+      @mixer:
 
       script: |
         case ::Config::CONFIG['host_os']
         when /linux/
 
-          @mixer = @definition['mixer'] || 'Master'
+          @mixer ||= 'Master'
 
           def reading
-            `amixer get #{mixer}`
+            `amixer get #{@mixer}`
           end
 
           def level
@@ -23,7 +23,7 @@ display:
           end
 
           def level= value
-            system "amixer set #{mixer} #{value}"
+            system "amixer set #{@mixer} #{value}"
             refresh
           end
 
@@ -41,7 +41,7 @@ display:
 
         when /bsd/
 
-          @mixer = @definition['mixer'] || 'mixer'
+          @mixer ||= 'mixer'
 
           def reading
             `mixer #{@mixer}`

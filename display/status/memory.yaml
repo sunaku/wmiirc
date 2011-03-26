@@ -4,7 +4,7 @@ import:
 display:
   status:
     memory:
-      refresh: 10
+      refresh: 15
 
       script: |
         case ::Config::CONFIG['host_os']

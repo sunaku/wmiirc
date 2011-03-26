@@ -11,7 +11,13 @@ script:
 
       class Status < Sandbox
         def initialize name, definition, position
-          @definition = definition
+          # make parameters that begin with '@' in the definition hash
+          # available as instance variables for use by Ruby code therein
+          definition.each do |key, value|
+            if key.start_with? '@'
+              instance_variable_set key, value
+            end
+          end
 
           if code = definition['script']
             instance_eval code,
@@ -25,10 +31,10 @@ script:
           # buttons appear in ASCII order of their IXP file name
           # so prepend a number to get ordered status bar applets
           file = name =~ /^!/ ? name : "#{position}-#{name}"
-          @button = StatusBarlet.new(file)
+          button = StatusBarlet.new(file)
 
           colors_hash = CONFIG['display']['color']
-          @refresh = Thread.new do
+          label_refresh_thread = Thread.new do
             loop do
               button_label = begin
                 Array(self.label)
@@ -45,23 +51,30 @@ script:
                 button_label.unshift colors_hash['normal']
               end
 
-              @button.colors = button_label.shift
-              @button.label = button_label.join(' ')
+              button.colors = button_label.shift
+              button.label = button_label.join(' ')
 
               sleep(*Array(definition['refresh']))
             end
           end
 
+          (class << self; self; end).class_eval do
+            define_method :refresh do
+              label_refresh_thread.wakeup if label_refresh_thread.alive?
+            end
+          end
+
           # register action handlers
-          @action_by_local_name = {}
-          if control = @definition['control']
+          if control = definition['control']
+            action_by_local_name = {}
+
             if actions = control['action']
               actions.each do |action_name, code|
                 handler = instance_eval "lambda {#{code}}", CONFIG.origin(
                   code, "display:status:#{name}:control:action:#{action_name}"
                 )
 
-                @action_by_local_name[action_name] = handler
+                action_by_local_name[action_name] = handler
 
                 # first instance of this status bar applet gets the honor of
                 # registering its action handlers under the global namespace
@@ -72,7 +85,7 @@ script:
                 # the button path suffix makes this action name unique
                 # to this particular instance of the status bar applet
                 # when we register the handler in the global namespace
-                Wmiirc.action action_name + @button.path, &handler
+                Wmiirc.action action_name + button.path, &handler
               end
             end
 
@@ -98,7 +111,7 @@ script:
               Wmiirc.event 'RightBarClick' do |clicked_button, clicked_file|
                 if clicked_file == file
                   if action = mouse_actions[Mouse[clicked_button]]
-                    if handler = @action_by_local_name[action]
+                    if handler = action_by_local_name[action]
                       # the given action is local to this status bar applet
                       handler.call
                     else
@@ -109,26 +122,6 @@ script:
                 end
               end
             end
-          end
-        end
-
-        ##
-        # Updates the label of this applet.
-        #
-        def refresh
-          @refresh.wakeup if @refresh.alive?
-        end
-
-        ##
-        # Provides method-call access to parameters in
-        # the YAML definition of this status bar applet.
-        #
-        def method_missing method_name
-          param_name = method_name.to_s
-          if @definition.key? param_name
-            @definition[param_name]
-          else
-            super
           end
         end
       end

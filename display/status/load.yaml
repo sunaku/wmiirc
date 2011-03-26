@@ -4,11 +4,10 @@ import:
 display:
   status:
     load:
-      # threshold values for visual indication
-      critical: 1.5
-      high: 0.75
-
       refresh: 10
+
+      @critical: 1.5
+      @high: 0.75
 
       script: |
         case ::Config::CONFIG['host_os']
@@ -33,11 +32,10 @@ display:
       label: |
         sample!
 
-        # visually indicate the intensity of system load
         color = case
-          when @current_load > critical then 'error'
-          when @current_load > high then 'notice'
-        end
+                when @current_load > @critical then 'error'
+                when @current_load > @high     then 'notice'
+                end
 
         [color, "\u25E2", @current_load]
 

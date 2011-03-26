@@ -4,15 +4,19 @@ import:
 display:
   status:
     power:
-      battery: # define this in your config.yaml
+      refresh: 15
+
+      @battery: BAT0
+      @high: 80
+      @low: 5
 
       script: |
         LEVELS = {:high => 80, :low => 10, :critical => 5}
         MESSAGES = {:low => "Battery LOW", :critical => "Battery CRITICAL"}
         @last_message = :high # no message
 
-        BAT_INFO_FILE = "/proc/acpi/battery/#{battery}/info"
-        BAT_STATE_FILE = "/proc/acpi/battery/#{battery}/state"
+        BAT_INFO_FILE = "/proc/acpi/battery/#{@battery}/info"
+        BAT_STATE_FILE = "/proc/acpi/battery/#{@battery}/state"
 
         def exist?
           File.exist? BAT_INFO_FILE and File.exist? BAT_STATE_FILE
@@ -83,8 +87,6 @@ display:
           return xmessage
         end
 
-      refresh: 15
-
       label: |
         sample!
 
@@ -101,7 +103,7 @@ display:
             else '?'
           end
 
-          [color, battery, status, sprintf(
+          [color, @battery, status, sprintf(
             "%d%% \u25CC %0.1fH",
             [percent, 100].min,
             hours_remaining

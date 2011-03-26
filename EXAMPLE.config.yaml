@@ -95,6 +95,8 @@ display:
   #
   #     <name of your status bar applet>:
   #
+  #         @<parameter name>:  <parameter value>
+  #
   #         instances:  <Array of hashes, each of which serve as
   #                      a set of arguments for creating multiple
   #                      instances of this status bar applet.>
@@ -125,6 +127,9 @@ display:
   #
   # The horizontal order in which these applets appear on the status
   # bar reflects the vertical order in which they are defined below.
+  #
+  # Code evaluated inside a Wmiirc::Status object has access to a `refresh`
+  # method which triggers redrawing of the label of that status bar applet.
   #
   status:
 

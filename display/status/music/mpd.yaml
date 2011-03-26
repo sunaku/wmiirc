@@ -7,14 +7,14 @@ display:
       mpd:
         refresh: 5
 
+        @password:
+
         script: |
           gem 'librmpd', '>= 0.1'
           require 'librmpd'
 
           @mpd = MPD.new
-          if password = @definition['password']
-            @mpd.password password
-          end
+          @mpd.password @password if @password
           @mpd.connect
           at_exit { @mpd.disconnect }
 

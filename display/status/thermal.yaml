@@ -6,9 +6,8 @@ display:
     thermal:
       refresh: 30
 
-      # threshold values for visual indication
-      high: 45
-      critical: 65
+      @critical: 65
+      @high: 45
 
       script: |
         case ::Config::CONFIG['host_os']
@@ -43,9 +42,9 @@ display:
         sample!
 
         color = case
-          when @temp > critical then 'error'
-          when @temp > high then 'notice'
-        end
+                when @temp > @critical then 'error'
+                when @temp > @high     then 'notice'
+                end
 
         [color, @temp, @unit]
 
