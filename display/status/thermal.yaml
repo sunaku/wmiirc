@@ -49,10 +49,9 @@ display:
 
         [color, @temp, @unit]
 
-      mouse_action:
-        left_click: thermal_info
+      control:
+        action:
+          show_thermal_info: self.show_info
 
-control:
-  action:
-    thermal_info: |
-      Status['thermal'].show_info
+        mouse_action:
+          left_click: show_thermal_info

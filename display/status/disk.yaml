@@ -17,10 +17,9 @@ display:
         free, used, path = usage.split.last(3)
         [path, "\u25D2", used, "\u25CC", free]
 
-      mouse_action:
-        left_click: show_df_stats
+      control:
+        action:
+          show_disk_usage: dialog self.usage
 
-control:
-  action:
-    show_df_stats: |
-      dialog Status['disk'].usage
+        mouse_action:
+          left_click: show_disk_usage

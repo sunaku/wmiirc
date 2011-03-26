@@ -112,8 +112,16 @@ display:
   #                    label() method in the Wmiirc::Status object
   #                    that corresponds to this definition.>
   #
-  #         mouse_action:
-  #           <mouse event>: <name of action>
+  #         control:
+  #           action:
+  #             <action name>: <Ruby code to evaluate in the Wmiirc::Status
+  #                             object that corresponds to this definition.>
+  #
+  #           mouse_action:
+  #             <mouse event>: <name of action>
+  #
+  #           keyboard_action:
+  #             <key sequence>: <name of action>
   #
   # You can refresh a particular status bar applet in Ruby using:
   #

@@ -41,10 +41,10 @@ display:
 
         [color, "\u25E2", @current_load]
 
-      mouse_action:
-        left_click: show_loadavg_stats
+      control:
+        action:
+          show_loadavg_stats: |
+            dialog `ps ux --sort=-pcpu,-vsz || ps ux`
 
-control:
-  action:
-    show_loadavg_stats: |
-      dialog `ps ux --sort=-pcpu,-vsz || ps ux`
+        mouse_action:
+          left_click: show_loadavg_stats

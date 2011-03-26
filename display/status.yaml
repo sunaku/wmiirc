@@ -8,7 +8,7 @@ control:
       Status[clicked_file].mouse clicked_button
 
 script:
-  - after: |
+  - before: |
       class StatusBarlet < Barlet
         def initialize path
           super path, :right
@@ -82,6 +82,49 @@ script:
             end
           end
 
+          # register action handlers
+          @action_by_local_name = {}
+          if control = @definition['control']
+            if actions = control['action']
+              actions.each do |action_name, code|
+                handler = instance_eval "lambda {#{code}}", CONFIG.origin(
+                  code, "display:status:#{name}:control:action:#{action_name}"
+                )
+
+                @action_by_local_name[action_name] = handler
+
+                # first instance of this status bar applet gets the honor of
+                # registering its action handlers under the global namespace
+                unless Wmiirc.action? action_name
+                  Wmiirc.action action_name, &handler
+                end
+
+                # the button path suffix makes this action name unique
+                # to this particular instance of the status bar applet
+                # when we register the handler in the global namespace
+                Wmiirc.action action_name + @button.path, &handler
+              end
+            end
+
+            if keyboard_actions = control['keyboard_action']
+              keyboard_actions.each do |key, action_name|
+                # FIXME: this code was copied from lib/wmiirc/config.rb
+
+                # expand ${...} in keyboard shortcuts
+                key = key.gsub(/\$\{(.+?)\}/) do
+                  CONFIG['control']['keyboard'][$1]
+                end
+
+                # other instances of this status bar applet may have already
+                # registered a handler for this keypress, so we skip this to
+                # avoid triggering the keypress handler multiple times!
+                unless Wmiirc.key? key
+                  Wmiirc.key(key) {|*argv| Wmiirc.action action_name }
+                end
+              end
+            end
+          end
+
           # register this instance
           @@by_name[name] = self
           @@by_file[file] = self
@@ -106,11 +149,19 @@ script:
         #   identification number that was clicked.
         #
         def mouse button
-          if action_by_mouse = @definition['mouse_action']
-            mouse = Mouse[button]
+          if control = @definition['control']
+            if action_by_mouse = control['mouse_action']
+              mouse = Mouse[button]
 
-            if action = action_by_mouse[mouse]
-              Wmiirc.action action
+              if action = action_by_mouse[mouse]
+                if handler = @action_by_local_name[action]
+                  # the given action is local to this status bar applet
+                  handler.call
+                else
+                  # the given action is global to the wmii configuration
+                  Wmiirc.action action
+                end
+              end
             end
           end
         end

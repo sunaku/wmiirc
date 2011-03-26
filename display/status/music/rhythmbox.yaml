@@ -35,22 +35,15 @@ display:
         label: |
           `rhythmbox-client --no-start --print-playing-format '(%ta) %at - %tt'`
 
-control:
-  action:
-    stop_playing_song: |
-      Status['music:rhythmbox'].stop
+        control:
+          action:
+            stop_playing_song: self.stop
+            play_previous_song: self.prev
+            play_next_song: self.next
+            pause_current_song_toggle: self.pause!
 
-    play_previous_song: |
-      Status['music:rhythmbox'].prev
-
-    play_next_song: |
-      Status['music:rhythmbox'].next
-
-    pause_current_song_toggle: |
-      Status['music:rhythmbox'].pause!
-
-  keyboard_action:
-    XF86AudioPlay: pause_current_song_toggle
-    XF86AudioPrev: play_previous_song
-    XF86AudioNext: play_next_song
-    XF86AudioStop: stop_playing_song
+          keyboard_action:
+            XF86AudioPlay: pause_current_song_toggle
+            XF86AudioPrev: play_previous_song
+            XF86AudioNext: play_next_song
+            XF86AudioStop: stop_playing_song

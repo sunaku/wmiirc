@@ -106,43 +106,31 @@ display:
 
           [color, status, song_name].compact
 
-        mouse_action:
-          left_click: pause_current_song_toggle
-          right_click: stop_playing_song
-          wheel_up: play_previous_song
-          wheel_down: play_next_song
-          wheel_click: play_song_from_menu
+        control:
+          action:
+            stop_playing_song: self.stop
+            play_previous_song: self.prev
+            play_next_song: self.next
+            pause_current_song_toggle: self.pause!
+            play_song_from_menu: self.play_song_from_menu
+            load_playlist_from_menu: self.load_playlist_from_menu
+            add_current_song_to_playlist_from_menu: |
+              self.add_current_song_to_playlist_from_menu
 
-control:
-  action:
-    stop_playing_song: |
-      Status['music:mpd'].stop
+          mouse_action:
+            left_click: pause_current_song_toggle
+            right_click: stop_playing_song
+            wheel_up: play_previous_song
+            wheel_down: play_next_song
+            wheel_click: play_song_from_menu
 
-    play_previous_song: |
-      Status['music:mpd'].prev
-
-    play_next_song: |
-      Status['music:mpd'].next
-
-    pause_current_song_toggle: |
-      Status['music:mpd'].pause!
-
-    play_song_from_menu: |
-      Status['music:mpd'].play_song_from_menu
-
-    load_playlist_from_menu: |
-      Status['music:mpd'].load_playlist_from_menu
-
-    add_current_song_to_playlist_from_menu: |
-      Status['music:mpd'].add_current_song_to_playlist_from_menu
-
-  keyboard_action:
-    XF86AudioPlay: pause_current_song_toggle
-    XF86AudioPrev: play_previous_song
-    XF86AudioNext: play_next_song
-    XF86AudioStop: stop_playing_song
-    ${mod}-Prior: play_previous_song
-    ${mod}-Next: play_next_song
-    ${mod}-Return: pause_current_song_toggle
-    ${mod}-Home: load_playlist_from_menu
-    ${mod}-End: add_current_song_to_playlist_from_menu
+          keyboard_action:
+            XF86AudioPlay: pause_current_song_toggle
+            XF86AudioPrev: play_previous_song
+            XF86AudioNext: play_next_song
+            XF86AudioStop: stop_playing_song
+            ${mod}-Prior: play_previous_song
+            ${mod}-Next: play_next_song
+            ${mod}-Return: pause_current_song_toggle
+            ${mod}-Home: load_playlist_from_menu
+            ${mod}-End: add_current_song_to_playlist_from_menu

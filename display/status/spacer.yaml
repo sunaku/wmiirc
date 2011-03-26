@@ -4,6 +4,7 @@ display:
   status:
     "!notice":
       label: ""
-      mouse_action: 
-        wheel_up: focus_next_view
-        wheel_down: focus_previous_view
+      control:
+        mouse_action:
+          wheel_up: focus_next_view
+          wheel_down: focus_previous_view

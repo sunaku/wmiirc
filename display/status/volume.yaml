@@ -95,30 +95,23 @@ display:
         color = 'notice' if mute?
         [color, "\u266A", level]
 
-      mouse_action:
-        left_click: set_volume_from_menu
-        right_click: mute_volume_toggle
-        wheel_up: increase_volume
-        wheel_down: decrease_volume
+      control:
+        action:
+          set_volume_from_menu: self.menu
+          increase_volume: self.increase
+          decrease_volume: self.decrease
+          mute_volume_toggle: self.mute!
 
-control:
-  action:
-    set_volume_from_menu: |
-      Status['volume'].menu
+        keyboard_action:
+          XF86AudioRaiseVolume: increase_volume
+          XF86AudioLowerVolume: decrease_volume
+          XF86AudioMute: mute_volume_toggle
+          ${mod}-Shift-Prior: increase_volume
+          ${mod}-Shift-Next: decrease_volume
+          ${mod}-Shift-Return: mute_volume_toggle
 
-    increase_volume: |
-      Status['volume'].increase
-
-    decrease_volume: |
-      Status['volume'].decrease
-
-    mute_volume_toggle: |
-      Status['volume'].mute!
-
-  keyboard_action:
-    XF86AudioRaiseVolume: increase_volume
-    XF86AudioLowerVolume: decrease_volume
-    XF86AudioMute: mute_volume_toggle
-    ${mod}-Shift-Prior: increase_volume
-    ${mod}-Shift-Next: decrease_volume
-    ${mod}-Shift-Return: mute_volume_toggle
+        mouse_action:
+          left_click: set_volume_from_menu
+          right_click: mute_volume_toggle
+          wheel_up: increase_volume
+          wheel_down: decrease_volume

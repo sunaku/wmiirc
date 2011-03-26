@@ -33,10 +33,9 @@ display:
         sample!
         "mem \u25D2 #{@used}M \u25CC #{@free}M \u25D8 #{@swap}M"
 
-      mouse_action:
-        left_click: show_memory_stats
+      control:
+        action:
+          show_memory_stats: dialog `vmstat`
 
-control:
-  action:
-    show_memory_stats: |
-      dialog `vmstat`
+        mouse_action:
+          left_click: show_memory_stats

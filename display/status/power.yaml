@@ -108,10 +108,9 @@ display:
           )]
         end
 
-      mouse_action:
-        left_click: show_acpi_stats
+      control:
+        action:
+          show_acpi_stats: dialog `acpi`
 
-control:
-  action:
-    show_acpi_stats: |
-      dialog `acpi`
+        mouse_action:
+          left_click: show_acpi_stats
