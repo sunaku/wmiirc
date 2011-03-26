@@ -47,10 +47,16 @@ display:
   status:
     power:
       battery: BAT0
+
       label: |
-        read
+        sample!
 
         if present?
+          if xmessage = message
+            system 'xkbbell -force'
+            dialog xmessage
+          end
+
           status = case state
             when 'charged' then "\u25CF"
             when 'charging' then "\u26A1"
@@ -58,14 +64,10 @@ display:
             else '?'
           end
 
-          xmessage = message
-          if xmessage
-            `xkbbell -force`
-            dialog xmessage
-          end
-
-          levels = '%d%%' % [[percent, 100].min]
-          [color, status, levels]
+          [color, status, sprintf(
+            "%d%%",
+            [percent, 100].min
+          )]
         end
 
     volume:
