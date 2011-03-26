@@ -20,9 +20,7 @@ display:
 
           def sample!
             reading = `vmstat -h`.split("\n")[2].split
-            @swap = reading[2]
-            @used = reading[3]
-            @free = reading[4]
+            @swap, @used, @free = reading[2...4]
           end
 
         else

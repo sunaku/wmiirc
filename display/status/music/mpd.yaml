@@ -1,12 +1,3 @@
-#
-# Music Player Daemon (MPD) applet
-# ================================
-#
-# Dependencies:
-#
-#   gem install librmpd
-#
-
 import:
   - display/status
 
@@ -17,10 +8,14 @@ display:
         refresh: 5
 
         script: |
-          require 'rubygems'
-          gem 'librmpd', '~> 0.1'
+          gem 'librmpd', '>= 0.1'
           require 'librmpd'
+
           @mpd = MPD.new
+          if password = @definition['password']
+            @mpd.password password
+          end
+          @mpd.connect
           at_exit { @mpd.disconnect }
 
           def load_playlist_from_menu
@@ -77,34 +72,25 @@ display:
           end
 
         label: |
-          unless @mpd.connected?
-            @mpd.connect
-            if password = @definition['password']
-              @mpd.password password
+          label = color = icon = nil
+
+          if @mpd.stopped?
+            icon = "\u25A0"
+          else
+            song = @mpd.current_song
+            song_title = song.title || (f = song.file and File.basename(f))
+            label = [song.artist, song_title].compact.
+              map {|s| s.force_encoding('UTF-8') }.
+              join(" \u2013 ")
+
+            if @mpd.paused?
+              icon = "\u25AE" * 2
+            else
+              icon = "\u25B6"
             end
           end
 
-          if song = @mpd.current_song
-            artist    = song.artist
-            title     = song.title || (f = song.file and File.basename(f))
-            song_name = [artist, title].compact.
-              map {|s| s.force_encoding('UTF-8') }.join(" \u2013 ")
-          end
-
-          if @mpd.stopped?
-            song_name = nil
-            color = nil
-          elsif @mpd.paused?
-            color = 'notice'
-          end
-
-          status = case
-            when @mpd.playing? then "\u25B6"
-            when @mpd.paused? then "\u25EB"
-            else "\u25A0"
-          end
-
-          [color, status, song_name].compact
+          [color, icon, label].compact
 
         control:
           action:

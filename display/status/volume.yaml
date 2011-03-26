@@ -6,76 +6,74 @@ display:
     volume:
       mixer: # define this in your config.yaml
 
+      refresh: 30
+
       script: |
         case ::Config::CONFIG['host_os']
         when /linux/
 
-          def get
+          @mixer = @definition['mixer'] || 'Master'
+
+          def reading
             `amixer get #{mixer}`
           end
 
           def level
-            get[/\d+%/]
+            reading[/\d+%/]
           end
 
-          def set value
+          def level= value
             system "amixer set #{mixer} #{value}"
             refresh
           end
 
           def increase
-            set '5%+'
+            self.level = '5%+'
           end
 
           def decrease
-            set '5%-'
+            self.level = '5%-'
           end
 
           def mute!
-            set 'toggle'
-            if mute?
-              @previous = level
-              set '0%'
-            else
-              set @previous || '80%'
-            end
+            self.level = 'toggle'
           end
 
         when /bsd/
 
-          def get
-            `mixer #{mixer}`
+          @mixer = @definition['mixer'] || 'mixer'
+
+          def reading
+            `mixer #{@mixer}`
           end
 
           def level
-            get.split.last(1)[0].split(":")[0]
+            reading.split.last.first.split(':').first
           end
 
-          def set value
-            system "mixer #{MIXER} #{value}"
+          def level= value
+            system "mixer #{@mixer} #{value}"
             refresh
           end
 
           def increase
-            set '+3'
+            self.level = '+3'
           end
 
           def decrease
-            set '-3'
+            self.level = '-3'
           end
 
           def mute!
-            set 'toggle'
+            self.level = 'toggle'
           end
 
         else
           raise NotImplementedError, 'OS not supported'
         end
 
-        alias level= set
-
         def mute?
-          get.include? '[off]'
+          reading.include? '[off]'
         end
 
         def menu
@@ -88,8 +86,6 @@ display:
             set level
           end
         end
-
-      refresh: 60
 
       label: |
         color = 'notice' if mute?

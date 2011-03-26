@@ -102,7 +102,7 @@ display:
           end
 
           [color, battery, status, sprintf(
-            "%d%% \u25CC %0.1fh",
+            "%d%% \u25CC %0.1fH",
             [percent, 100].min,
             hours_remaining
           )]
