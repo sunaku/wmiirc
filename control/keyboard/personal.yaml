@@ -30,4 +30,5 @@ control:
     prev: comma
     next: period
 
-    floating: space
+    ## Defined in control/keyboard/common.yaml
+    # floating: space
