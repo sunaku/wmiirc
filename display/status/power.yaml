@@ -110,7 +110,9 @@ display:
 
       control:
         action:
-          show_acpi_stats: dialog `acpi`
+          show_battery_info: |
+            sample!
+            dialog (@bat_state + @bat_info).lines.to_a.uniq.join
 
         mouse_action:
-          left_click: show_acpi_stats
+          left_click: show_battery_info
