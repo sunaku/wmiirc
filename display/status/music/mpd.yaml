@@ -91,13 +91,12 @@ display:
               map {|s| s.force_encoding('UTF-8') }.join(" \u2013 ")
           end
 
-          color =
-            if @mpd.stopped?
-              song_name = nil
-              nil
-            elsif @mpd.paused?
-              CONFIG['display']['color']['notice']
-            end
+          if @mpd.stopped?
+            song_name = nil
+            color = nil
+          elsif @mpd.paused?
+            color = 'notice'
+          end
 
           status = case
             when @mpd.playing? then "\u25B6"

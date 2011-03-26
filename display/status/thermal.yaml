@@ -42,12 +42,12 @@ display:
       label: |
         sample!
 
-        color_key = case
+        color = case
           when @temp > critical then 'error'
           when @temp > high then 'notice'
         end
 
-        [CONFIG['display']['color'][color_key], @temp, @unit]
+        [color, @temp, @unit]
 
       mouse_action:
         left_click: thermal_info

@@ -92,7 +92,7 @@ display:
       refresh: 60
 
       label: |
-        color = CONFIG['display']['color']['notice'] if mute?
+        color = 'notice' if mute?
         [color, "\u266A", level]
 
       mouse_action:

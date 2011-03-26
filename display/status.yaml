@@ -57,18 +57,22 @@ script:
           file = (name.start_with? "!" )? name : "#{position}-#{name}"
           @button = StatusBarlet.new(file)
 
+          colors_hash = CONFIG['display']['color']
           @refresh = Thread.new do
             loop do
               button_label = begin
                 Array(self.label)
               rescue Exception => e
                 LOG.error e
-                [CONFIG['display']['color']['error'], e]
+                [colors_hash['error'], e]
               end
 
               # provide default color
-              unless button_label.first =~ /(?:#[[:xdigit:]]{6} ?){3}/
-                button_label.unshift CONFIG['display']['color']['normal']
+              possible_color = button_label.first.to_s
+              if colors_hash.key? possible_color
+                button_label[0] = colors_hash[possible_color]
+              elsif possible_color !~ /(?:#[[:xdigit:]]{6} ?){3}/
+                button_label.unshift colors_hash['normal']
               end
 
               @button.colors = button_label.shift

@@ -22,4 +22,4 @@ display:
           details = []
         end
 
-        [CONFIG['display']['color'][color], interface, details]
+        [color, interface, details]
