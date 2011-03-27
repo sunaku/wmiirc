@@ -104,7 +104,12 @@ display:
   #         refresh:  <Number of seconds to wait before updating the
   #                    label.  To disable automatic refreshing, give
   #                    this parameter a `nil` value by omitting this
-  #                    parameter completely or by omitting its value.>
+  #                    parameter completely or by omitting its value.
+  #
+  #                    DO NOT specify a *zero* value for this parameter;
+  #                    doing so will cause massive delays in wmii's event
+  #                    stream processing and will make wmii unresponsive!>
+  #
   #
   #         script:   <Ruby code to evaluate in the Wmiirc::Status
   #                    object that corresponds to this definition.>
