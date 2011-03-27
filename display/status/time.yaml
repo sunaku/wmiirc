@@ -7,7 +7,8 @@ display:
       refresh: 1
 
       @format: %c
-      label: Time.now.strftime @format
+      label: |
+        ["\u25D4", Time.now.strftime(@format)]
 
       control:
         action:
