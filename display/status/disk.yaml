@@ -15,7 +15,7 @@ display:
 
       label: |
         free, used, path = usage.split.last(3)
-        [path, "\u25D2", used, "\u25CC", free]
+        [path, "\u25D3", used, "\u25CC", free]
 
       control:
         action:

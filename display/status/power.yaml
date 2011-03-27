@@ -99,7 +99,7 @@ display:
           status = case state
             when 'charged' then "\u25CF"
             when 'charging' then "\u26A1"
-            when 'discharging' then "\u25D2"
+            when 'discharging' then "\u25D3"
             else '?'
           end
 
