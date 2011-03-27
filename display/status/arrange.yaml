@@ -3,6 +3,8 @@ display:
     arrange:
       refresh: # this status bar applet will refresh itself as necessary
 
+      @default: # set this to the name of your default arrangement choice
+
       @choices:
         LarsWM: [arrange_as_larswm]
         stacks: [arrange_in_stacks, 2]
@@ -44,7 +46,7 @@ display:
           end
         end
 
-        @choice_by_tag = {}
+        @choice_by_tag = Hash.new {|h,k| h[k] = @default }
 
         def current
           @choice_by_tag[@current_tag]
@@ -58,7 +60,7 @@ display:
         end
 
         def stop
-          @choice_by_tag.delete @current_tag
+          @choice_by_tag[@current_tag] = nil
           refresh
         end
 
