@@ -1,0 +1,88 @@
+display:
+  status:
+    arrange:
+      refresh: # this status bar applet will refresh itself as necessary
+
+      @choices:
+        LarsWM: [arrange_as_larswm]
+        stacks: [arrange_in_stacks, 2]
+        grid: [arrange_in_grid]
+        diamond: [arrange_in_diamond]
+
+      script: |
+        # create actions for each possible choice so that the user can set
+        # up keybindings to trigger the application of particular choices
+        @choices.each_key do |choice|
+          action "apply_#{choice}_persistent_arrangement" do
+            self.current = choice
+          end
+        end
+
+        # we can only safely reapply the arrangement once the view has
+        # stabilized (i.e. we are NOT in the middle of changing views)
+        @can_reapply = false
+
+        event 'ClientFocus' do
+          @can_reapply = true
+        end
+
+        event 'FocusTag' do |tag|
+          @current_tag = tag
+          @can_reapply = false
+          refresh
+        end
+
+        # persist the arrangement whenever clients are
+        # added to or removed from the current view
+        %w[MapClient UnmapClient].each do |trigger|
+          event(trigger) { apply }
+        end
+
+        def apply
+          if @can_reapply and @choices.key? current
+            curr_view.send(*@choices[current])
+          end
+        end
+
+        @choice_by_tag = {}
+
+        def current
+          @choice_by_tag[@current_tag]
+        end
+
+        def current= choice
+          raise ArgumentError unless @choices.key? choice
+          @choice_by_tag[@current_tag] = choice
+          refresh
+          apply
+        end
+
+        def stop
+          @choice_by_tag.delete @current_tag
+          refresh
+        end
+
+        def choose
+          if choice = click_menu(@choices.keys, current)
+            self.current = choice
+          end
+        end
+
+      label: |
+        ["\u25F1", current || 'manual']
+
+      control:
+        action:
+          stop_persistent_arrangement: self.stop
+          choose_persistent_arrangement: self.choose
+
+        mouse_action:
+          left_click: choose_persistent_arrangement
+          right_click: stop_persistent_arrangement
+
+        keyboard_action:
+          ${arrange},Shift-t: apply_LarsWM_persistent_arrangement
+          ${arrange},Shift-g: apply_grid_persistent_arrangement
+          ${arrange},Shift-s: apply_stacks_persistent_arrangement
+          ${arrange},Shift-d: apply_diamond_persistent_arrangement
+          ${arrange},Shift-z: stop_persistent_arrangement
