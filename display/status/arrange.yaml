@@ -6,16 +6,26 @@ display:
       @default: # set this to the name of your default arrangement choice
 
       @choices:
-        LarsWM: [arrange_as_larswm]
-        stacks: [arrange_in_stacks, 2]
-        grid: [arrange_in_grid]
-        diamond: [arrange_in_diamond]
+        right: [tile_right]
+        rightward: [tile_rightward]
+        left: [tile_left]
+        leftward: [tile_leftward]
+        inward: [tile_inward]
+        outward: [tile_outward]
+        stack: [stack]
+        grid: [grid]
+        join: [stack, 1]
+        split: [grid, 1]
 
       script: |
         # create actions for each possible choice so that the user can set
         # up keybindings to trigger the application of particular choices
         @choices.each_key do |choice|
-          action "apply_#{choice}_persistent_arrangement" do
+          action "arrange_#{choice}" do
+            apply choice
+          end
+
+          action "arrange_#{choice}_persist" do
             self.current = choice
           end
         end
@@ -40,9 +50,9 @@ display:
           event(trigger) { apply }
         end
 
-        def apply
-          if @can_reapply and @choices.key? current
-            curr_view.send(*@choices[current])
+        def apply choice = current
+          if @can_reapply and @choices.key? choice
+            curr_view.send(*@choices[choice])
           end
         end
 
@@ -83,8 +93,24 @@ display:
           right_click: stop_persistent_arrangement
 
         keyboard_action:
-          ${arrange},Shift-t: apply_LarsWM_persistent_arrangement
-          ${arrange},Shift-g: apply_grid_persistent_arrangement
-          ${arrange},Shift-s: apply_stacks_persistent_arrangement
-          ${arrange},Shift-d: apply_diamond_persistent_arrangement
-          ${arrange},Shift-z: stop_persistent_arrangement
+          ${arrange},r: arrange_right
+          ${arrange},Mod1-r: arrange_right_persist
+          ${arrange},Shift-r: arrange_rightward
+          ${arrange},Mod1-Shift-r: arrange_rightward_persist
+          ${arrange},l: arrange_left
+          ${arrange},Mod1-l: arrange_left_persist
+          ${arrange},Shift-l: arrange_leftward
+          ${arrange},Mod1-Shift-l: arrange_leftward_persist
+          ${arrange},i: arrange_inward
+          ${arrange},Mod1-i: arrange_inward_persist
+          ${arrange},o: arrange_outward
+          ${arrange},Mod1-o: arrange_outward_persist
+          ${arrange},g: arrange_grid
+          ${arrange},Mod1-g: arrange_grid_persist
+          ${arrange},s: arrange_stack
+          ${arrange},Mod1-s: arrange_stack_persist
+          ${arrange},j: arrange_join
+          ${arrange},Mod1-j: arrange_join_persist
+          ${arrange},Shift-j: arrange_split
+          ${arrange},Mod1-Shift-j: arrange_split_persist
+          ${arrange},Mod1-z: stop_persistent_arrangement
