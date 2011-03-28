@@ -82,8 +82,8 @@ display:
                    push(current.to_i).sort.uniq.
                    map {|i| "#{i}%" }.reverse
 
-          if level = click_menu(levels, current)
-            set level
+          if choice = click_menu(levels, current)
+            self.level = choice
           end
         end
 
