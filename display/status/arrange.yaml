@@ -30,33 +30,24 @@ display:
           end
         end
 
-        # we can only safely reapply the arrangement once the view has
-        # stabilized (i.e. we are NOT in the middle of changing views)
-        @can_reapply = false
-
-        event 'ClientFocus' do
-          @can_reapply = true
-        end
-
-        event 'FocusTag' do |tag|
-          @current_tag = tag
-          @can_reapply = false
-          refresh
-        end
-
         # persist the arrangement whenever clients are
         # added to or removed from the current view
-        %w[MapClient UnmapClient].each do |trigger|
+        %w[ClientAttach ClientDetach].each do |trigger|
           event(trigger) { apply }
         end
 
         def apply choice = current
-          if @can_reapply and @choices.key? choice
+          if @choices.key? choice
             curr_view.send(*@choices[choice])
           end
         end
 
         @choice_by_tag = Hash.new {|h,k| h[k] = @default }
+
+        event 'FocusTag' do |tag|
+          @current_tag = tag
+          refresh
+        end
 
         def current
           @choice_by_tag[@current_tag]
