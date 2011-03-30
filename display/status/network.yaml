@@ -14,7 +14,7 @@ display:
 
         if alive and ip_addr
           color = 'normal'
-          stats = [ip_addr, "\u25BC", rx_bytes, "\u25B2", tx_bytes]
+          stats = [ip_addr, "\u2798", rx_bytes, "\u279A", tx_bytes]
         else
           color = 'error'
           stats = []
