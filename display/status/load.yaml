@@ -37,7 +37,7 @@ display:
                 when @current_load > @high     then 'notice'
                 end
 
-        [color, "\u2691", @current_load]
+        [color, "\u2691", *@load_averages]
 
       control:
         action:
