@@ -9,7 +9,7 @@ control:
       clients = grouping
 
       unless clients.empty?
-        # determine new view
+        # determine temporary view
         if curr_tag =~ ZOOMED_SUFFIX
           src, num = $`, $1.to_i
           dst = "#{src}~#{num+1}"
@@ -17,16 +17,14 @@ control:
           dst = "#{curr_tag}~1"
         end
 
-        # add clients to new view
+        # add clients to temporary view
+        curr_client_before_zoom = curr_client
         clients.each {|c| c.tag dst }
 
-        # focus new view
-        v = View.new dst
+        # focus temporary view
+        v = View.new(dst)
         v.focus
-        v.arrange_in_grid
-
-        # propagate focus into new view
-        clients.first.focus v
+        curr_client_before_zoom.focus v
       end
 
     restore_grouping_from_temporary_view: |
@@ -36,10 +34,11 @@ control:
         src = curr_tag
 
         if src =~ ZOOMED_SUFFIX
-          # determine new view
+          # determine original view
           dst = $`
 
-          # remove clients from old view
+          # remove clients from temporary view
+          curr_client_before_zoom = curr_client
           clients.each do |c|
             c.with_tags do
               delete src
@@ -47,16 +46,14 @@ control:
               if empty?
                 push dst
               else
-                dst = last
+                dst = self.last
               end
             end
           end
 
-          # focus new view
-          v = View.new dst
+          # focus original view
+          v = View.new(dst)
           v.focus
-
-          # propagate focus into original view
-          clients.first.focus v
+          curr_client_before_zoom.focus v
         end
       end
