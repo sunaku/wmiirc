@@ -86,23 +86,23 @@ display:
 
         keyboard_action:
           ${arrange},r: arrange_right
-          ${arrange},Mod1-r: arrange_right_persist
+          ${arrange},Control-r: arrange_right_persist
           ${arrange},Shift-r: arrange_rightward
-          ${arrange},Mod1-Shift-r: arrange_rightward_persist
+          ${arrange},Control-Shift-r: arrange_rightward_persist
           ${arrange},l: arrange_left
-          ${arrange},Mod1-l: arrange_left_persist
+          ${arrange},Control-l: arrange_left_persist
           ${arrange},Shift-l: arrange_leftward
-          ${arrange},Mod1-Shift-l: arrange_leftward_persist
+          ${arrange},Control-Shift-l: arrange_leftward_persist
           ${arrange},i: arrange_inward
-          ${arrange},Mod1-i: arrange_inward_persist
+          ${arrange},Control-i: arrange_inward_persist
           ${arrange},o: arrange_outward
-          ${arrange},Mod1-o: arrange_outward_persist
+          ${arrange},Control-o: arrange_outward_persist
           ${arrange},g: arrange_grid
-          ${arrange},Mod1-g: arrange_grid_persist
+          ${arrange},Control-g: arrange_grid_persist
           ${arrange},s: arrange_stack
-          ${arrange},Mod1-s: arrange_stack_persist
+          ${arrange},Control-s: arrange_stack_persist
           ${arrange},j: arrange_join
-          ${arrange},Mod1-j: arrange_join_persist
+          ${arrange},Control-j: arrange_join_persist
           ${arrange},Shift-j: arrange_split
-          ${arrange},Mod1-Shift-j: arrange_split_persist
-          ${arrange},Mod1-z: stop_persistent_arrangement
+          ${arrange},Control-Shift-j: arrange_split_persist
+          ${arrange},Control-z: stop_persistent_arrangement
