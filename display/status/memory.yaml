@@ -29,7 +29,7 @@ display:
 
       label: |
         sample!
-        "mem \u25D3 #{@used}M \u25CC #{@free}M \u25D8 #{@swap}M"
+        "mem \u25D3 #{@used}M \u25CC #{@free}M \u25C9 #{@swap}M"
 
       control:
         action:
