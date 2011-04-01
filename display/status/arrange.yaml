@@ -47,7 +47,6 @@ display:
         event 'FocusTag' do |tag|
           @current_tag = tag
           refresh
-          apply
         end
 
         def current
