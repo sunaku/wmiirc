@@ -30,11 +30,8 @@ display:
           end
         end
 
-        # persist the arrangement whenever clients are
-        # added to or removed from the current view
-        %w[ClientAttach ClientDetach].each do |trigger|
-          event(trigger) { apply }
-        end
+        # reapply arrangement when wmii tells us to
+        event('ArrangeView') { apply }
 
         def apply choice = current
           if @choices.key? choice
