@@ -75,10 +75,12 @@ display:
         action:
           stop_persistent_arrangement: self.stop
           choose_persistent_arrangement: self.choose
+          reapply_persistent_arrangement: self.apply
 
         mouse_action:
           left_click: choose_persistent_arrangement
           right_click: stop_persistent_arrangement
+          middle_click: reapply_persistent_arrangement
 
         keyboard_action:
           ${arrange},r: arrange_right
@@ -101,4 +103,5 @@ display:
           ${arrange},Control-j: arrange_join_persist
           ${arrange},Shift-j: arrange_split
           ${arrange},Control-Shift-j: arrange_split_persist
-          ${arrange},Control-z: stop_persistent_arrangement
+          ${arrange},Control-z: reapply_persistent_arrangement
+          ${arrange},z: stop_persistent_arrangement
