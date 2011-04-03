@@ -22,6 +22,10 @@ Prerequisites
 ------------------------------------------------------------------------------
 
 * wmii 3.9 or newer     -  <http://wmii.suckless.org>
+
+  The `display/status/arrange` status bar applet requires a [patched version
+  of wmii-hg r2758]( http://code.google.com/p/wmii/issues/detail?id=232 ).
+
 * Ruby 1.9 or newer     -  <http://www.ruby-lang.org>
 * Rumai 4.1.0 or newer  -  `gem install rumai -v '>= 4.1.0'`
 
