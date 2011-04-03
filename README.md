@@ -3,15 +3,15 @@ sunaku's Ruby wmiirc
 
 [![screenshot](http://ompldr.org/tODNuag)](http://ompldr.org/vODNuag)
 
-This is a [Ruby][1] and [YAML][2] based configuration of the [wmii][3]
-window manager.  It manipulates wmii through the [Rumai][4] library,
-which comes with an [interactive shell][5] for live experimentation.
+This is a [Ruby] and [YAML] based configuration of the [wmii] window manager.
+It manipulates wmii through the [Rumai] library, which comes with [an
+interactive shell][RumaiShell] for live experimentation.
 
-[1]: http://ruby-lang.org
-[2]: http://yaml.org
-[3]: http://wmii.suckless.org
-[4]: http://snk.tuxfamily.org/lib/rumai/
-[5]: http://snk.tuxfamily.org/lib/rumai/#EXAMPLES
+[Ruby]: http://ruby-lang.org
+[YAML]: http://yaml.org
+[wmii]: http://wmii.suckless.org
+[Rumai]: http://snk.tuxfamily.org/lib/rumai/
+[RumaiShell]: http://snk.tuxfamily.org/lib/rumai/#EXAMPLES
 
 This configuration is also discussed in the following articles:
 
@@ -23,13 +23,15 @@ This configuration is also discussed in the following articles:
 Prerequisites
 ------------------------------------------------------------------------------
 
-* wmii 3.9 or newer     -  <http://wmii.suckless.org>
+* [wmii] 3.9 or newer.  Note that the
+  `display/status/arrange` status bar applet requires a [patched version of
+  wmii-hg r2758]( http://code.google.com/p/wmii/issues/detail?id=232 ).
 
-  The `display/status/arrange` status bar applet requires a [patched version
-  of wmii-hg r2758]( http://code.google.com/p/wmii/issues/detail?id=232 ).
+* [Ruby] 1.9.2 or newer.
 
-* Ruby 1.9 or newer     -  <http://www.ruby-lang.org>
-* Rumai 4.1.0 or newer  -  `gem install rumai -v '>= 4.1.0'`
+* [Rumai] 4.1.0 or newer:
+
+      gem install rumai -v '>= 4.1.0'
 
 ------------------------------------------------------------------------------
 Installing
