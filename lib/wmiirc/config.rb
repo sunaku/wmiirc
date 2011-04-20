@@ -34,7 +34,7 @@ module Wmiirc
     def script key
       Array(self['script']).each do |hash|
         if script = hash[key]
-          SANDBOX.eval script, origin(script, "script:#{key}")
+          SANDBOX.eval script.to_s, origin(script, "script:#{key}")
         end
       end
     end

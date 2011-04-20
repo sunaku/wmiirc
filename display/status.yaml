@@ -20,7 +20,7 @@ script:
           end
 
           if code = definition['script']
-            instance_eval code,
+            instance_eval code.to_s,
               CONFIG.origin(code, "display:status:#{name}:script")
           end
 
