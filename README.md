@@ -29,9 +29,9 @@ Prerequisites
 
 * [Ruby] 1.9.2 or newer.
 
-* [Rumai] 4.1.0 or newer:
+* [Rumai] 4.1.2 or newer:
 
-      gem install rumai -v '>= 4.1.0'
+      gem install rumai -v '>= 4.1.2'
 
 ------------------------------------------------------------------------------
 Installing
