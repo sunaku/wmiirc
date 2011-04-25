@@ -14,8 +14,8 @@ display:
           require 'librmpd'
 
           @mpd = MPD.new
-          @mpd.password @password if @password
           @mpd.connect
+          @mpd.password @password if @password
           at_exit { @mpd.disconnect }
 
           def load_playlist_from_menu
