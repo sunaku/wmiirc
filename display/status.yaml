@@ -30,7 +30,7 @@ script:
 
           # buttons appear in ASCII order of their IXP file name
           # so prepend a number to get ordered status bar applets
-          file = name =~ /^!/ ? name : "#{position}-#{name}"
+          file = "#{position}-#{name}"
           button = StatusBarlet.new(file)
 
           colors_hash = CONFIG['display']['color']
