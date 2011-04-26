@@ -36,6 +36,13 @@ display:
         [:notice, @message] if @message
 
       control:
+        action:
+          focus_notice_client: |
+            @client.focus rescue nil
+
+        mouse_action:
+          left_click: focus_notice_client
+
         event:
           Notice: |
             display argv.join(' ')
@@ -43,10 +50,11 @@ display:
           Urgent: |
             id, type = argv
 
-            message =
-              case type
-              when 'Client' then Client.new(id).label.read
-              else id
-              end
+            if type == 'Client'
+              @client = Client.new(id)
+              message = @client.label.read
+            else
+              message = id
+            end
 
             display "#{type} #{message}"
