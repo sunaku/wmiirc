@@ -122,6 +122,14 @@ script:
                 end
               end
             end
+
+            if events = control['event']
+              events.each do |event_name, code|
+                origin = CONFIG.origin(code, "display:status:#{name}:control:event:#{event_name}")
+                handler = instance_eval("lambda {|*argv| #{code}}", origin)
+                Wmiirc.event event_name, &handler
+              end
+            end
           end
         end
       end
