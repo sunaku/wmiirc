@@ -1,0 +1,52 @@
+import:
+  - display/status
+
+display:
+  status:
+    notice:
+      @duration: 5
+
+      script: |
+        @lock = Mutex.new
+        @message = nil
+
+        ##
+        # Displays the given notice in the status bar.
+        #
+        def display message
+          # don't block the calling thread
+          Thread.new do
+            # prevent messages from clobbering
+            # each other before their time is up
+            @lock.synchronize do
+              # display the message
+              LOG.info message # also log it in case the user is not present
+              @message = message
+              refresh
+
+              # clear the notice
+              sleep [1, @duration.to_i].max
+              @message = nil
+              refresh
+            end
+          end
+        end
+
+      label: |
+        [:notice, @message] if @message
+
+      control:
+        event:
+          Notice: |
+            display argv.join(' ')
+
+          Urgent: |
+            id, type = argv
+
+            message =
+              case type
+              when 'Client' then Client.new(id).label.read
+              else id
+              end
+
+            display "#{type} #{message}"
