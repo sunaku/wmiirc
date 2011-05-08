@@ -1,7 +1,9 @@
 sunaku's Ruby wmiirc
 ==============================================================================
 
-[![screenshot](http://ompldr.org/tODNuag)](http://ompldr.org/vODNuag)
+[![May 2011 screenshot](http://ompldr.org/tOGxyZQ)](http://ompldr.org/vOGxyZQ)
+[![April 2011 screenshot](http://ompldr.org/tODNuag)](http://ompldr.org/vODNuag)
+[![March 2011 screenshot](http://ompldr.org/tN3l2bQ)](http://ompldr.org/vN3l2bQ)
 
 This is a [Ruby] and [YAML] based configuration of the [wmii] window manager.
 It manipulates wmii through the [Rumai] library, which comes with [an
