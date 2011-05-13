@@ -23,8 +23,8 @@ display:
         end
 
         def sample!
-          @bat_info = File.read(BAT_INFO_FILE)
-          @bat_state = File.read(BAT_STATE_FILE)
+          @bat_info = File.read(BAT_INFO_FILE).force_encoding('ISO-8859-1').encode('UTF-8')
+          @bat_state = File.read(BAT_STATE_FILE).force_encoding('ISO-8859-1').encode('UTF-8')
         end
 
         def present?
