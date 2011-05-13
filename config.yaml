@@ -3,7 +3,7 @@ import:
   - display/color/personal
   - display/client
   - display/tags
-  - display/notice
+  - display/status/notice
   - display/status/music/rhythmbox
   - display/status/load
   - display/status/power
