@@ -1,0 +1,6 @@
+import:
+  - control/keyboard/common/focus
+
+control:
+  keyboard_action:
+    ${mod}-slash: focus_most_recently_focused_view

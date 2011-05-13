@@ -1,0 +1,7 @@
+import:
+  - control/keyboard/common/launch
+
+control:
+  keyboard_action:
+    ${mod}-Return: launch_terminal
+    ${mod}-e: launch_browser
