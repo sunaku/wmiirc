@@ -9,7 +9,7 @@ control:
     7: wheel_right
 
 script:
-  - after: |
+  - before: |
       module Mouse
         NAME_BY_CODE = CONFIG['control']['mouse']
 

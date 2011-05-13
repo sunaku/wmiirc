@@ -4,11 +4,10 @@ import:
 display:
   status:
     load:
-      # threshold values for visual indication
-      critical: 1.5
-      high: 0.75
-
       refresh: 10
+
+      @critical: 1.5
+      @high: 0.75
 
       script: |
         case ::Config::CONFIG['host_os']
@@ -33,18 +32,17 @@ display:
       label: |
         sample!
 
-        # visually indicate the intensity of system load
-        color_key = case
-          when @current_load > critical then 'error'
-          when @current_load > high then 'notice'
-        end
+        color = case
+                when @current_load > @critical then 'error'
+                when @current_load > @high     then 'notice'
+                end
 
-        [CONFIG['display']['color'][color_key], "\u25E2", @current_load]
+        [color, "\u2691", *@load_averages]
 
-      mouse_action:
-        left_click: show_loadavg_stats
+      control:
+        action:
+          show_loadavg_stats: |
+            dialog `ps ux --sort=-pcpu,-vsz || ps ux`
 
-control:
-  action:
-    show_loadavg_stats: |
-      dialog `ps ux --sort=-pcpu,-vsz || ps ux`
+        mouse_action:
+          left_click: show_loadavg_stats

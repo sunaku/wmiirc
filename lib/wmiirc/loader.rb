@@ -97,7 +97,7 @@ module Wmiirc
       end
 
       def allow_user_rescue error
-        system 'xterm &'
+        spawn 'xterm'
 
         IO.popen('xmessage -nearmouse -file - -buttons Recover,Ignore -print', 'w+') do |f|
           f.puts error.inspect, error.backtrace

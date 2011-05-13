@@ -95,6 +95,8 @@ display:
   #
   #     <name of your status bar applet>:
   #
+  #         @<parameter name>:  <parameter value>
+  #
   #         instances:  <Array of hashes, each of which serve as
   #                      a set of arguments for creating multiple
   #                      instances of this status bar applet.>
@@ -102,7 +104,12 @@ display:
   #         refresh:  <Number of seconds to wait before updating the
   #                    label.  To disable automatic refreshing, give
   #                    this parameter a `nil` value by omitting this
-  #                    parameter completely or by omitting its value.>
+  #                    parameter completely or by omitting its value.
+  #
+  #                    DO NOT specify a *zero* value for this parameter;
+  #                    doing so will cause massive delays in wmii's event
+  #                    stream processing and will make wmii unresponsive!>
+  #
   #
   #         script:   <Ruby code to evaluate in the Wmiirc::Status
   #                    object that corresponds to this definition.>
@@ -112,19 +119,22 @@ display:
   #                    label() method in the Wmiirc::Status object
   #                    that corresponds to this definition.>
   #
-  #         mouse_action:
-  #           <mouse event>: <name of action>
+  #         control:
+  #           action:
+  #             <action name>: <Ruby code to evaluate in the Wmiirc::Status
+  #                             object that corresponds to this definition.>
   #
-  # You can refresh a particular status bar applet in Ruby using:
+  #           mouse_action:
+  #             <mouse event>: <name of action>
   #
-  #   Status["arbitrary levels ...:name of your status bar applet"].refresh
-  #
-  # The value passed in is a hierarchical path reflecting all the hash keys
-  # that lead from display:status (the root) down to your status bar applet.
-  # The path separator for this value is a single colon (:).
+  #           keyboard_action:
+  #             <key sequence>: <name of action>
   #
   # The horizontal order in which these applets appear on the status
   # bar reflects the vertical order in which they are defined below.
+  #
+  # Code evaluated inside a Wmiirc::Status object has access to a `refresh`
+  # method which triggers redrawing of the label of that status bar applet.
   #
   status:
 

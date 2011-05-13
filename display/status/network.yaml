@@ -1,25 +1,23 @@
 display:
   status:
     network:
-      ifconfig: /sbin/ifconfig
-      interface: # define this in your config.yaml
       refresh: 30
-      script: |
-        def sample!
-          reading = `#{ifconfig} #{interface} 2>&1`
-          @alive = reading !~ /\A\S+ error/
-          @ip_addr = reading[/inet .+?:(\S+)/, 1]
-          @rx_bytes, @tx_bytes = reading.scan(/\((\d+(?:\.\d+)? \w+)\)/)
-        end
-      label: |
-        sample!
 
-        if @alive && @ip_addr
+      @ifconfig: /sbin/ifconfig
+      @interface: lo
+
+      label: |
+        reading = `#{@ifconfig} #{@interface} 2>&1`
+        alive = reading !~ /\A\S+ error/
+        ip_addr = reading[/inet .+?:(\S+)/, 1]
+        rx_bytes, tx_bytes = reading.scan(/\((\d+(?:\.\d+)? \w+)\)/)
+
+        if alive and ip_addr
           color = 'normal'
-          details = [@ip_addr, "\u25BC", @rx_bytes, "\u25B2", @tx_bytes]
+          stats = [ip_addr, "\u2798", rx_bytes, "\u279A", tx_bytes]
         else
           color = 'error'
-          details = []
+          stats = []
         end
 
-        [CONFIG['display']['color'][color], interface, details]
+        [color, @interface, stats]

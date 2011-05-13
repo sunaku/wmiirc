@@ -1,0 +1,107 @@
+display:
+  status:
+    arrange:
+      refresh: # this status bar applet will refresh itself as necessary
+
+      @default: # set this to the name of your default arrangement choice
+
+      @choices:
+        right: [tile_right]
+        rightward: [tile_rightward]
+        left: [tile_left]
+        leftward: [tile_leftward]
+        inward: [tile_inward]
+        outward: [tile_outward]
+        stack: [stack]
+        grid: [grid]
+        join: [stack, 1]
+        split: [grid, 1]
+
+      script: |
+        # create actions for each possible choice so that the user can set
+        # up keybindings to trigger the application of particular choices
+        @choices.each_key do |choice|
+          action "arrange_#{choice}" do
+            apply choice
+          end
+
+          action "arrange_#{choice}_persist" do
+            self.current = choice
+          end
+        end
+
+        # reapply arrangement when wmii tells us to
+        event('ArrangeView') { apply }
+
+        def apply choice = current
+          if @choices.key? choice
+            curr_view.send(*@choices[choice])
+          end
+        end
+
+        @choice_by_tag = Hash.new {|h,k| h[k] = @default }
+
+        event 'FocusTag' do |tag|
+          @current_tag = tag
+          refresh
+        end
+
+        def current
+          @choice_by_tag[@current_tag]
+        end
+
+        def current= choice
+          raise ArgumentError unless @choices.key? choice
+          @choice_by_tag[@current_tag] = choice
+          refresh
+          apply
+        end
+
+        def stop
+          @choice_by_tag[@current_tag] = nil
+          refresh
+        end
+
+        def choose
+          if choice = click_menu(@choices.keys, current)
+            self.current = choice
+          end
+        end
+
+      label: |
+        ["\u25F1", current || 'manual']
+
+      control:
+        action:
+          stop_persistent_arrangement: self.stop
+          choose_persistent_arrangement: self.choose
+          reapply_persistent_arrangement: self.apply
+
+        mouse_action:
+          left_click: choose_persistent_arrangement
+          right_click: stop_persistent_arrangement
+          middle_click: reapply_persistent_arrangement
+
+        keyboard_action:
+          ${arrange},r: arrange_right
+          ${arrange},Control-r: arrange_right_persist
+          ${arrange},Shift-r: arrange_rightward
+          ${arrange},Control-Shift-r: arrange_rightward_persist
+          ${arrange},l: arrange_left
+          ${arrange},Control-l: arrange_left_persist
+          ${arrange},Shift-l: arrange_leftward
+          ${arrange},Control-Shift-l: arrange_leftward_persist
+          ${arrange},i: arrange_inward
+          ${arrange},Control-i: arrange_inward_persist
+          ${arrange},o: arrange_outward
+          ${arrange},Control-o: arrange_outward_persist
+          ${arrange},g: arrange_grid
+          ${arrange},Control-g: arrange_grid_persist
+          ${arrange},s: arrange_stack
+          ${arrange},Control-s: arrange_stack_persist
+          ${arrange},j: arrange_join
+          ${arrange},Control-j: arrange_join_persist
+          ${arrange},Shift-j: arrange_split
+          ${arrange},Control-Shift-j: arrange_split_persist
+          ${arrange},Control-z: reapply_persistent_arrangement
+          ${arrange},z: stop_persistent_arrangement

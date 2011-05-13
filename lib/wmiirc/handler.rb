@@ -40,6 +40,13 @@ module Wmiirc
   end
 
   ##
+  # Checks if a handler for the given event name has been registered.
+  #
+  def event? name
+    EVENTS.key? name
+  end
+
+  ##
   # Returns a list of registered event names.
   #
   def events
@@ -57,6 +64,13 @@ module Wmiirc
   end
 
   ##
+  # Checks if a handler for the given action name has been registered.
+  #
+  def action? name
+    ACTIONS.key? name
+  end
+
+  ##
   # Returns a list of registered action names.
   #
   def actions
@@ -71,6 +85,13 @@ module Wmiirc
   #
   def key(*a, &b)
     KEYS.handle(*a, &b)
+  end
+
+  ##
+  # Checks if a handler for the given keypress name has been registered.
+  #
+  def key? name
+    KEYS.key? name
   end
 
   ##

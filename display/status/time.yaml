@@ -4,13 +4,16 @@ import:
 display:
   status:
     time:
-      format: %c
       refresh: 1
-      label: Time.now.strftime(@definition['format'])
-      mouse_action:
-        left_click: show_calendar
 
-control:
-  action:
-    show_calendar:
-      dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '-' * s.length }
+      @format: %c
+      label: |
+        ["\u25D4", Time.now.strftime(@format)]
+
+      control:
+        action:
+          show_calendar:
+            dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '-' * s.length }
+
+        mouse_action:
+          left_click: show_calendar

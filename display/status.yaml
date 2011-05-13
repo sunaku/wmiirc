@@ -1,14 +1,8 @@
 import:
   - display/barlet
 
-control:
-  event:
-    RightBarClick: |
-      clicked_button, clicked_file = argv
-      Status[clicked_file].mouse clicked_button
-
 script:
-  - after: |
+  - before: |
       class StatusBarlet < Barlet
         def initialize path
           super path, :right
@@ -16,35 +10,17 @@ script:
       end
 
       class Status < Sandbox
-        @@by_name = {}
-        @@by_file = {}
-
-        class << self
-          ##
-          # Returns the status bar applet that
-          # is associated with the given name.
-          #
-          # [name]
-          #   Either the the user-defined name of
-          #   the status bar applet or the basename
-          #   of the status bar applet's IXP file.
-          #
-          def [] name
-            @@by_name[name] || @@by_file[name]
-          end
-
-          def each &block
-            @@by_name.each_value(&block)
-          end
-
-          include Enumerable
-        end
-
         def initialize name, definition, position
-          @definition = definition
+          # make parameters that begin with '@' in the definition hash
+          # available as instance variables for use by Ruby code therein
+          definition.each do |key, value|
+            if key.start_with? '@'
+              instance_variable_set key, value
+            end
+          end
 
           if code = definition['script']
-            instance_eval code,
+            instance_eval code.to_s,
               CONFIG.origin(code, "display:status:#{name}:script")
           end
 
@@ -54,73 +30,106 @@ script:
 
           # buttons appear in ASCII order of their IXP file name
           # so prepend a number to get ordered status bar applets
-          file = (name.start_with? "!" )? name : "#{position}-#{name}"
-          @button = StatusBarlet.new(file)
+          file = "#{position}-#{name}"
+          button = StatusBarlet.new(file)
 
-          @refresh = Thread.new do
+          colors_hash = CONFIG['display']['color']
+          label_refresh_thread = Thread.new do
             loop do
               button_label = begin
                 Array(self.label)
               rescue Exception => e
                 LOG.error e
-                [CONFIG['display']['color']['error'], e]
+                [colors_hash['error'], e]
               end
 
               # provide default color
-              unless button_label.first =~ /(?:#[[:xdigit:]]{6} ?){3}/
-                button_label.unshift CONFIG['display']['color']['normal']
+              possible_color = button_label.first.to_s
+              if colors_hash.key? possible_color
+                button_label[0] = colors_hash[possible_color]
+              elsif possible_color !~ /(?:#[[:xdigit:]]{6} ?){3}/
+                button_label.unshift colors_hash['normal']
               end
 
-              @button.colors = button_label.shift
-              @button.label = button_label.join(' ')
+              button.colors = button_label.shift
+              button.label = button_label.join(' ')
 
               sleep(*Array(definition['refresh']))
             end
           end
 
-          # register this instance
-          @@by_name[name] = self
-          @@by_file[file] = self
-        end
-
-        ##
-        # Updates the label of this applet.
-        #
-        def refresh
-          @refresh.wakeup if @refresh.alive?
-        end
-
-        ##
-        # Invokes the mouse action associated with the given mouse button.
-        #
-        # ==== Parameters
-        #
-        # [button]
-        #   Either the identification number of the
-        #   mouse button (as defined by X server) or
-        #   a named action corresponding to such as
-        #   identification number that was clicked.
-        #
-        def mouse button
-          if action_by_mouse = @definition['mouse_action']
-            mouse = Mouse[button]
-
-            if action = action_by_mouse[mouse]
-              Wmiirc.action action
+          (class << self; self; end).class_eval do
+            define_method :refresh do
+              label_refresh_thread.wakeup if label_refresh_thread.alive?
             end
           end
-        end
 
-        ##
-        # Provides method-call access to parameters in
-        # the YAML definition of this status bar applet.
-        #
-        def method_missing method_name
-          param_name = method_name.to_s
-          if @definition.key? param_name
-            @definition[param_name]
-          else
-            super
+          # register action handlers
+          if control = definition['control']
+            action_by_local_name = {}
+
+            if actions = control['action']
+              actions.each do |action_name, code|
+                handler = instance_eval "lambda {#{code}}", CONFIG.origin(
+                  code, "display:status:#{name}:control:action:#{action_name}"
+                )
+
+                action_by_local_name[action_name] = handler
+
+                # first instance of this status bar applet gets the honor of
+                # registering its action handlers under the global namespace
+                unless Wmiirc.action? action_name
+                  Wmiirc.action action_name, &handler
+                end
+
+                # the button path suffix makes this action name unique
+                # to this particular instance of the status bar applet
+                # when we register the handler in the global namespace
+                Wmiirc.action action_name + button.path, &handler
+              end
+            end
+
+            if keyboard_actions = control['keyboard_action']
+              keyboard_actions.each do |key, action_name|
+                # FIXME: this code was copied from lib/wmiirc/config.rb
+
+                # expand ${...} in keyboard shortcuts
+                key = key.gsub(/\$\{(.+?)\}/) do
+                  CONFIG['control']['keyboard'][$1]
+                end
+
+                # other instances of this status bar applet may have already
+                # registered a handler for this keypress, so we skip this to
+                # avoid triggering the keypress handler multiple times!
+                unless Wmiirc.key? key
+                  Wmiirc.key(key) {|*argv| Wmiirc.action action_name }
+                end
+              end
+            end
+
+            if mouse_actions = control['mouse_action']
+              Wmiirc.event 'RightBarClick' do |clicked_button, clicked_file|
+                if clicked_file == file
+                  if action = mouse_actions[Mouse[clicked_button]]
+                    if handler = action_by_local_name[action]
+                      # the given action is local to this status bar applet
+                      handler.call
+                    else
+                      # the given action is global to the wmii configuration
+                      Wmiirc.action action
+                    end
+                  end
+                end
+              end
+            end
+
+            if events = control['event']
+              events.each do |event_name, code|
+                origin = CONFIG.origin(code, "display:status:#{name}:control:event:#{event_name}")
+                handler = instance_eval("lambda {|*argv| #{code}}", origin)
+                Wmiirc.event event_name, &handler
+              end
+            end
           end
         end
       end

@@ -6,9 +6,8 @@ display:
     thermal:
       refresh: 30
 
-      # threshold values for visual indication
-      high: 45
-      critical: 65
+      @critical: 65
+      @high: 45
 
       script: |
         case ::Config::CONFIG['host_os']
@@ -42,17 +41,16 @@ display:
       label: |
         sample!
 
-        color_key = case
-          when @temp > critical then 'error'
-          when @temp > high then 'notice'
-        end
+        color = case
+                when @temp > @critical then 'error'
+                when @temp > @high     then 'notice'
+                end
 
-        [CONFIG['display']['color'][color_key], @temp, @unit]
+        [color, @temp, @unit]
 
-      mouse_action:
-        left_click: thermal_info
+      control:
+        action:
+          show_thermal_info: self.show_info
 
-control:
-  action:
-    thermal_info: |
-      Status['thermal'].show_info
+        mouse_action:
+          left_click: show_thermal_info

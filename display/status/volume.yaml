@@ -4,78 +4,76 @@ import:
 display:
   status:
     volume:
-      mixer: # define this in your config.yaml
+      refresh: 30
+
+      @mixer:
 
       script: |
         case ::Config::CONFIG['host_os']
         when /linux/
 
-          def get
-            `amixer get #{mixer}`
+          @mixer ||= 'Master'
+
+          def reading
+            `amixer get #{@mixer}`
           end
 
           def level
-            get[/\d+%/]
+            reading[/\d+%/]
           end
 
-          def set value
-            system "amixer set #{mixer} #{value}"
+          def level= value
+            system "amixer set #{@mixer} #{value}"
             refresh
           end
 
           def increase
-            set '5%+'
+            self.level = '5%+'
           end
 
           def decrease
-            set '5%-'
+            self.level = '5%-'
           end
 
           def mute!
-            set 'toggle'
-            if mute?
-              @previous = level
-              set '0%'
-            else
-              set @previous || '80%'
-            end
+            self.level = 'toggle'
           end
 
         when /bsd/
 
-          def get
-            `mixer #{mixer}`
+          @mixer ||= 'mixer'
+
+          def reading
+            `mixer #{@mixer}`
           end
 
           def level
-            get.split.last(1)[0].split(":")[0]
+            reading.split.last.first.split(':').first
           end
 
-          def set value
-            system "mixer #{MIXER} #{value}"
+          def level= value
+            system "mixer #{@mixer} #{value}"
             refresh
           end
 
           def increase
-            set '+3'
+            self.level = '+3'
           end
 
           def decrease
-            set '-3'
+            self.level = '-3'
           end
 
           def mute!
-            set 'toggle'
+            self.level = 'toggle'
           end
 
         else
           raise NotImplementedError, 'OS not supported'
         end
 
-        alias level= set
-
         def mute?
-          get.include? '[off]'
+          reading.include? '[off]'
         end
 
         def menu
@@ -84,41 +82,32 @@ display:
                    push(current.to_i).sort.uniq.
                    map {|i| "#{i}%" }.reverse
 
-          if level = click_menu(levels, current)
-            set level
+          if choice = click_menu(levels, current)
+            self.level = choice
           end
         end
 
-      refresh: 60
-
       label: |
-        color = CONFIG['display']['color']['notice'] if mute?
+        color = 'notice' if mute?
         [color, "\u266A", level]
 
-      mouse_action:
-        left_click: set_volume_from_menu
-        right_click: mute_volume_toggle
-        wheel_up: increase_volume
-        wheel_down: decrease_volume
+      control:
+        action:
+          set_volume_from_menu: self.menu
+          increase_volume: self.increase
+          decrease_volume: self.decrease
+          mute_volume_toggle: self.mute!
 
-control:
-  action:
-    set_volume_from_menu: |
-      Status['volume'].menu
+        keyboard_action:
+          XF86AudioRaiseVolume: increase_volume
+          XF86AudioLowerVolume: decrease_volume
+          XF86AudioMute: mute_volume_toggle
+          ${mod}-Shift-Prior: increase_volume
+          ${mod}-Shift-Next: decrease_volume
+          ${mod}-Shift-Return: mute_volume_toggle
 
-    increase_volume: |
-      Status['volume'].increase
-
-    decrease_volume: |
-      Status['volume'].decrease
-
-    mute_volume_toggle: |
-      Status['volume'].mute!
-
-  keyboard_action:
-    XF86AudioRaiseVolume: increase_volume
-    XF86AudioLowerVolume: decrease_volume
-    XF86AudioMute: mute_volume_toggle
-    ${mod}-Shift-Prior: increase_volume
-    ${mod}-Shift-Next: decrease_volume
-    ${mod}-Shift-Return: mute_volume_toggle
+        mouse_action:
+          left_click: set_volume_from_menu
+          right_click: mute_volume_toggle
+          wheel_up: increase_volume
+          wheel_down: decrease_volume
