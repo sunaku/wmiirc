@@ -52,8 +52,7 @@ Install:
 Branch:
 
     cd ~/.wmii
-    git checkout -b personal
-    cp -vb EXAMPLE.config.yaml config.yaml
+    make branch
 
 ------------------------------------------------------------------------------
 Configuring
@@ -92,12 +91,8 @@ Running
 Upgrading
 ------------------------------------------------------------------------------
 
-    # assuming that "origin" points to github.com/sunaku/wmiirc
-    git fetch origin
-    git checkout master
-    git rebase origin/master
-    git checkout personal
-    git rebase master
+    cd ~/.wmii
+    make rebase
 
 ------------------------------------------------------------------------------
 Hacking
@@ -107,8 +102,7 @@ To use the development version of Rumai directly from its source code
 repository (instead of the currently published gem version), do this:
 
     cd ~/.wmii
-    git clone git://github.com/sunaku/rumai.git
-    sed '2a$:.unshift File.expand_path("../rumai/lib", __FILE__)' -i wmiirc
+    make rumai
 
 ------------------------------------------------------------------------------
 Contributing
