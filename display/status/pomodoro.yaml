@@ -1,0 +1,52 @@
+display:
+  status:
+    pomodoro:
+      @timer:  0
+      @started: false
+      @counter: 0
+
+      refresh: 1
+
+      label: |
+        if @started
+          if Time.now - @timer > 25*60
+            dialog "take a break"
+            self.stop
+          end
+          "pomodoro running #{25 - ((Time.now - @timer)/60).to_i} count #{@counter}"
+        else
+          "pomodoro not started"
+        end
+
+      script: |
+        def start
+          unless @started
+            @timer = Time.now
+            @started = true
+          end
+          refresh
+        end
+
+        def stop
+          @started = false
+          @timer = 0
+          @counter +=1
+          refresh
+        end
+
+        def reset
+          stop
+          @counter = 0
+          refresh
+        end
+
+      control:
+        action:
+          start_pomodoro: self.start
+          stop_pomodoro: self.stop
+          reset_pomodoro: self.reset
+
+        mouse_action:
+          left_click: start_pomodoro
+          right_click: stop_pomodoro
+          wheel_click: reset_pomodoro
