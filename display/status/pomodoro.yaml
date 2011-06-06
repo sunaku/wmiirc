@@ -1,43 +1,41 @@
 display:
   status:
     pomodoro:
-      @timer:  0
-      @started: false
-      @counter: 0
-
-      refresh: 1
-
-      label: |
-        if @started
-          if Time.now - @timer > 25*60
-            dialog "take a break"
-            self.stop
-          end
-          "pomodoro running #{25 - ((Time.now - @timer)/60).to_i} count #{@counter}"
-        else
-          "pomodoro not started"
-        end
+      refresh: 60
 
       script: |
+        MINUTES = 25 # minutes in a single pomodoro
+
         def start
-          unless @started
-            @timer = Time.now
-            @started = true
-          end
+          @started_at ||= Time.now
+          @pomodoros ||= 0
           refresh
         end
 
         def stop
-          @started = false
-          @timer = 0
-          @counter +=1
+          @started_at = nil
+          @pomodoros +=1
           refresh
         end
 
         def reset
           stop
-          @counter = 0
+          @pomodoros = 0
           refresh
+        end
+
+      label: |
+        if @started_at
+          minutes_elasped = ((Time.now - @started_at) / 60).round
+
+          if minutes_elasped >= MINUTES
+            dialog 'Take a break!', '-title', 'Pomodoro'
+            self.stop
+          end
+
+          [:success, "pomodoro #{MINUTES - minutes_elasped}m x#{@pomodoros}"]
+        else
+          'pomodoro'
         end
 
       control:
