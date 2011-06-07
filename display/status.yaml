@@ -11,6 +11,24 @@ script:
 
       class Status < Sandbox
         def initialize name, definition, position
+          definition_key = "display:status:#{name}"
+
+          # restore instance variables from previous session
+          if session = SESSION[definition_key]
+            session.each do |variable, value|
+              instance_variable_set variable, value
+            end
+          end
+
+          # store instance variables for next session before exiting
+          at_exit do
+            SESSION[definition_key] = Hash[
+              instance_variables.map do |variable|
+                [variable, instance_variable_get(variable)]
+              end
+            ]
+          end
+
           # make parameters that begin with '@' in the definition hash
           # available as instance variables for use by Ruby code therein
           definition.each do |key, value|
@@ -21,12 +39,12 @@ script:
 
           if code = definition['script']
             instance_eval code.to_s,
-              CONFIG.origin(code, "display:status:#{name}:script")
+              CONFIG.origin(code, "#{definition_key}:script")
           end
 
           code = definition['label']
           instance_eval "def label; #{code}; end",
-            CONFIG.origin(code, "display:status:#{name}:label")
+            CONFIG.origin(code, "#{definition_key}:label")
 
           # buttons appear in ASCII order of their IXP file name
           # so prepend a number to get ordered status bar applets
@@ -71,7 +89,7 @@ script:
             if actions = control['action']
               actions.each do |action_name, code|
                 handler = instance_eval "lambda {#{code}}", CONFIG.origin(
-                  code, "display:status:#{name}:control:action:#{action_name}"
+                  code, "#{definition_key}:control:action:#{action_name}"
                 )
 
                 action_by_local_name[action_name] = handler
@@ -125,7 +143,7 @@ script:
 
             if events = control['event']
               events.each do |event_name, code|
-                origin = CONFIG.origin(code, "display:status:#{name}:control:event:#{event_name}")
+                origin = CONFIG.origin(code, "#{definition_key}:control:event:#{event_name}")
                 handler = instance_eval("lambda {|*argv| #{code}}", origin)
                 Wmiirc.event event_name, &handler
               end

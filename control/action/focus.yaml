@@ -1,13 +1,16 @@
 script:
   - before: |
       # keep track of most recently focused view
-      $last_view = nil
+      if tag = SESSION[:most_recently_focused_tag]
+        $most_recently_focused_view = View.new(tag)
+      end
 
       class Rumai::View
         alias __focus__ focus
 
         def focus
-          $last_view = self.class.curr
+          $most_recently_focused_view = self.class.curr
+          SESSION[:most_recently_focused_tag] = $most_recently_focused_view.id
           __focus__
         end
       end
@@ -37,4 +40,4 @@ control:
       next_view.focus
 
     focus_most_recently_focused_view: |
-      $last_view.focus if $last_view
+      $most_recently_focused_view.focus if $most_recently_focused_view

@@ -11,6 +11,7 @@ module Wmiirc
 
         log_standard_outputs
         terminate_other_instances
+        load_user_session
         load_user_config
         enter_event_loop
 
@@ -77,6 +78,31 @@ module Wmiirc
         Wmiirc.event 'Start' do |arg|
           exit if arg == 'wmiirc'
         end
+
+        # wait for other instances to exit
+        # so that we can read their session
+        # data after they finish writing it
+        sleep 0.5 # FIXME: race condition
+      end
+
+      def load_user_session
+        session_file = File.join(DIR, 'session.yaml')
+
+        session =
+          begin
+            YAML.load_file session_file
+          rescue => e
+            LOG.error e
+            {}
+          end
+
+        at_exit do
+          File.open(session_file, 'w') do |file|
+            file.write session.to_yaml
+          end
+        end
+
+        Wmiirc.const_set :SESSION, session
       end
 
       def load_user_config

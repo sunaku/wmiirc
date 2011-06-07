@@ -39,12 +39,13 @@ display:
           end
         end
 
-        @choice_by_tag = Hash.new {|h,k| h[k] = @default }
-
         event 'FocusTag' do |tag|
           @current_tag = tag
           refresh
         end
+
+        @choice_by_tag ||= {}
+        @choice_by_tag.default_proc ||= proc {|h,k| h[k] = @default }
 
         def current
           @choice_by_tag[@current_tag]

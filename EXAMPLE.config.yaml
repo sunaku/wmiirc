@@ -1,9 +1,9 @@
 #
 # High-level wmii configuration.
 #
-# Ruby code in this file has access
-# to a CONFIG constant which contains
-# the data in this configuration file.
+# Ruby code in this file has access to a CONFIG constant which contains the
+# data in this configuration file.  It also has access to a SESSION constant
+# which is a hash that is persisted across multiple instances of this wmiirc.
 #
 
 ##
