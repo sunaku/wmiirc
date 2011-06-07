@@ -4,17 +4,18 @@ display:
       refresh: 60
 
       script: |
-        MINUTES = 25 # minutes in a single pomodoro
+        MINUTES_PER_POMODORO = 25
+        POMODOROS_PER_SET = 4
+        @pomodoros ||= 0
 
         def start
-          @started_at ||= Time.now
-          @pomodoros ||= 0
+          @started_at = Time.now
+          @pomodoros += 1
           refresh
         end
 
         def stop
           @started_at = nil
-          @pomodoros +=1
           refresh
         end
 
@@ -27,16 +28,26 @@ display:
       label: |
         if @started_at
           minutes_elasped = ((Time.now - @started_at) / 60).round
+          minutes_remaining = MINUTES_PER_POMODORO - minutes_elasped
 
-          if minutes_elasped >= MINUTES
-            dialog 'Take a break!', '-title', 'Pomodoro'
-            self.stop
+          if minutes_remaining > 0
+            color = :success
+          elsif minutes_remaining == 0
+            color = :notice
+
+            dialog '-title', 'Pomodoro', "Take a #{
+              @pomodoros.next % POMODOROS_PER_SET == 0 ? 'longer' : 'short'
+            } break!"
+          else
+            color = :error
           end
 
-          [:success, "pomodoro #{MINUTES - minutes_elasped}m x#{@pomodoros}"]
+          message = "#{minutes_remaining}m x#{@pomodoros}"
         else
-          'pomodoro'
+          message = 'stopped'
         end
+
+        [color, 'pomodoro', message]
 
       control:
         action:
