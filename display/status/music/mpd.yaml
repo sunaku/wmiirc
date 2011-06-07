@@ -72,14 +72,13 @@ display:
           end
 
         label: |
-          label = color = icon = nil
-
           if @mpd.stopped?
             icon = "\u25A0"
+            text = 'mpd'
           else
             song = @mpd.current_song
             song_title = song.title || (f = song.file and File.basename(f))
-            label = [song.artist, song_title].compact.
+            text = [song.artist, song_title].compact.
               map {|s| s.force_encoding('UTF-8') }.
               join(" \u2013 ")
 
@@ -90,7 +89,7 @@ display:
             end
           end
 
-          [color, icon, label].compact
+          [icon, text].compact
 
         control:
           action:
