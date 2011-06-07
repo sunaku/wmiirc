@@ -4,18 +4,20 @@ display:
       refresh: 60
 
       script: |
-        MINUTES_PER_POMODORO = 25
         POMODOROS_PER_SESSION = 4
+        MINUTES_PER_POMODORO = 25
+        SECONDS_PER_MINUTE = 60
+        SECONDS_PER_POMODORO = MINUTES_PER_POMODORO * SECONDS_PER_MINUTE
         @pomodoros ||= 0
 
         def start
-          expired = Time.now >= @deadline if @deadline
+          completed = Time.now >= @deadline if @deadline
 
-          if not @started or expired
-            @deadline = Time.now + (MINUTES_PER_POMODORO * 60)
+          if not @started or completed
+            @deadline = Time.now + SECONDS_PER_POMODORO
             @started = true
             @paused = false
-            @pomodoros += 1 if expired
+            @pomodoros += 1 if completed
 
           elsif @paused
             @deadline = Time.now + @paused
@@ -35,18 +37,22 @@ display:
         end
 
         def reset
-          stop
           @pomodoros = 0
-          refresh
+          stop
+        end
+
+        def seconds_to_minutes seconds
+          (seconds.to_f / SECONDS_PER_MINUTE).round
         end
 
       label: |
         if @paused
-          color = :notice
-          minutes_remaining = "\u221E" # infinity
+          icon = "\u25AE" * 2
+          minutes_remaining = seconds_to_minutes(@paused)
 
         elsif @started
-          minutes_remaining = ((@deadline - Time.now) / 60).round
+          icon = "\u25B6"
+          minutes_remaining = seconds_to_minutes(@deadline - Time.now)
 
           if minutes_remaining == 0
             color = :success
@@ -62,9 +68,11 @@ display:
           elsif minutes_remaining < 0
             color = :error
           end
+        else
+          icon = "\u25A0"
         end
 
-        [color, 'pomodoro',
+        [color, icon, 'pomodoro',
           ("#{minutes_remaining}m" if minutes_remaining),
           ("x#{@pomodoros}" if @started),
         ].compact
