@@ -48,11 +48,8 @@ display:
         elsif @started
           minutes_remaining = ((@deadline - Time.now) / 60).round
 
-          if minutes_remaining > 0
+          if minutes_remaining == 0
             color = :success
-
-          elsif minutes_remaining == 0
-            color = :focus
 
             message =
               if (@pomodoros + 1) % POMODOROS_PER_SESSION == 0
@@ -62,7 +59,7 @@ display:
               end
             dialog message, '-title', 'Pomodoro Technique'
 
-          else
+          elsif minutes_remaining < 0
             color = :error
           end
         end
