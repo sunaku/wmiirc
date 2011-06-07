@@ -5,17 +5,32 @@ display:
 
       script: |
         MINUTES_PER_POMODORO = 25
-        POMODOROS_PER_SET = 4
+        POMODOROS_PER_SESSION = 4
         @pomodoros ||= 0
 
         def start
-          @started_at = Time.now
-          @pomodoros += 1
+          expired = Time.now >= @deadline if @deadline
+
+          if not @started or expired
+            @deadline = Time.now + (MINUTES_PER_POMODORO * 60)
+            @started = true
+            @paused = false
+            @pomodoros += 1 if expired
+
+          elsif @paused
+            @deadline = Time.now + @paused
+            @paused = false
+
+          else
+            @paused = @deadline - Time.now
+          end
+
           refresh
         end
 
         def stop
-          @started_at = nil
+          @started = false
+          @paused = false
           refresh
         end
 
@@ -26,28 +41,36 @@ display:
         end
 
       label: |
-        if @started_at
-          minutes_elasped = ((Time.now - @started_at) / 60).round
-          minutes_remaining = MINUTES_PER_POMODORO - minutes_elasped
+        if @paused
+          color = :notice
+          minutes_remaining = "\u221E" # infinity
+
+        elsif @started
+          minutes_remaining = ((@deadline - Time.now) / 60).round
 
           if minutes_remaining > 0
             color = :success
-          elsif minutes_remaining == 0
-            color = :notice
 
-            dialog '-title', 'Pomodoro', "Take a #{
-              @pomodoros.next % POMODOROS_PER_SET == 0 ? 'longer' : 'short'
-            } break!"
+          elsif minutes_remaining == 0
+            color = :focus
+
+            message =
+              if (@pomodoros + 1) % POMODOROS_PER_SESSION == 0
+                'Take a longer (10-20 minutes) break!'
+              else
+                'Take a short (5 minutes) break!'
+              end
+            dialog message, '-title', 'Pomodoro Technique'
+
           else
             color = :error
           end
-
-          message = "#{minutes_remaining}m x#{@pomodoros}"
-        else
-          message = 'stopped'
         end
 
-        [color, 'pomodoro', message]
+        [color, 'pomodoro',
+          ("#{minutes_remaining}m" if minutes_remaining),
+          ("x#{@pomodoros}" if @started),
+        ].compact
 
       control:
         action:
