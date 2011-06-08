@@ -71,7 +71,7 @@ display:
             case level
             when :critical then 'error'
             when :low then 'notice'
-            else 'success'
+            else 'normal'
             end
           else
             'notice'
