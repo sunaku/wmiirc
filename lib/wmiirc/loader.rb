@@ -90,10 +90,10 @@ module Wmiirc
 
         session =
           begin
-            YAML.load_file session_file
+            YAML.load_file(session_file).to_hash
           rescue => e
             LOG.error e
-            {}
+            Hash.new
           end
 
         at_exit do
