@@ -6,112 +6,33 @@ display:
     power:
       refresh: 15
 
-      @battery: BAT0
-      @high: 80
-      @low: 5
-
-      script: |
-        LEVELS = {:high => 80, :low => 10, :critical => 5}
-        MESSAGES = {:low => "Battery LOW", :critical => "Battery CRITICAL"}
-        @last_message = :high # no message
-
-        BAT_INFO_FILE = "/proc/acpi/battery/#{@battery}/info"
-        BAT_STATE_FILE = "/proc/acpi/battery/#{@battery}/state"
-
-        def exist?
-          File.exist? BAT_INFO_FILE and File.exist? BAT_STATE_FILE
-        end
-
-        def sample!
-          @bat_info = File.read(BAT_INFO_FILE)
-          @bat_state = File.read(BAT_STATE_FILE)
-        end
-
-        def present?
-          @bat_info =~ /present:\s*yes/
-        end
-
-        def state
-          @bat_state[/charging state:\s*([a-z]+)/,1]
-        end
-
-        def percent
-          (remaining_capacity.to_f / last_full_capacity.to_f) * 100
-        end
-
-        def hours_remaining
-          remaining_capacity.to_f / present_rate.to_f
-        end
-
-        def last_full_capacity
-          @bat_info[/last full capacity:\s*(\d+)/, 1]
-        end
-
-        def remaining_capacity
-          @bat_state[/remaining capacity:\s*(\d+)/, 1]
-        end
-
-        def present_rate
-          @bat_state[/present rate:\s*(\d+)/, 1]
-        end
-
-        def level
-          case
-            when percent < LEVELS[:critical] then :critical
-            when percent < LEVELS[:low] then :low
-            when percent > LEVELS[:high] then :high
-          end
-        end
-
-        def color
-          case state
-          when 'charged', 'charging'
-            'normal'
-          when 'discharging'
-            case level
-            when :critical then 'error'
-            when :low then 'notice'
-            else 'normal'
-            end
-          else
-            'notice'
-          end
-        end
-
-        def message
-          current = level || :high
-          if LEVELS[current] < LEVELS[@last_message]
-            xmessage = MESSAGES[current]
-          end
-          @last_message = current
-          return xmessage
-        end
+      @low: 10
+      @critical: 5
 
       label: |
-        sample!
+        name, status, level, time = `acpi -b`.split(/[:,] /)
 
-        if present?
-          if xmessage = message
-            system 'xkbbell -force'
-            dialog xmessage
+        icon =
+          case status.downcase
+          when 'full' then "\u25CF"
+          when 'charging' then "\u26A1"
+          when 'discharging' then "\u25D3"
+          else "\u2047"
           end
 
-          status = case state
-            when 'charged' then "\u25CF"
-            when 'charging' then "\u26A1"
-            when 'discharging' then "\u25D3"
+        color =
+          case [level.to_i, @low, @critical].max
+          when @low then :notice
+          when @critical then :error
           end
 
-          [color, @battery, status, sprintf(
-            "%d%% \u25CC %0.1fH", [percent, 100].min, hours_remaining
-          )].compact
-        end
+        time = "\u25D4 #{time[/[0:]*(\S+)/, 1]}" if time
+
+        [color, "BAT#{name.split.last}", icon, level, time].compact
 
       control:
         action:
-          show_battery_info: |
-            sample!
-            dialog (@bat_state + @bat_info).lines.to_a.uniq.join
+          show_battery_info: dialog `acpi -b -i`
 
         mouse_action:
           left_click: show_battery_info
