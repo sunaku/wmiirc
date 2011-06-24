@@ -9,7 +9,9 @@ rebase:
 branch:
 	git checkout -b personal
 	cp -vb EXAMPLE.config.yaml config.yaml
-	$(EDITOR) config.yaml
+	@echo '---------------------------------------------------------------'
+	@echo 'IMPORTANT: You must now edit config.yaml -- fill in the blanks!'
+	@echo '---------------------------------------------------------------'
 
 rumai:
 	git clone git://github.com/sunaku/rumai.git
