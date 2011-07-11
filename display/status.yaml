@@ -9,7 +9,7 @@ script:
         end
       end
 
-      class Status < Sandbox
+      class StatusBarletSandbox < Sandbox
         def initialize name, definition, position
           definition_key = "display:status:#{name}"
 
@@ -181,6 +181,6 @@ script:
         instances << definition if instances.empty?
 
         instances.each_with_index do |instance, offset|
-          Status.new name, instance, "#{position}-#{offset}"
+          StatusBarletSandbox.new name, instance, "#{position}-#{offset}"
         end
       end
