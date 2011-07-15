@@ -5,15 +5,15 @@ display:
   status:
     time:
       refresh: 1
-
       @format: %c
       label: |
         ["\u25D4", Time.now.strftime(@format)]
-
       control:
-        action:
-          show_calendar:
-            dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '-' * s.length }
-
         mouse_action:
-          left_click: show_calendar
+          left_click: show_month_calendar
+          right_click: show_year_calendar
+        action:
+          show_month_calendar: |
+            dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '*' * s.length }
+          show_year_calendar: |
+            dialog "Today is #{Date.today}.\n" + `cal -y`
