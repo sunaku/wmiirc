@@ -10,7 +10,7 @@ display:
         @password:
 
         script: |
-          gem 'librmpd', '>= 0.1'
+          gem 'librmpd', '~> 0.1'
           require 'librmpd'
 
           @mpd = MPD.new
