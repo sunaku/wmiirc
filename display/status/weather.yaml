@@ -11,10 +11,11 @@ display:
       script: |
         gem 'barometer', '~> 0.7.3'
         require 'barometer'
-        @barometer = Barometer.new(@location)
+
 
       label: |
-        weather = @barometer.measure
+        barometer = Barometer.new(@location)
+        weather = barometer.measure
         description = weather.current.icon
 
         icon = case description
