@@ -29,4 +29,19 @@ display:
 
         temperature = weather.temperature.to_s.tr('CF', "\u2103\u2109")
 
-        [icon, description, temperature, weather.pressure, weather.wind]
+        [icon, description, temperature]
+
+      control:
+        action:
+          show_weather_info: |
+            barometer = Barometer.new(@location)
+            weather = barometer.measure
+
+            require 'stringio'
+            require 'pp'
+            io = StringIO.new
+            PP.pp weather, io
+            dialog io.string
+
+        mouse_action:
+          left_click: show_weather_info
