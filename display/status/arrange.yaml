@@ -70,7 +70,7 @@ display:
         end
 
       label: |
-        ["\u25E9", current || 'manual']
+        ["\u25E9", current].compact
 
       control:
         action:

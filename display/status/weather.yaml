@@ -29,7 +29,7 @@ display:
 
         temperature = weather.temperature.to_s.tr('CF', "\u2103\u2109")
 
-        [icon, description, temperature]
+        [icon, temperature, description]
 
       control:
         action:

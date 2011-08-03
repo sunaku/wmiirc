@@ -74,7 +74,6 @@ display:
         label: |
           if @mpd.stopped?
             icon = "\u25A0"
-            text = 'mpd'
           else
             song = @mpd.current_song
             song_title = song.title || (f = song.file and File.basename(f))

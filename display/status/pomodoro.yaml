@@ -47,11 +47,10 @@ display:
 
       label: |
         if @paused
-          icon = "\u25AE" * 2
+          color = :notice
           minutes_remaining = seconds_to_minutes(@paused)
 
         elsif @started
-          icon = "\u25B6"
           minutes_remaining = seconds_to_minutes(@deadline - Time.now)
 
           if minutes_remaining == 0
@@ -68,11 +67,9 @@ display:
           elsif minutes_remaining < 0
             color = :error
           end
-        else
-          icon = "\u25A0"
         end
 
-        [color, icon, 'pomodoro',
+        [color, "\u2692",
           ("#{minutes_remaining}m" if minutes_remaining),
           ("x#{@pomodoros}" if @started),
         ].compact
