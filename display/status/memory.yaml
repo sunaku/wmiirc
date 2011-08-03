@@ -29,7 +29,8 @@ display:
 
       label: |
         sample!
-        "mem \u25D3 #{@used}M \u25CC #{@free}M \u25C9 #{@swap}M"
+        used_percent = ((@used.to_f / (@used.to_f + @free.to_f)) * 100).round
+        "mem \u25D3 #{used_percent}% \u25CC #{@free}M \u25C9 #{@swap}M"
 
       control:
         action:
