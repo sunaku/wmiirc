@@ -16,4 +16,4 @@ display:
           show_month_calendar: |
             dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '*' * s.length }
           show_year_calendar: |
-            dialog "Today is #{Date.today}.\n" + `cal -y`
+            dialog `cal -y`.sub(/^.*$/) {|line| Date.today.to_s.center(line.length) }
