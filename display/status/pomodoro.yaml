@@ -45,6 +45,16 @@ display:
           (seconds.to_f / SECONDS_PER_MINUTE).round
         end
 
+        def tell_user_to_take_break
+          message =
+            if (@pomodoros + 1) % POMODOROS_PER_SESSION == 0
+              'Take a longer (10-20 minutes) break!'
+            else
+              'Take a short (5 minutes) break!'
+            end
+          dialog message, '-title', 'Pomodoro Technique'
+        end
+
       label: |
         if @paused
           color = :notice
@@ -53,19 +63,15 @@ display:
         elsif @started
           minutes_remaining = seconds_to_minutes(@deadline - Time.now)
 
-          if minutes_remaining == 0
-            color = :success
+          color =
+            if minutes_remaining == 0
+              :success
+            elsif minutes_remaining < 0
+              :error
+            end
 
-            message =
-              if (@pomodoros + 1) % POMODOROS_PER_SESSION == 0
-                'Take a longer (10-20 minutes) break!'
-              else
-                'Take a short (5 minutes) break!'
-              end
-            dialog message, '-title', 'Pomodoro Technique'
-
-          elsif minutes_remaining < 0
-            color = :error
+          if minutes_remaining % 5 == 0 and minutes_remaining <= 0
+            tell_user_to_take_break
           end
         end
 
