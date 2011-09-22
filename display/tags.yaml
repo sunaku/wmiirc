@@ -43,8 +43,15 @@ control:
       mouse_code, view_id = argv
       mouse_event = Mouse[mouse_code]
 
-      if mouse_event == 'left_click'
+      case mouse_event
+      when 'left_click'
         focus_view view_id
+
+      when 'wheel_click'
+        curr_client.tag view_id
+
+      when 'right_click'
+        curr_client.untag view_id
       end
 
     ##
