@@ -10,6 +10,16 @@ display:
         SECONDS_PER_POMODORO = MINUTES_PER_POMODORO * SECONDS_PER_MINUTE
         @pomodoros ||= 0
 
+        # roughly record the time of user's last computer activity
+        @activity = Time.now
+        Thread.new do
+          Rumai.fs.event.each_line do |events|
+            if events =~ /^\w+Focus\b/
+              @activity = Time.now
+            end
+          end
+        end
+
         def start
           completed = Time.now >= @deadline if @deadline
 
@@ -73,6 +83,11 @@ display:
           if minutes_remaining % 5 == 0 and minutes_remaining <= 0
             tell_user_to_take_break
           end
+
+        elsif seconds_to_minutes(Time.now - @activity) < 5
+          # remind the user that they started working on the computer without
+          # having activated the pomodoro timer; think of their health! >:-O
+          color = :error
         end
 
         [color, "\u2692",
