@@ -5,6 +5,7 @@ display:
 
       script: |
         POMODOROS_PER_SESSION = 4
+        MINUTES_PER_BREAK = 5
         MINUTES_PER_POMODORO = 25
         SECONDS_PER_MINUTE = 60
         SECONDS_PER_POMODORO = MINUTES_PER_POMODORO * SECONDS_PER_MINUTE
@@ -52,7 +53,11 @@ display:
             else
               'Take a short (5 minutes) break!'
             end
-          dialog message, '-title', 'Pomodoro Technique'
+
+          dialog message, '-title', 'Pomodoro Technique',
+            '-timeout', (MINUTES_PER_BREAK * SECONDS_PER_MINUTE).to_s
+
+          Rumai.fs.event.write "Notice #{message}\n"
         end
 
       label: |
@@ -73,9 +78,8 @@ display:
             color = :success
           end
 
-          if minutes_remaining % 5 == 0 and minutes_remaining <= 0
-            tell_user_to_take_break
-          end
+          tell_user_to_take_break if minutes_remaining <= 0 and
+            minutes_remaining % MINUTES_PER_BREAK == 0
         end
 
         [color, "\u2692",
