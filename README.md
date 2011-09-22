@@ -1,6 +1,7 @@
 sunaku's Ruby wmiirc
 ==============================================================================
 
+[![September 2011 screenshot](http://ompldr.org/tYWg1eQ)](http://ompldr.org/vYWg1eQ)
 [![August 2011 screenshot](http://ompldr.org/tOXJjcg)](http://ompldr.org/vOXJjcg)
 [![July 2011 screenshot](http://ompldr.org/tOWk0Zw)](http://ompldr.org/vOWk0Zw)
 [![June 2011 screenshot](http://ompldr.org/tOHZzcw)](http://ompldr.org/vOHZzcw)
