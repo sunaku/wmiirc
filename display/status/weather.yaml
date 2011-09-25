@@ -1,6 +1,9 @@
 import:
   - display/status
 
+require:
+  - barometer: '~> 0.7.3'
+
 display:
   status:
     weather:
@@ -9,13 +12,10 @@ display:
       refresh: 300 # 5 minutes
 
       script: |
-        gem 'barometer', '~> 0.7.3'
-        require 'barometer'
-
+        @barometer = Barometer.new(@location)
 
       label: |
-        barometer = Barometer.new(@location)
-        weather = barometer.measure
+        weather = @barometer.measure
         description = weather.current.icon
 
         icon = case description

@@ -11,7 +11,6 @@ module Wmiirc
 
         log_standard_outputs
         terminate_other_instances
-        load_user_session
         load_user_config
         enter_event_loop
 
@@ -105,9 +104,24 @@ module Wmiirc
         Wmiirc.const_set :SESSION, session
       end
 
+      def load_user_requires
+        Array(CONFIG['require']).each do |library|
+          if library.kind_of? Hash
+            library.each do |gem_name, gem_version|
+              gem gem_name, *Array(gem_version)
+              require gem_name
+            end
+          else
+            require library
+          end
+        end
+      end
+
       def load_user_config
         config = Config.new('config')
         Wmiirc.const_set :CONFIG, config
+        load_user_requires
+        load_user_session
         config.apply
       end
 

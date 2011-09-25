@@ -15,6 +15,18 @@
 import:
 
 ##
+# A list of Ruby libraries to load before evaluating this configuration file.
+# If a library is a RubyGem, you can constrain its version number like this:
+#
+#   require:
+#     - some_gem
+#     - another_gem: '>= 1.0.9'
+#     - yet_another_gem: ['>= 1.0.9', '< 2']
+#     - some_ruby_library
+#
+require:
+
+##
 # Arbitrary preferences.
 #
 prefer:

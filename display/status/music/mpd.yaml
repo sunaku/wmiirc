@@ -1,6 +1,9 @@
 import:
   - display/status
 
+require:
+  - librmpd: '~> 0.1'
+
 display:
   status:
     music:
@@ -10,9 +13,6 @@ display:
         @password:
 
         script: |
-          gem 'librmpd', '~> 0.1'
-          require 'librmpd'
-
           @mpd = MPD.new
           @mpd.connect
           @mpd.password @password if @password
