@@ -45,10 +45,9 @@ display:
         end
 
         @choice_by_tag ||= {}
-        @choice_by_tag.default_proc ||= proc {|h,k| h[k] = @default }
 
         def current
-          @choice_by_tag[@current_tag]
+          @choice_by_tag[@current_tag] || @default
         end
 
         def current= choice
@@ -59,7 +58,7 @@ display:
         end
 
         def stop
-          @choice_by_tag[@current_tag] = nil
+          @choice_by_tag.delete @current_tag
           refresh
         end
 
