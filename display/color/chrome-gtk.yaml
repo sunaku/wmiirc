@@ -1,3 +1,6 @@
+import:
+  - display/color/common
+
 #
 # Colors from the GTK+ theme for Google Chrome.
 #

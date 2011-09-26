@@ -80,9 +80,6 @@ display:
     desktop:
     focus:
     normal:
-    error:
-    notice:
-    success:
 
   ##
   # Settings for columns drawn by wmii.

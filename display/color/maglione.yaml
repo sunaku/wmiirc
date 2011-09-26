@@ -1,3 +1,6 @@
+import:
+  - display/color/common
+
 #
 # Kris Maglione's color scheme,
 # extracted from cmd/rc/wmii.sh

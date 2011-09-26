@@ -1,4 +1,9 @@
-# colors to match the xfce-cadmium gtk theme
+import:
+  - display/color/common
+
+#
+# Colors from the xfce-cadmium GTK+ theme.
+#
 display:
   color:
     desktop:  "#eeeeef"

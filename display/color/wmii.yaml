@@ -1,3 +1,6 @@
+import:
+  - display/color/common
+
 #
 # wmii's default color scheme,
 # extracted from cmd/wmii/dat.h
