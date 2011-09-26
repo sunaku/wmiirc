@@ -1,6 +1,4 @@
 #
-# High-level wmii configuration.
-#
 # Ruby code in this file has access to a CONFIG constant which contains the
 # data in this configuration file.  It also has access to a SESSION constant
 # which is a hash that is persisted across multiple instances of this wmiirc.
@@ -8,9 +6,30 @@
 
 ##
 # A list of configuration files (partials) to import before
-# evaluating this configuration file.  Imported partials
-# may import other partials, recursively.  The contents of
-# each successive partial are merged with the previous one.
+# evaluating this configuration file.  Imported partials may
+# import other partials, recursively.  The contents of each
+# successive partial are merged with the previous one.  As a
+# result, the contents of the current file *always overwrite*
+# the contents of the partials imported by the current file.
+#
+# How this overwriting occurs depends on the type of object being overwritten:
+#
+# * If the object being overwritten is a hash, then:
+#
+#   (1) for keys that are present in the old hash but absent in the new hash,
+#       key-value pairs from the old hash are retained.
+#
+#   (2) for keys that are present in the new hash but absent in the old hash,
+#       key-value pairs from the new hash are added.
+#
+#   (3) for keys in common between the old and new hashes, key-value pairs
+#       from the old hash are replaced by key-value pairs from the new hash.
+#
+# * If the object being overwritten is an array, then items from the new array
+#   are appended to end of the old array.
+#
+# * If the object being overwritten is a scalar value such as a string,
+#   integer, or boolean, then the old value is replaced by the new value.
 #
 import:
 
@@ -88,6 +107,8 @@ display:
   #   rule: <the wmii "colrules" setting>
   #
   column:
+    mode:
+    rule:
 
   ##
   # Settings for clients handled by wmii.
@@ -95,6 +116,7 @@ display:
   #   rule: <the wmii "rules" setting>
   #
   client:
+    rule:
 
   ##
   # Status bar applets.
@@ -167,8 +189,8 @@ control:
   # The Ruby code has access to an "argv" variable which
   # is a list of arguments that were passed to the event.
   #
-  # Keep in mind that these event handlers block the
-  # wmiirc event loop---meaning that no new events are
+  # Keep in mind that these event handlers **block** the
+  # wmiirc event loop --- meaning that no new events are
   # received and processed until the current one has been
   # fully handled.  So try to keep them short and quick.
   #
@@ -221,8 +243,8 @@ control:
   keyboard_action:
 
 ##
-# Arbitrary logic to execute either before or after processing this file.  Any
-# number of "before" and "after" subsections may be defined within this section.
+# Arbitrary logic to execute while processing this file.  Any number of
+# "before" and "after" subsections may be defined within this section.
 #
 #   script:
 #     - before: <Ruby code to execute before processing this file>

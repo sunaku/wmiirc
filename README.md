@@ -79,6 +79,9 @@ Branch:
 Configuring
 ------------------------------------------------------------------------------
 
+* Read the inline documentation in the `~/.wmii/EXAMPLE.config.yaml` file to
+  familiarize yourself with the configuration file's format and its sections.
+
 * Edit the `~/.wmii/config.yaml` file to suit your needs.  For a working
   example, see [my personal configuration file](
   https://github.com/sunaku/wmiirc/blob/personal/config.yaml ).
