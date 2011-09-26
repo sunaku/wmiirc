@@ -18,13 +18,14 @@ for live experimentation) and offers a near "Desktop Environment" experience:
 * System, dialog, and menu (with history) integration.
 * QWERTY, Dvorak, and Neo2 keyboard layouts.
 * Client grouping and mass manipulation thereof.
-* View and client access by number and letter keys.
+* View and client access by menu and alphanumeric keys.
 * Automated client arrangements with optional persistence.
 * Detaching clients from current view and restoring them.
 * Zooming clients to temporary views and restoring them.
 * Closing all clients before exiting the window manager.
 * Script and stdout/err logging with automatic rotation.
 * Crash handling with error trace and recovery console.
+* Session state propagation between wmiirc instances.
 * And oh so much more... :-]
 
 All of this can be configured to suit your needs, of course.
