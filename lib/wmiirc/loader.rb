@@ -77,28 +77,28 @@ module Wmiirc
         Wmiirc.event 'Start' do |arg|
           exit if arg == 'wmiirc'
         end
-
-        # wait for other instances to exit
-        # so that we can read their session
-        # data after they finish writing it
-        sleep 0.5 # FIXME: race condition
       end
 
       def load_user_session
         session_file = File.join(DIR, 'session.yaml')
 
+        require 'fileutils'
+        FileUtils.touch session_file
+        session_store = File.open(session_file, 'r+')
+        session_store.flock File::LOCK_EX # acquire lock
+
         session =
           begin
-            YAML.load_file(session_file).to_hash
+            YAML.load(session_store).to_hash
           rescue => e
             LOG.error e
             Hash.new
           end
 
         at_exit do
-          File.open(session_file, 'w') do |file|
-            file.write session.to_yaml
-          end
+          session_store.rewind
+          session_store.write session.to_yaml
+          session_store.close # release lock
         end
 
         Wmiirc.const_set :SESSION, session
