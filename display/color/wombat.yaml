@@ -13,6 +13,3 @@ display:
     desktop:  "#191919"
     normal:   "#dddddd #343434 #444444"
     focus:    "#343434 #a1cdcd #444444"
-    error:    "#191919 #e5786d #444444"
-    notice:   "#191919 #6aa6c2 #444444"
-    success:  "#191919 #95e454 #444444"

@@ -11,6 +11,3 @@ display:
     desktop:  "#333333" # VisualNOS
     focus:    "#000d18 #8faf9f #4f4f4f" # Cursor, Cursor, CursorColumn
     normal:   "#dcdccc #3f3f3f #434443" # Normal, CursorLine
-    error:    "#262626 #cc9393 #434443" # LineNr, String, CursorLine
-    notice:   "#262626 #e3ceab #434443" # LineNr, Statement, CursorLine
-    success:  "#262626 #ccdc90 #434443" # LineNr, StatusLine, CursorLine

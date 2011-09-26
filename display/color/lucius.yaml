@@ -10,6 +10,3 @@ display:
     desktop:  "#363946" # LineNr
     focus:    "#cae682 #505860 #303840" # PmenuSel
     normal:   "#e0e0e0 #202020 #202438" # Normal
-    error:    "#e37170 #432323 #202438" # Error
-    notice:   "#efaf7f #202020 #202438" # Identifier
-    success:  "#b3d38c #202020 #202438" # Type
