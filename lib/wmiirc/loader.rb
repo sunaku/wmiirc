@@ -84,21 +84,20 @@ module Wmiirc
 
         require 'fileutils'
         FileUtils.touch session_file
-        session_store = File.open(session_file, 'r+')
-        session_store.flock File::LOCK_EX # acquire lock
+        File.open(session_file).flock(File::LOCK_EX) # auto released on exit
 
         session =
           begin
-            YAML.load(session_store).to_hash
+            YAML.load_file(session_file).to_hash
           rescue => e
             LOG.error e
             Hash.new
           end
 
         at_exit do
-          session_store.rewind
-          session_store.write session.to_yaml
-          session_store.close # release lock
+          File.open(session_file, 'w') do |file|
+            file.write session.to_yaml
+          end
         end
 
         Wmiirc.const_set :SESSION, session
