@@ -3,19 +3,27 @@ display:
     arrange:
       refresh: # this status bar applet will refresh itself as necessary
 
-      @default: # set this to the name of your default arrangement choice
+      ##
+      # Default arrangement to apply to all views unless chosen otherwise.
+      #
+      @default:
 
+      ##
+      # Arrangements that are available for the user to select and apply.
+      #
+      # <name>: <Ruby code to evaluate inside current view (Rumai::View)>
+      #
       @choices:
-        right: [tile_right]
-        rightward: [tile_rightward]
-        left: [tile_left]
-        leftward: [tile_leftward]
-        inward: [tile_inward]
-        outward: [tile_outward]
-        stack: [stack]
-        grid: [grid]
-        join: [stack, 1]
-        split: [grid, 1]
+        right: tile_right
+        rightward: tile_rightward
+        left: tile_left
+        leftward: tile_leftward
+        inward: tile_inward
+        outward: tile_outward
+        stack: stack
+        grid: grid
+        join: stack 1
+        split: grid 1
 
       script: |
         # create actions for each possible choice so that the user can set
@@ -35,7 +43,7 @@ display:
 
         def apply choice = current
           if @choices.key? choice
-            curr_view.send(*@choices[choice])
+            curr_view.instance_eval(@choices[choice].to_s)
           end
         end
 
