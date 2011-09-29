@@ -80,7 +80,7 @@ module Wmiirc
       end
 
       def load_user_session
-        session_file = File.join(DIR, 'session.yaml')
+        session_file = File.join(DIR, 'session.dump')
 
         require 'fileutils'
         FileUtils.touch session_file
@@ -116,11 +116,18 @@ module Wmiirc
         end
       end
 
+      def dump_user_config
+        File.open(File.join(DIR, 'config.dump'), 'w') do |file|
+          file.write CONFIG.to_yaml
+        end
+      end
+
       def load_user_config
         config = Config.new('config')
         Wmiirc.const_set :CONFIG, config
         load_user_requires
         load_user_session
+        dump_user_config
         config.apply
       end
 
