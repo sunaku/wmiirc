@@ -55,6 +55,31 @@ module Wmiirc
   end
 
   ##
+  # Shows a notification with the given title and message.
+  #
+  # This is a "fire and forget" operation.  The result of
+  # the notification command is NOT returned by this method!
+  #
+  # ==== Parameters
+  #
+  # [title]
+  #   The title to be displayed.
+  #
+  # [message]
+  #   The message to be displayed.
+  #
+  # [icon]
+  #   The icon to be displayed.
+  #
+  # [arguments]
+  #   Additional command-line arguments for `notify-send`.
+  #
+  def notify title, message, icon='dialog-information', *arguments
+    Rumai.fs.event.write "Notice #{title}: #{message}\n"
+    launch 'notify-send', '-i', icon, title, message, *arguments
+  end
+
+  ##
   # Shows a dialog box containing the given message.
   #
   # This is a "fire and forget" operation.  The result of

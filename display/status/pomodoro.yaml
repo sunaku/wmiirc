@@ -54,10 +54,7 @@ display:
               'Take a short (5 minutes) break!'
             end
 
-          dialog message, '-title', 'Pomodoro Technique',
-            '-timeout', (MINUTES_PER_BREAK * SECONDS_PER_MINUTE).to_s
-
-          Rumai.fs.event.write "Notice #{message}\n"
+          notify 'Pomodoro Technique', message
         end
 
       label: |
@@ -78,8 +75,7 @@ display:
             color = :success
           end
 
-          tell_user_to_take_break if minutes_remaining <= 0 and
-            minutes_remaining % MINUTES_PER_BREAK == 0
+          tell_user_to_take_break if minutes_remaining <= 0
         end
 
         [color, "\u2692",
