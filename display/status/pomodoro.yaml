@@ -39,7 +39,7 @@ display:
 
         def reset
           @pomodoros = 0
-          stop
+          refresh
         end
 
         def seconds_to_minutes seconds
