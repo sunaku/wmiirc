@@ -75,7 +75,8 @@ display:
             color = :success
           end
 
-          tell_user_to_take_break if minutes_remaining <= 0
+          tell_user_to_take_break if minutes_remaining <= 0 and
+            minutes_remaining % MINUTES_PER_BREAK == 0
         end
 
         [color, "\u2692",
