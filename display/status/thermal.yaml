@@ -1,6 +1,9 @@
 import:
   - display/status
 
+require:
+  - rbconfig
+
 display:
   status:
     thermal:
@@ -10,7 +13,7 @@ display:
       @high: 45
 
       script: |
-        case ::Config::CONFIG['host_os']
+        case ::RbConfig::CONFIG['host_os']
         when /linux/
 
           def sample!

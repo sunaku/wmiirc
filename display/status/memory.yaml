@@ -1,13 +1,16 @@
 import:
   - display/status
 
+require:
+  - rbconfig
+
 display:
   status:
     memory:
       refresh: 15
 
       script: |
-        case ::Config::CONFIG['host_os']
+        case ::RbConfig::CONFIG['host_os']
         when /linux/
 
           def sample!

@@ -1,6 +1,9 @@
 import:
   - display/status
 
+require:
+  - rbconfig
+
 display:
   status:
     volume:
@@ -9,7 +12,7 @@ display:
       @mixer:
 
       script: |
-        case ::Config::CONFIG['host_os']
+        case ::RbConfig::CONFIG['host_os']
         when /linux/
 
           @mixer ||= 'Master'
