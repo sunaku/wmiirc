@@ -1,7 +1,7 @@
 script:
   - before: |
       require 'securerandom'
-      ZOOMED_SUFFIX = /~\d+\.[[:xdigit:]]+$/
+      ZOOMED_SUFFIX = /!\d+\.[[:xdigit:]]+$/
 
 control:
   action:
@@ -20,7 +20,7 @@ control:
 
         num = tags.grep(ZOOMED_SUFFIX).length
         hex = SecureRandom.hex(2)
-        temp_tag = "#{orig_tag}~#{num}.#{hex}"
+        temp_tag = "#{orig_tag}!#{num}.#{hex}"
 
         # travel to temporary view
         temp_view = View.new(temp_tag)
