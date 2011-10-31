@@ -45,7 +45,9 @@ display:
       control:
         action:
           show_loadavg_stats: |
-            dialog `ps ux --sort=-pcpu,-vsz || ps ux`
+            launch 'xterm', '-e',
+              'watch', 'ps ux --sort=-pcpu,-vsz || ps ux',
+              type: 'DIALOG'
 
         mouse_action:
           left_click: show_loadavg_stats
