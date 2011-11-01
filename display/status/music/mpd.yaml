@@ -10,7 +10,7 @@ display:
       mpd:
         refresh: 5
 
-        @password:
+        '@password':
 
         script: |
           @mpd = MPD.new

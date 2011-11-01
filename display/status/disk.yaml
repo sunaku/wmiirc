@@ -6,7 +6,7 @@ display:
     disk:
       refresh: 600 # 10 minutes
 
-      @path:
+      '@path':
 
       script: |
         def usage

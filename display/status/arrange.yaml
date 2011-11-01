@@ -6,14 +6,14 @@ display:
       ##
       # Default arrangement to apply to all views unless chosen otherwise.
       #
-      @default:
+      '@default':
 
       ##
       # Arrangements that are available for the user to select and apply.
       #
       # <name>: <Ruby code to evaluate inside current view (Rumai::View)>
       #
-      @choices:
+      '@choices':
         right: tile_right
         rightward: tile_rightward
         left: tile_left

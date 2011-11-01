@@ -3,8 +3,8 @@ display:
     network:
       refresh: 30
 
-      @ifconfig: /sbin/ifconfig
-      @interface: lo
+      '@ifconfig': /sbin/ifconfig
+      '@interface': lo
 
       label: |
         reading = `#{@ifconfig} #{@interface} 2>&1`

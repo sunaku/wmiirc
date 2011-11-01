@@ -6,8 +6,8 @@ display:
     power:
       refresh: 15
 
-      @low: 10
-      @critical: 5
+      '@low': 10
+      '@critical': 5
 
       label: |
         name, status, level, time = `acpi -b`.split(/[:,] /)

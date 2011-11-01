@@ -5,7 +5,7 @@ display:
   status:
     time:
       refresh: 1
-      @format: %c
+      '@format': '%c'
       label: |
         ["\u25D4", Time.now.strftime(@format)]
       control:

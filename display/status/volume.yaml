@@ -9,7 +9,7 @@ display:
     volume:
       refresh: 30
 
-      @mixer:
+      '@mixer':
 
       script: |
         case ::RbConfig::CONFIG['host_os']

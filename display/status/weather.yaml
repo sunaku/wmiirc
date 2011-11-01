@@ -7,7 +7,7 @@ require:
 display:
   status:
     weather:
-      @location:
+      '@location':
 
       refresh: 300 # 5 minutes
 

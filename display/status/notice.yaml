@@ -4,7 +4,7 @@ import:
 display:
   status:
     notice:
-      @duration: 5
+      '@duration': 5
 
       script: |
         @lock = Mutex.new

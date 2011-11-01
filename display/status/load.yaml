@@ -9,8 +9,8 @@ display:
     load:
       refresh: 10
 
-      @critical: 1.5
-      @high: 0.75
+      '@critical': 1.5
+      '@high': 0.75
 
       script: |
         case ::RbConfig::CONFIG['host_os']

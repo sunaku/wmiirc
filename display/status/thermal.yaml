@@ -9,8 +9,8 @@ display:
     thermal:
       refresh: 30
 
-      @critical: 65
-      @high: 45
+      '@critical': 65
+      '@high': 45
 
       script: |
         case ::RbConfig::CONFIG['host_os']
