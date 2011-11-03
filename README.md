@@ -45,12 +45,19 @@ In the past, this configuration was described in the following articles:
 Prerequisites
 ------------------------------------------------------------------------------
 
-* [wmii] 3.9 or newer.  Note that the `display/status/arrange` status bar
-  applet requires a [patched version of wmii-hg revision 2758 or greater](
-  http://code.google.com/p/wmii/issues/detail?id=232 ) in order to *persist*
-  automated client arrangements.
+* [wmii] 3.9 or newer.
+
+  > Note that the `display/status/arrange` status bar applet requires a
+  > [patched version of wmii-hg revision 2758 or greater](
+  > http://code.google.com/p/wmii/issues/detail?id=232 ) in order to *persist*
+  > automated client arrangements.
 
 * [Ruby] 1.9.2 or newer.
+
+  > I recommend using Ruby 1.9.3-p0 because it is [significantly more
+  > power-efficient](
+  > http://snk.tuxfamily.org/log/ruby-1.9.3-p0-power-efficiency.html ) than
+  > previous Ruby 1.9.x releases.
 
 * [Rumai] 4.1.3 or newer:
 
