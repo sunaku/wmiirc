@@ -15,8 +15,8 @@ display:
         @barometer = Barometer.new(@location)
 
       label: |
-        weather = @barometer.measure
-        description = weather.current.icon
+        @weather = @barometer.measure
+        description = @weather.current.icon
 
         icon = case description
                when /cloud|overcast/ then "\u2601"
@@ -27,21 +27,15 @@ display:
                else "\u2600"
                end
 
-        temperature = weather.temperature.to_s.tr('CF', "\u2103\u2109")
+        temperature = @weather.temperature.to_s.tr('CF', "\u2103\u2109")
 
         [icon, temperature, description]
 
       control:
         action:
           show_weather_info: |
-            barometer = Barometer.new(@location)
-            weather = barometer.measure
-
-            require 'stringio'
-            require 'pp'
-            io = StringIO.new
-            PP.pp weather, io
-            dialog io.string
+            refresh
+            dialog @weather.to_yaml
 
         mouse_action:
           left_click: show_weather_info
