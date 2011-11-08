@@ -7,53 +7,31 @@ require:
 display:
   status:
     thermal:
-      refresh: 30
+      refresh: 15
 
-      '@critical': 65
-      '@high': 45
-
-      script: |
-        case ::RbConfig::CONFIG['host_os']
-        when /linux/
-
-          def sample!
-            reading = File.read('/proc/acpi/thermal_zone/THRM/temperature')
-            @temp, @unit = reading.split.last(2)
-          end
-
-          def show_info
-            dialog `acpi -V`
-          end
-
-        when /bsd/
-
-          def sample!
-            reading = `sysctl hw.acpi.thermal.tz0.temperature`
-            @temp = [/.*:\s*(\d+\,\d+)/, 1].to_f
-            @unit = 'C'
-          end
-
-          def show_info
-            dialog `sysctl hw.acpi.thermal`
-          end
-
-        else
-          raise NotImplementedError, 'OS not supported'
-        end
+      '@critical': 90
+      '@high': 70
 
       label: |
-        sample!
+        device, status = `acpi -t`.chomp.split(/: */, 2)
+        status, level = status.split(/, */)
 
-        color = case
-                when @temp > @critical then 'error'
-                when @temp > @high     then 'notice'
-                end
+        color =
+          case [level.to_f, @high, @critical].min
+          when @critical then :error
+          when @high then :notice
+          end
 
-        [color, @temp, @unit]
+        temperature = level.sub(' degrees', '').tr('CF', "\u2103\u2109")
+
+        type, id = device.split
+        source = id.to_i > 0 ? device : type
+
+        [color, source, "\u2622", temperature, status].compact
 
       control:
         action:
-          show_thermal_info: self.show_info
+          show_thermal_info: dialog `acpi -itc`
 
         mouse_action:
           left_click: show_thermal_info

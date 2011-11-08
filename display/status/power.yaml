@@ -6,11 +6,12 @@ display:
     power:
       refresh: 15
 
-      '@low': 10
+      '@low': 15
       '@critical': 5
 
       label: |
-        name, status, level, time = `acpi -b`.split(/[:,] /)
+        device, status = `acpi -b`.chomp.split(/: */, 2)
+        status, level, time = status.split(/, */)
 
         icon =
           case status.downcase
@@ -21,14 +22,17 @@ display:
           end
 
         color =
-          case [level.to_i, @low, @critical].max
-          when @low then :notice
+          case [level.to_f, @low, @critical].max
           when @critical then :error
+          when @low then :notice
           end
 
         time = "\u25D4 #{time[/[0:]*(\S+)/, 1]}" if time
 
-        [color, "BAT#{name.split.last}", icon, level, time].compact
+        type, id = device.split
+        source = id.to_i > 0 ? device : type
+
+        [color, source, icon, level, time].compact
 
       control:
         action:
