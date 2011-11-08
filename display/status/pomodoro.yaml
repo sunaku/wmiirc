@@ -55,6 +55,7 @@ display:
             end
 
           notify 'Pomodoro Technique', message
+          launch 'xwrits typetime=0 multiply=0.025 +top +mouse +once'
         end
 
       label: |
