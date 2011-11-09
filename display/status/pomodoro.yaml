@@ -31,6 +31,11 @@ display:
           refresh
         end
 
+        def pause
+          start unless @started
+          start
+        end
+
         def stop
           @started = false
           @paused = false
@@ -88,6 +93,7 @@ display:
       control:
         action:
           start_pomodoro: self.start
+          pause_pomodoro: self.pause
           stop_pomodoro: self.stop
           reset_pomodoro: self.reset
 
