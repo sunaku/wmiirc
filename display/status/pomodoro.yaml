@@ -60,7 +60,7 @@ display:
             end
 
           notify 'Pomodoro Technique', message
-          launch 'xwrits typetime=0 breaktime=3 multiply=0.05 +once'
+          Rumai.focus_view 'PomodoroBreakTime!'
         end
 
       label: |
