@@ -3,4 +3,4 @@ import:
 
 control:
   keyboard_action:
-    ${mod}-s: focus_most_recently_focused_view
+    ${mod}-s: focus_antecedent_view
