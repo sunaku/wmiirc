@@ -24,10 +24,7 @@ display:
 
         temperature = level.sub(' degrees', '').tr('CF', "\u2103\u2109")
 
-        type, id = device.split
-        source = id.to_i > 0 ? device : type
-
-        [color, source, "\u2622", temperature, status].compact
+        [color, "\u2622", temperature, status].compact
 
       control:
         action:

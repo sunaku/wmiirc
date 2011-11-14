@@ -13,14 +13,6 @@ display:
         device, status = `acpi -b`.chomp.split(/: */, 2)
         status, level, time = status.split(/, */)
 
-        icon =
-          case status.downcase
-          when 'full' then "\u25CF"
-          when 'charging' then "\u26A1"
-          when 'discharging' then "\u25D3"
-          else "\u2047"
-          end
-
         color =
           case [level.to_f, @low, @critical].max
           when @critical then :error
@@ -29,10 +21,7 @@ display:
 
         time = "\u25D4 #{time[/[0:]*(\S+)/, 1]}" if time
 
-        type, id = device.split
-        source = id.to_i > 0 ? device : type
-
-        [color, source, icon, level, time].compact
+        [color, "\u26A1", level, time].compact
 
       control:
         action:

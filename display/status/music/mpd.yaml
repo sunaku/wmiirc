@@ -77,9 +77,9 @@ display:
           else
             song = @mpd.current_song
             song_title = song.title || (f = song.file and File.basename(f))
-            text = [song.artist, song_title].compact.
+            text = [song_title, song.artist].compact.
               map {|s| s.force_encoding('UTF-8') }.
-              join(" \u2013 ")
+              join(" \u227A ")
 
             if @mpd.paused?
               icon = "\u25AE" * 2
