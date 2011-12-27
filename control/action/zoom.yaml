@@ -1,12 +1,14 @@
+require:
+  - securerandom
+
 script:
   - before: |
-      require 'securerandom'
       ZOOMED_SUFFIX = /!\d+\.[[:xdigit:]]+$/
 
 control:
   action:
 
-    copy_grouping_to_temporary_view: |
+    zoom_group: |
       orig_clients = grouping
 
       unless orig_clients.empty?
@@ -33,7 +35,7 @@ control:
         curr_client_before_zoom.focus temp_view
       end
 
-    restore_grouping_from_temporary_view: |
+    unzoom_group: |
       temp_clients = grouping
 
       unless temp_clients.empty?

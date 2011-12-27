@@ -18,7 +18,7 @@ display:
           @mpd.password @password if @password
           at_exit { @mpd.disconnect }
 
-          def load_playlist_from_menu
+          def music_playlist_menu
             if list = key_menu(@mpd.playlists, 'load playlist:', :playlist)
               @mpd.clear
               @mpd.load list
@@ -26,7 +26,7 @@ display:
             end
           end
 
-          def add_current_song_to_playlist_from_menu
+          def music_append_playlist
             if list = key_menu(@mpd.playlists, 'add current song to playlist:', :playlist)
               file = File.join(File.expand_path('~/.mpd/playlists'), list + '.m3u')
 
@@ -38,7 +38,7 @@ display:
             end
           end
 
-          def play_song_from_menu
+          def music_menu
             songs = `mpc playlist`.downcase.split("\n")
             if index = index_menu(songs, 'play song:', :song)
               # MPD uses natural 1..N numbering
@@ -92,29 +92,18 @@ display:
 
         control:
           action:
-            stop_playing_song: self.stop
-            play_previous_song: self.prev
-            play_next_song: self.next
-            pause_current_song_toggle: self.pause!
-            play_song_from_menu: self.play_song_from_menu
-            load_playlist_from_menu: self.load_playlist_from_menu
-            add_current_song_to_playlist_from_menu: |
-              self.add_current_song_to_playlist_from_menu
+            music_stop: self.stop
+            music_previous: self.prev
+            music_next: self.next
+            music_pause!: self.pause!
+            music_menu: self.play_song_from_menu
+            music_playlist_menu: self.load_playlist_from_menu
+            music_append_playlist: |
+              self.music_append_playlist
 
           mouse_action:
-            left_click: pause_current_song_toggle
-            right_click: stop_playing_song
-            wheel_up: play_previous_song
-            wheel_down: play_next_song
-            wheel_click: play_song_from_menu
-
-          keyboard_action:
-            XF86AudioPlay: pause_current_song_toggle
-            XF86AudioPrev: play_previous_song
-            XF86AudioNext: play_next_song
-            XF86AudioStop: stop_playing_song
-            ${mod}-Prior: play_previous_song
-            ${mod}-Next: play_next_song
-            ${mod}-Return: pause_current_song_toggle
-            ${mod}-Home: load_playlist_from_menu
-            ${mod}-End: add_current_song_to_playlist_from_menu
+            left_click: music_pause!
+            right_click: music_stop
+            wheel_up: music_previous
+            wheel_down: music_next
+            wheel_click: music_menu

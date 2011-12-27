@@ -38,7 +38,7 @@ display:
           end
         end
 
-        # reapply arrangement when wmii tells us to
+        # reapply peristent arrangement when wmii tells us to
         event('ArrangeView') { apply }
 
         def apply choice = current
@@ -81,35 +81,11 @@ display:
 
       control:
         action:
-          stop_persistent_arrangement: self.stop
-          choose_persistent_arrangement: self.choose
-          reapply_persistent_arrangement: self.apply
+          arrange_persist_stop: self.stop
+          arrange_persist_menu: self.choose
+          arrange_persist_redo: self.apply
 
         mouse_action:
-          left_click: choose_persistent_arrangement
-          right_click: stop_persistent_arrangement
-          middle_click: reapply_persistent_arrangement
-
-        keyboard_action:
-          ${arrange},r: arrange_right
-          ${arrange},Control-r: arrange_right_persist
-          ${arrange},Shift-r: arrange_rightward
-          ${arrange},Control-Shift-r: arrange_rightward_persist
-          ${arrange},l: arrange_left
-          ${arrange},Control-l: arrange_left_persist
-          ${arrange},Shift-l: arrange_leftward
-          ${arrange},Control-Shift-l: arrange_leftward_persist
-          ${arrange},i: arrange_inward
-          ${arrange},Control-i: arrange_inward_persist
-          ${arrange},o: arrange_outward
-          ${arrange},Control-o: arrange_outward_persist
-          ${arrange},g: arrange_grid
-          ${arrange},Control-g: arrange_grid_persist
-          ${arrange},s: arrange_stack
-          ${arrange},Control-s: arrange_stack_persist
-          ${arrange},j: arrange_join
-          ${arrange},Control-j: arrange_join_persist
-          ${arrange},Shift-j: arrange_split
-          ${arrange},Control-Shift-j: arrange_split_persist
-          ${arrange},Control-z: reapply_persistent_arrangement
-          ${arrange},z: stop_persistent_arrangement
+          left_click: arrange_persist_menu
+          right_click: arrange_persist_stop
+          middle_click: arrange_persist_redo

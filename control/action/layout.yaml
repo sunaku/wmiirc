@@ -1,26 +1,37 @@
 control:
   action:
 
-    apply_equal_spacing_layout_to_current_column: |
+    layout_column_equal: |
       curr_area.layout = :default
 
-    apply_equal_spacing_layout_to_all_columns: |
+    layout_view_equal: |
       curr_view.columns.each do |a|
         a.layout = :default
       end
 
-    apply_stacked_layout_to_current_column: |
+    layout_column_stack: |
       curr_area.layout = :stack
 
-    apply_stacked_layout_to_all_columns: |
+    layout_view_stack: |
       curr_view.columns.each do |a|
         a.layout = :stack
       end
 
-    apply_maximized_layout_to_current_column: |
+    layout_column_max: |
       curr_area.layout = :max
 
-    apply_maximized_layout_to_all_columns: |
+    layout_view_max: |
       curr_view.columns.each do |a|
         a.layout = :max
       end
+
+    layout_stack_1: curr_view.arrange_in_stacks 1
+    layout_stack_2: curr_view.arrange_in_stacks 2
+    layout_stack_3: curr_view.arrange_in_stacks 3
+    layout_stack_4: curr_view.arrange_in_stacks 4
+    layout_stack_5: curr_view.arrange_in_stacks 5
+    layout_stack_6: curr_view.arrange_in_stacks 6
+    layout_stack_7: curr_view.arrange_in_stacks 7
+    layout_stack_8: curr_view.arrange_in_stacks 8
+    layout_stack_9: curr_view.arrange_in_stacks 9
+    layout_stack_0: curr_view.arrange_in_stacks 9999 # one client per column

@@ -1,17 +1,14 @@
-script:
-  - after: |
-      action 'rehash'
-
 control:
   action:
+
+    action_menu: |
+      if choice = key_menu(actions, 'action:', :action)
+        action choice
+      end
 
     reload: |
       # reload this wmii configuration
       Wmiirc::Loader.reload
-
-    rehash: |
-      # scan for available programs and actions
-      @programs = find_programs(ENV['PATH'].squeeze(':').split(':'))
 
     clear: |
       # these browsers' "restore session" feature does

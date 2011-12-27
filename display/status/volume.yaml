@@ -96,21 +96,13 @@ display:
 
       control:
         action:
-          set_volume_from_menu: self.menu
-          increase_volume: self.increase
-          decrease_volume: self.decrease
-          mute_volume_toggle: self.mute!
-
-        keyboard_action:
-          XF86AudioRaiseVolume: increase_volume
-          XF86AudioLowerVolume: decrease_volume
-          XF86AudioMute: mute_volume_toggle
-          ${mod}-Shift-Prior: increase_volume
-          ${mod}-Shift-Next: decrease_volume
-          ${mod}-Shift-Return: mute_volume_toggle
+          volume_menu: self.menu
+          volume_more: self.increase
+          volume_less: self.decrease
+          volume_mute!: self.mute!
 
         mouse_action:
-          left_click: set_volume_from_menu
-          right_click: mute_volume_toggle
-          wheel_up: increase_volume
-          wheel_down: decrease_volume
+          left_click: volume_menu
+          right_click: volume_mute!
+          wheel_up: volume_more
+          wheel_down: volume_less

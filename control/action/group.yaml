@@ -1,41 +1,26 @@
 control:
   action:
 
-    toggle_current_client_from_grouping: |
+    group_client!: |
       curr_client.group!
 
-    add_clients_in_current_area_to_grouping: |
-      curr_area.group
+    group_area!: |
+      curr_area.group!
 
-    remove_clients_in_current_area_from_grouping: |
-      curr_area.ungroup
+    group_overlay!: |
+      Area.floating.group!
 
-    add_clients_in_floating_area_to_grouping: |
-      Area.floating.group
+    group_columns!: |
+      curr_view.managed_areas.each {|a| a.group! }
 
-    remove_clients_in_floating_area_from_grouping: |
-      Area.floating.ungroup
-
-    add_clients_in_managed_areas_to_grouping: |
-      curr_view.managed_areas.each {|a| a.group }
-
-    remove_clients_in_managed_areas_from_grouping: |
-      curr_view.managed_areas.each {|a| a.ungroup }
-
-    add_clients_in_current_view_to_grouping: |
-      curr_view.group
-
-    remove_clients_in_current_view_from_grouping: |
-      curr_view.ungroup
-
-    invert_grouping_in_current_view: |
+    group_view!: |
       curr_view.group!
 
-    invert_grouping_in_all_views: |
+    group_all!: |
       Rumai.group!
 
-    remove_all_clients_from_grouping: |
+    ungroup_all: |
       Rumai.ungroup
 
-    kill_all_clients_in_grouping: |
+    group_kill: |
       grouping.each {|c| c.kill }

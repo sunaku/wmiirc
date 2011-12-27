@@ -1,22 +1,22 @@
 control:
   action:
 
-    move_grouping_up: |
+    send_group_up: |
       grouping.each {|c| c.send(:up) rescue nil }
 
-    move_grouping_down: |
+    send_group_down: |
       grouping.each {|c| c.send(:down) rescue nil }
 
-    move_grouping_left: |
+    send_group_left: |
       grouping.each {|c| c.send(:left) rescue nil }
 
-    move_grouping_right: |
+    send_group_right: |
       grouping.each {|c| c.send(:right) rescue nil }
 
-    float_grouping_toggle: |
+    send_group_overlay!: |
       grouping.each {|c| c.send(:toggle) rescue nil }
 
-    move_grouping_to_view_from_menu: |
+    send_group_view_menu: |
       #
       # Changes the tag (according to a menu choice) of
       # each grouped client and returns the chosen tag.
@@ -36,3 +36,14 @@ control:
           end
         end
       end
+
+    send_group_view_1: grouping.each {|c| c.tags = tags[0] || 1  }
+    send_group_view_2: grouping.each {|c| c.tags = tags[1] || 2  }
+    send_group_view_3: grouping.each {|c| c.tags = tags[2] || 3  }
+    send_group_view_4: grouping.each {|c| c.tags = tags[3] || 4  }
+    send_group_view_5: grouping.each {|c| c.tags = tags[4] || 5  }
+    send_group_view_6: grouping.each {|c| c.tags = tags[5] || 6  }
+    send_group_view_7: grouping.each {|c| c.tags = tags[6] || 7  }
+    send_group_view_8: grouping.each {|c| c.tags = tags[7] || 8  }
+    send_group_view_9: grouping.each {|c| c.tags = tags[8] || 9  }
+    send_group_view_0: grouping.each {|c| c.tags = tags[9] || 10 }

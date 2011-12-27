@@ -5,13 +5,13 @@ script:
 control:
   action:
 
-    detach_grouping: |
+    detach_group: |
       grouping.each do |c|
         c.tag DETACHED_TAG
         c.untag curr_tag
       end
 
-    reattach_client: |
+    attach_client: |
       v = View.new(DETACHED_TAG)
 
       if v.exist? and c = v.clients.reject(&:stick?).last

@@ -1,4 +1,7 @@
 script:
+  - after: |
+      action 'launch_menu_rehash'
+
   - before: |
       require 'fileutils'
 
@@ -60,6 +63,15 @@ script:
 
 control:
   action:
+
+    launch_menu_rehash: |
+      # scan for available programs and actions
+      @programs = find_programs(ENV['PATH'].squeeze(':').split(':'))
+
+    launch_menu: |
+      if choice = key_menu(@programs, 'launch:', :program)
+        launch choice
+      end
 
     launch_terminal: |
       launch_in_curr_client_pwd CONFIG['prefer']['terminal']
