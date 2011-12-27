@@ -1,9 +1,0 @@
-import:
-  - control/keyboard/common/menu
-
-control:
-  keyboard_action:
-    ${mod}-a: run_action_from_menu
-    ${mod}-p: run_program_from_menu
-    ${mod}-t: focus_view_from_menu
-    ${mod}-c: focus_client_from_menu

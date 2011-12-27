@@ -1,7 +1,0 @@
-import:
-  - control/action/client
-
-control:
-  keyboard_action:
-    ${mod}-f: client_fullscreen_toggle
-    ${mod}-Shift-c: kill_current_client

@@ -1,6 +1,0 @@
-import:
-  - control/keyboard/common/focus
-
-control:
-  keyboard_action:
-    ${mod}-o: focus_antecedent_view

@@ -1,7 +1,0 @@
-import:
-  - control/action/detach
-
-control:
-  keyboard_action:
-    ${mod}-d: detach_grouping
-    ${mod}-Shift-d: reattach_client

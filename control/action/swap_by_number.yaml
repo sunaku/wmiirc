@@ -1,8 +1,5 @@
-#
 # Swap current client with the column whose index equals the pressed number.
-#
 control:
-
   action:
     swap_client_in_column_1:  curr_client.swap 1
     swap_client_in_column_2:  curr_client.swap 2
@@ -14,15 +11,3 @@ control:
     swap_client_in_column_8:  curr_client.swap 8
     swap_client_in_column_9:  curr_client.swap 9
     swap_client_in_column_10: curr_client.swap 10
-
-  keyboard_action:
-    ${swap},1: swap_client_in_column_1
-    ${swap},2: swap_client_in_column_2
-    ${swap},3: swap_client_in_column_3
-    ${swap},4: swap_client_in_column_4
-    ${swap},5: swap_client_in_column_5
-    ${swap},6: swap_client_in_column_6
-    ${swap},7: swap_client_in_column_7
-    ${swap},8: swap_client_in_column_8
-    ${swap},9: swap_client_in_column_9
-    ${swap},0: swap_client_in_column_10

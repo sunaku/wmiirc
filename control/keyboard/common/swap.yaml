@@ -1,9 +1,0 @@
-import:
-  - control/action/swap
-
-control:
-  keyboard_action:
-    ${swap},${up}: swap_above_client
-    ${swap},${down}: swap_below_client
-    ${swap},${left}: swap_left_client
-    ${swap},${right}: swap_right_client

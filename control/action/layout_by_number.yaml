@@ -1,8 +1,5 @@
-#
 # Apply stacking layout with the pressed number of columns.
-#
 control:
-
   action:
     apply_stacked_layout_to_all_columns_1: curr_view.arrange_in_stacks 1
     apply_stacked_layout_to_all_columns_2: curr_view.arrange_in_stacks 2
@@ -14,15 +11,3 @@ control:
     apply_stacked_layout_to_all_columns_8: curr_view.arrange_in_stacks 8
     apply_stacked_layout_to_all_columns_9: curr_view.arrange_in_stacks 9
     apply_stacked_layout_to_all_columns_0: curr_view.arrange_in_stacks 9999 # one client per column
-
-  keyboard_action:
-    ${layout},Shift-1: apply_stacked_layout_to_all_columns_1
-    ${layout},Shift-2: apply_stacked_layout_to_all_columns_2
-    ${layout},Shift-3: apply_stacked_layout_to_all_columns_3
-    ${layout},Shift-4: apply_stacked_layout_to_all_columns_4
-    ${layout},Shift-5: apply_stacked_layout_to_all_columns_5
-    ${layout},Shift-6: apply_stacked_layout_to_all_columns_6
-    ${layout},Shift-7: apply_stacked_layout_to_all_columns_7
-    ${layout},Shift-8: apply_stacked_layout_to_all_columns_8
-    ${layout},Shift-9: apply_stacked_layout_to_all_columns_9
-    ${layout},Shift-0: apply_stacked_layout_to_all_columns_0

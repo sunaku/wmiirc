@@ -16,7 +16,6 @@ for live experimentation) and offers a near "Desktop Environment" experience:
 
 * Status bar applets with mouse, keyboard, and menu access.
 * System, dialog, and menu (with history) integration.
-* QWERTY, Dvorak, and Neo2 keyboard layouts.
 * Client grouping and mass manipulation thereof.
 * View and client access by menu and alphanumeric keys.
 * Automated client arrangements with optional persistence.
