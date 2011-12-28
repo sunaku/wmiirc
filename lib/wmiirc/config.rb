@@ -79,8 +79,7 @@ module Wmiirc
               end
 
               meth = 'key'
-              name = code
-              code = self['control']['action'][name]
+              code = self['control']['action'][code] || "action #{code.inspect}"
             else
               name = key
               meth = section
