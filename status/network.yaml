@@ -1,0 +1,34 @@
+status:
+  network:
+    params:
+      refresh: 30
+      ifconfig: /sbin/ifconfig
+      interface: lo
+
+    script: |
+      def reading
+        `#{@ifconfig} #{@interface} 2>&1`
+      end
+
+    label: |
+      reading = self.reading
+      alive = reading !~ /\A\S+ error/
+      ip_addr = reading[/inet ([\d.]+)/, 1]
+      rx_bytes, tx_bytes = reading.scan(/\((\d+(?:\.\d+)? \w+)\)/)
+
+      if alive and ip_addr
+        color = 'normal'
+        stats = [ip_addr, "\u2798", rx_bytes, "\u279A", tx_bytes]
+      else
+        color = 'error'
+        stats = []
+      end
+
+      [color, @interface, stats]
+
+    control:
+      action:
+        network_details: dialog reading
+
+      mouse_action:
+        left_click: network_details

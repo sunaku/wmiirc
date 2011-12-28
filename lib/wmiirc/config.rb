@@ -147,6 +147,8 @@ module Wmiirc
       end
     end
 
+    public
+
     def merge dst_hash, src_hash, src_file, backtrace = []
       src_hash.each do |key, src_val|
         backtrace.push key

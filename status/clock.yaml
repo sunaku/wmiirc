@@ -1,0 +1,20 @@
+status:
+  clock:
+    params:
+      refresh: 1
+      format: '%c'
+
+    label: |
+      ["\u25D4", Time.now.strftime(@format)]
+
+    control:
+      action:
+        time_month_calendar: |
+          dialog `cal`.sub(/\b#{Time.now.day}\b/) {|s| '*' * s.length }
+
+        time_year_calendar: |
+          dialog `cal -y`.sub(/^.*$/) {|line| Date.today.to_s.center(line.length) }
+
+      mouse_action:
+        left_click: time_month_calendar
+        right_click: time_year_calendar

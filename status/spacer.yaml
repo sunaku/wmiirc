@@ -1,0 +1,8 @@
+status:
+  spacer:
+    params:
+      refresh: ~
+    control:
+      mouse_action:
+        wheel_up: focus_next_view
+        wheel_down: focus_previous_view

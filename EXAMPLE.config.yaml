@@ -119,18 +119,17 @@ display:
     rule:
 
   ##
-  # Status bar applets.
+  # Status bar applets. Array of hashes, each serving as arguments
+  # for creating multiple instances of a certain status bar applet.
   #
-  #   <arbitrary number of levels ...>:
-  #     # you can nest your applet definition as deep as you like!
+  #   status:
+  #     - <name of the status bar applet to instantiate>:
   #
-  #     <name of your status bar applet>:
+  #         params:
+  #           <parameter name>:  <parameter value>
   #
-  #         @<parameter name>:  <parameter value>
-  #
-  #         instances:  <Array of hashes, each of which serve as
-  #                      a set of arguments for creating multiple
-  #                      instances of this status bar applet.>
+  #           These parameters are later available as instance variables in
+  #           the Ruby code that is executed inside this status bar applet.
   #
   #         refresh:  <Number of seconds to wait before updating the
   #                    label.  To disable automatic refreshing, give

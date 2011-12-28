@@ -1,0 +1,9 @@
+status:
+  ipaddr:
+    params:
+      refresh: 15
+      path_to_ip:
+    label: |
+      ipbin = @path_to_ip || 'ip'
+      cmd = "#{ipbin} addr | awk '/inet / {sub(/\\/.*/, \"\", $2); print $2}'"
+      `#{cmd}`.sub("127.0.0.1\n", '').tr("\n", ' ').strip

@@ -1,0 +1,104 @@
+require:
+  - rbconfig
+
+status:
+  volume:
+    params:
+      refresh: 30
+      mixer:
+
+    script: |
+      case ::RbConfig::CONFIG['host_os']
+      when /linux/
+
+        @mixer ||= 'Master'
+
+        def reading
+          `amixer get #{@mixer}`
+        end
+
+        def level
+          reading[/\d+%/]
+        end
+
+        def level= value
+          system "amixer set #{@mixer} #{value}"
+          refresh
+        end
+
+        def increase
+          self.level = '5%+'
+        end
+
+        def decrease
+          self.level = '5%-'
+        end
+
+        def mute!
+          self.level = 'toggle'
+        end
+
+      when /bsd/
+
+        @mixer ||= 'mixer'
+
+        def reading
+          `mixer #{@mixer}`
+        end
+
+        def level
+          reading.split.last.first.split(':').first
+        end
+
+        def level= value
+          system "mixer #{@mixer} #{value}"
+          refresh
+        end
+
+        def increase
+          self.level = '+3'
+        end
+
+        def decrease
+          self.level = '-3'
+        end
+
+        def mute!
+          self.level = 'toggle'
+        end
+
+      else
+        raise NotImplementedError, 'OS not supported'
+      end
+
+      def mute?
+        reading.include? '[off]'
+      end
+
+      def menu
+        current = self.level
+        levels = (0 .. 10).map {|i| i * 10 }.
+                 push(current.to_i).sort.uniq.
+                 map {|i| "#{i}%" }.reverse
+
+        if choice = click_menu(levels, current)
+          self.level = choice
+        end
+      end
+
+    label: |
+      color = 'notice' if mute?
+      [color, "\u266A", level]
+
+    control:
+      action:
+        volume_menu: self.menu
+        volume_more: self.increase
+        volume_less: self.decrease
+        volume_mute!: self.mute!
+
+      mouse_action:
+        left_click: volume_menu
+        right_click: volume_mute!
+        wheel_up: volume_more
+        wheel_down: volume_less

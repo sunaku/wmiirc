@@ -1,0 +1,37 @@
+require:
+  - barometer: '~> 0.7.3'
+
+status:
+  weather:
+    params:
+      refresh: 300 # 5 minutes
+      location:
+
+    script: |
+      @barometer = Barometer.new(@location)
+
+    label: |
+      @weather = @barometer.measure
+      description = @weather.current.icon
+
+      icon = case description
+             when /cloud|overcast/ then "\u2601"
+             when /rain|shower/ then "\u2602"
+             when /snow|hail/ then "\u2603"
+             when /lightning/ then "\u2607"
+             when /thunder/ then "\u2608"
+             else "\u2600"
+             end
+
+      temperature = @weather.temperature.to_s.tr('CF', "\u2103\u2109")
+
+      [icon, temperature, description]
+
+    control:
+      action:
+        show_weather_info: |
+          refresh
+          dialog @weather.to_yaml
+
+      mouse_action:
+        left_click: show_weather_info

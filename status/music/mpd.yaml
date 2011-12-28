@@ -1,0 +1,103 @@
+require:
+  - librmpd: '~> 0.1'
+
+status:
+  music:
+    params:
+      refresh: 5
+
+    script: |
+      @mpd = MPD.new
+      @mpd.connect
+      @mpd.password @password if @password
+      at_exit { @mpd.disconnect }
+
+      def music_playlist_menu
+        if list = key_menu(@mpd.playlists, 'load playlist:', :playlist)
+          @mpd.clear
+          @mpd.load list
+          @mpd.play
+        end
+      end
+
+      def music_append_playlist
+        if list = key_menu(@mpd.playlists, 'add current song to playlist:', :playlist)
+          file = File.join(File.expand_path('~/.mpd/playlists'), list + '.m3u')
+
+          songs = File.readlines(file) rescue []
+          songs << @mpd.current_song.file
+          songs.uniq!
+
+          File.open(file, 'w') {|f| f.puts songs }
+        end
+      end
+
+      def music_menu
+        songs = `mpc playlist`.downcase.split("\n")
+        if index = index_menu(songs, 'play song:', :song)
+          # MPD uses natural 1..N numbering
+          system "mpc play #{index + 1}"
+        end
+        refresh
+      end
+
+      def pause!
+        if @mpd.stopped?
+          @mpd.play
+        else
+          @mpd.pause = !@mpd.paused?
+        end
+        refresh
+      end
+
+      def stop
+        @mpd.stop
+        refresh
+      end
+
+      def next
+        @mpd.next
+        refresh
+      end
+
+      def prev
+        @mpd.previous
+        refresh
+      end
+
+    label: |
+      if @mpd.stopped?
+        icon = "\u25A0"
+      else
+        song = @mpd.current_song
+        song_title = song.title || (f = song.file and File.basename(f))
+        text = [song_title, song.artist].compact.
+          map {|s| s.force_encoding('UTF-8') }.
+          join(" \u227A ")
+
+        if @mpd.paused?
+          icon = "\u25AE" * 2
+        else
+          icon = "\u25B6"
+        end
+      end
+
+      [icon, text].compact
+
+    control:
+      action:
+        music_stop: self.stop
+        music_previous: self.prev
+        music_next: self.next
+        music_pause!: self.pause!
+        music_menu: self.play_song_from_menu
+        music_playlist_menu: self.load_playlist_from_menu
+        music_append_playlist: |
+          self.music_append_playlist
+
+      mouse_action:
+        left_click: music_pause!
+        right_click: music_stop
+        wheel_up: music_previous
+        wheel_down: music_next
+        wheel_click: music_menu
