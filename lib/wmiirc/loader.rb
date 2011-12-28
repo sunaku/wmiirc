@@ -36,22 +36,6 @@ module Wmiirc
         Wmiirc.launch File.expand_path($0)
       end
 
-      ##
-      # Tries to find the given file inside WMII_CONFPATH or
-      # the user's personal wmii configuration directory.
-      #
-      # Returns nil if the file could not be found.
-      #
-      def find file
-        unless defined? @find_dirs_glob
-          base_dirs = ENV['WMII_CONFPATH'].to_s.split(/:+/).unshift(DIR)
-          ruby_dirs = base_dirs.map {|dir| File.join(dir, 'ruby') }
-          @find_dirs_glob = '{' + base_dirs.zip(ruby_dirs).join(',') + '}'
-        end
-
-        Dir["#{@find_dirs_glob}/#{file}"].first
-      end
-
       private
 
       ##

@@ -107,23 +107,27 @@ module Wmiirc
 
     def import virtual_paths, merged_result = {}, already_imported = [], importer = $0
       Array(virtual_paths).each do |virtual_path|
-        begin
+        Dir["#{DIR}/#{virtual_path}.yaml"].each do |physical_path|
+          if already_imported.include? physical_path
+            next
+          else
+            already_imported << physical_path
+          end
 
-          physical_path = Loader.find("#{virtual_path}.yaml")
-          config_partial = YAML.load_file(physical_path).to_hash
-          mark_origin config_partial, physical_path
+          begin
+            config_partial = YAML.load_file(physical_path).to_hash
+            mark_origin config_partial, physical_path
 
-          imports = Array(config_partial['import']) - already_imported
-          already_imported.concat imports
+            import Array(config_partial['import']), merged_result,
+              already_imported, physical_path
 
-          import imports, merged_result, already_imported, physical_path
-          merge merged_result, config_partial, physical_path
+            merge merged_result, config_partial, physical_path
+          rescue => error
+            error.message << ' when importing %s (really %s) into %s' %
+            [ virtual_path, physical_path, importer ].map(&:inspect)
 
-        rescue => error
-          error.message << ' when importing %s (really %s) into %s' %
-          [ virtual_path, physical_path, importer ].map(&:inspect)
-
-          raise error
+            raise error
+          end
         end
       end
 
