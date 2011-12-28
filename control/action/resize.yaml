@@ -2,25 +2,25 @@ control:
   action:
 
     grow_client_up: |
-      curr_client.grow(:up) rescue nil
+      curr_client.grow('up 5') rescue nil
 
     grow_client_down: |
-      curr_client.grow(:down) rescue nil
+      curr_client.grow('down 5') rescue nil
 
     grow_client_left: |
-      curr_client.grow(:left) rescue nil
+      curr_client.grow('left 5') rescue nil
 
     grow_client_right: |
-      curr_client.grow(:right) rescue nil
+      curr_client.grow('right 5') rescue nil
 
     shrink_client_up: |
-      curr_client.grow('up -1') rescue nil
+      curr_client.grow('up -5') rescue nil
 
     shrink_client_down: |
-      curr_client.grow('down -1') rescue nil
+      curr_client.grow('down -5') rescue nil
 
     shrink_client_left: |
-      curr_client.grow('left -1') rescue nil
+      curr_client.grow('left -5') rescue nil
 
     shrink_client_right: |
-      curr_client.grow('right -1') rescue nil
+      curr_client.grow('right -5') rescue nil
