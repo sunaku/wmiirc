@@ -109,12 +109,7 @@ script:
 
             if keyboard_actions = control['keyboard_action']
               keyboard_actions.each do |key, action_name|
-                # FIXME: this code was copied from lib/wmiirc/config.rb
-
-                # expand ${...} in keyboard shortcuts
-                key = key.gsub(/\$\{(.+?)\}/) do
-                  CONFIG['control']['keyboard'][$1]
-                end
+                key = CONFIG.expand_keyboard_shortcut(key)
 
                 # other instances of this status bar applet may have already
                 # registered a handler for this keypress, so we skip this to

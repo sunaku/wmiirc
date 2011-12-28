@@ -73,12 +73,7 @@ module Wmiirc
         if settings = self['control'][section]
           settings.each do |key, code|
             if section == 'keyboard_action'
-              # expand symbolic references in keyboard shortcuts
-              key = key.dup
-              while key.gsub!(/\$(\w+)/){ self['control']['keyboard'][$1] }
-                # continue
-              end
-
+              key = expand_keyboard_shortcut(key)
               meth = 'key'
               code = self['control']['action'][code] || "action #{code.inspect}"
             else
@@ -99,6 +94,15 @@ module Wmiirc
         fs.keys.write keys.join("\n")
         event('Key') {|*a| key(*a) }
       end
+    end
+
+    # Expands symbolic references in the given keyboard shortcut.
+    def expand_keyboard_shortcut key
+      key = key.dup
+      while key.gsub!(/\$(\w+)/){ self['control']['keyboard'][$1] }
+        # continue
+      end
+      key
     end
 
     def import virtual_paths, merged_result = {}, already_imported = [], importer = $0
