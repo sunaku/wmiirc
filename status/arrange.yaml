@@ -1,8 +1,8 @@
 status:
   arrange:
-    params:
-      refresh: ~ # this status bar applet will refresh itself as necessary
+    refresh: 0 # this status bar applet will refresh itself as necessary
 
+    params:
       ##
       # Default arrangement to apply to all views unless chosen otherwise.
       #

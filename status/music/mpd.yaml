@@ -3,9 +3,6 @@ require:
 
 status:
   music:
-    params:
-      refresh: 5
-
     script: |
       @mpd = MPD.new
       @mpd.connect

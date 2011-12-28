@@ -1,7 +1,6 @@
 status:
   power:
     params:
-      refresh: 15
       low: 15
       critical: 5
 

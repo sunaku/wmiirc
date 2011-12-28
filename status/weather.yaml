@@ -4,7 +4,6 @@ require:
 status:
   weather:
     params:
-      refresh: 300 # 5 minutes
       location:
 
     script: |

@@ -1,7 +1,6 @@
 status:
   pomodoro:
-    params:
-      refresh: 60
+    refresh: 60
 
     script: |
       POMODOROS_PER_SESSION = 4

@@ -4,7 +4,6 @@ require:
 status:
   volume:
     params:
-      refresh: 30
       mixer:
 
     script: |

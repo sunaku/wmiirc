@@ -1,7 +1,6 @@
 status:
   ipaddr:
     params:
-      refresh: 15
       path_to_ip:
     label: |
       ipbin = @path_to_ip || 'ip'

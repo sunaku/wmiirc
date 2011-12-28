@@ -1,7 +1,6 @@
 status:
   disk:
     params:
-      refresh: 600 # 10 minutes
       path: # the disk path that you want to monitor
 
     script: |

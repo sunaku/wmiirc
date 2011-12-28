@@ -4,7 +4,6 @@ require:
 status:
   memory:
     params:
-      refresh: 15
 
     script: |
       case ::RbConfig::CONFIG['host_os']

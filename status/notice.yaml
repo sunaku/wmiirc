@@ -1,7 +1,8 @@
 status:
   notice:
+    refresh: 0
+
     params:
-      refresh: ~
       duration: 5
 
     script: |

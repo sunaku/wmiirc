@@ -4,7 +4,6 @@ require:
 status:
   loadavg:
     params:
-      refresh: 10
       critical: 1.5
       high: 0.75
 

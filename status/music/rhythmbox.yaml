@@ -1,8 +1,5 @@
 status:
   music:
-    params:
-      refresh: 5
-
     script: |
       def pause!
         system 'rhythmbox-client --no-start --play-pause'

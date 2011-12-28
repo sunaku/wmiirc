@@ -1,7 +1,6 @@
 status:
   network:
     params:
-      refresh: 30
       ifconfig: /sbin/ifconfig
       interface: lo
 

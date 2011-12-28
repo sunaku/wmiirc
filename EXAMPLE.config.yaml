@@ -119,6 +119,11 @@ display:
     rule:
 
   ##
+  # Global refresh rate for status bar applets (measured in seconds).
+  #
+  refresh:
+
+  ##
   # Status bar applets. Array of hashes, each serving as arguments
   # for creating multiple instances of a certain status bar applet.
   #

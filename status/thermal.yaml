@@ -4,7 +4,6 @@ require:
 status:
   thermal:
     params:
-      refresh: 15
       critical: 90
       high: 70
 

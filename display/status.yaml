@@ -33,8 +33,11 @@ script:
 
           definition = definition.dup
           CONFIG.merge definition, instance, instance_key
-          definition['params'].each do |key, value|
-            instance_variable_set "@#{key}", value
+
+          if params = definition['params']
+            params.each do |key, value|
+              instance_variable_set "@#{key}", value
+            end
           end
 
           if code = definition['script']
@@ -51,8 +54,13 @@ script:
           file = sprintf('%03d-%s-%d', position, name, offset)
           button = StatusBarlet.new(file)
 
-          colors_hash = CONFIG['display']['color']
           label_refresh_thread = Thread.new do
+            refresh_rate = definition['refresh'] ||
+              CONFIG['display']['refresh'] || 60
+            refresh_rate = nil if refresh_rate <= 0
+
+            colors_hash = CONFIG['display']['color']
+
             loop do
               button_label = begin
                 Array(self.label)
@@ -72,7 +80,7 @@ script:
               button.colors = button_label.shift
               button.label = button_label.join(' ')
 
-              sleep(*Array(if defined? @refresh then @refresh else 60 end))
+              sleep *refresh_rate
             end
           end
 

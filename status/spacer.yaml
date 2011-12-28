@@ -1,7 +1,6 @@
 status:
   spacer:
-    params:
-      refresh: ~
+    refresh: 0
     control:
       mouse_action:
         wheel_up: focus_next_view
