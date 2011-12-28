@@ -73,9 +73,10 @@ module Wmiirc
         if settings = self['control'][section]
           settings.each do |key, code|
             if section == 'keyboard_action'
-              # expand ${...} in keyboard shortcuts
-              key = key.gsub(/\$\{(.+?)\}/) do
-                self['control']['keyboard'][$1]
+              # expand symbolic references in keyboard shortcuts
+              key = key.dup
+              while key.gsub!(/\$(\w+)/){ self['control']['keyboard'][$1] }
+                # continue
               end
 
               meth = 'key'

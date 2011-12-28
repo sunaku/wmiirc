@@ -220,7 +220,7 @@ control:
   #
   #   <key sequence>: <name of action>
   #
-  # A key sequence may contain ${...} expressions which
+  # A key sequence may contain $... expressions which
   # are replaced with the value corresponding to '...' in
   # the "control:keyboard" section of this configuration.
   #
@@ -233,9 +233,9 @@ control:
   #
   # and the following key sequence was used:
   #
-  #   ${foo}-${bar},${bar}
+  #   $foo-$bar,$bar
   #
-  # then after ${...} expression replacement,
+  # then after $... expression replacement,
   # that key sequence would appear like this:
   #
   #   Mod4-y,y
