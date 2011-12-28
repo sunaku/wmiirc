@@ -99,7 +99,7 @@ module Wmiirc
     # Expands symbolic references in the given keyboard shortcut.
     def expand_keyboard_shortcut key
       key = key.dup
-      while key.gsub!(/\$(\w+)/){ self['control']['keyboard'][$1] }
+      while key.gsub!(/\$\{(\w+)\}/){ self['control']['keyboard'][$1] }
         # continue
       end
       key
