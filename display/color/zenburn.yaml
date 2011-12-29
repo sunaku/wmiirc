@@ -9,5 +9,5 @@ import:
 display:
   color:
     desktop:  "#333333" # VisualNOS
-    focus:    "#333333 #8cd0d3 #8cd0d3" # Normal, Number, Number
-    normal:   "#dcdccc #3f3f3f #434443" # Normal, CursorLine
+    normal:   "#dcdccc #3f3f3f #434443" # Normal(forward), CursorLine
+    focus:    "#3f3f3f #dcdccc #4f4f4f" # Normal(reverse), CursorColumn
