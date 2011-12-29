@@ -19,7 +19,7 @@ status:
 
       temperature = level.sub(' degrees', '').tr('CF', "\u2103\u2109")
 
-      [color, "\u2622", temperature, status].compact
+      [color, "\u2622", temperature, status]
 
     control:
       action:

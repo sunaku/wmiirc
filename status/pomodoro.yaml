@@ -87,7 +87,7 @@ status:
       [color, "\u2692",
         ("#{minutes_remaining}m" if minutes_remaining),
         ("x#{@pomodoros}" if @started),
-      ].compact
+      ]
 
     control:
       action:

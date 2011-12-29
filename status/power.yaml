@@ -16,7 +16,7 @@ status:
 
       time = "\u25D4 #{time[/[0:]*(\S+)/, 1]}" if time
 
-      [color, "\u26A1", level, time].compact
+      [color, "\u26A1", level, time]
 
     control:
       action:

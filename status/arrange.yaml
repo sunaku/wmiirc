@@ -77,7 +77,7 @@ status:
       end
 
     label: |
-      ["\u22C8", current].compact
+      ["\u22C8", current]
 
     control:
       action:

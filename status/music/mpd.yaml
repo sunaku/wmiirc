@@ -79,7 +79,7 @@ status:
         end
       end
 
-      [icon, text].compact
+      [icon, text]
 
     control:
       action:

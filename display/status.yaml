@@ -78,7 +78,7 @@ script:
               end
 
               button.colors = button_label.shift
-              button.label = button_label.join(' ')
+              button.label = button_label.compact.join(' ')
 
               sleep *refresh_rate
             end
