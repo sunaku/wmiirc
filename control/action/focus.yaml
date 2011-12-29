@@ -26,6 +26,20 @@ control:
     focus_client_left: curr_view.select(:left) rescue nil
     focus_client_right: curr_view.select(:right) rescue nil
 
+    focus_client_view_next: |
+      c = curr_client
+      v = next_view
+      v = v.next until v.client_ids.include? c.id
+      v.focus
+      c.focus v
+
+    focus_client_view_previous: |
+      c = curr_client
+      v = prev_view
+      v = v.prev until v.client_ids.include? c.id
+      v.focus
+      c.focus v
+
     focus_overlay!: curr_view.select(:toggle)
 
     focus_view_menu: |
