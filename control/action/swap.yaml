@@ -6,6 +6,23 @@ control:
     swap_client_left: curr_client.swap(:left) rescue nil
     swap_client_right: curr_client.swap(:right) rescue nil
 
+    swap_client_master: |
+      unless defined? $swap_client_master
+        $swap_client_master = Hash.new(2)
+      end
+      begin
+        c = curr_client
+        a = c.area.id
+        t = curr_tag
+        if a == 1
+          c.swap $swap_client_master[t]
+        else
+          $swap_client_master[t] = a
+          c.swap 1
+        end
+      rescue
+      end
+
     # swap current client with the selected one in column <N>
     swap_client_column_1: curr_client.swap 1
     swap_client_column_2: curr_client.swap 2
