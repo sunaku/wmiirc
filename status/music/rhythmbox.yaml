@@ -1,32 +1,37 @@
 status:
   music:
-    script: |
-      def pause!
-        system 'rhythmbox-client --no-start --play-pause'
-        refresh
-      end
-
-      def stop
-        system 'rhythmbox-client --no-start --stop'
-        refresh
-      end
-
-      def next
-        system 'rhythmbox-client --no-start --next'
-        refresh
-      end
-
-      def prev
-        system 'rhythmbox-client --no-start --previous'
-        refresh
-      end
+    params:
+      client: rhythmbox-client --no-start
+      format: '(%ta) %at - %tt'
 
     label: |
-      `rhythmbox-client --no-start --print-playing-format '(%ta) %at - %tt'`
+      `#{@client} --print-playing-format #{@format.inspect}`.chomp
 
     control:
       action:
-        music_stop: self.stop
-        music_previous: self.prev
-        music_next: self.next
-        music_pause!: self.pause!
+        music_play!: |
+          system "#{@client} --play-pause"
+          refresh
+
+        music_pause: |
+          system "#{@client} --pause"
+          refresh
+
+        music_stop: |
+          system "#{@client} --stop"
+          refresh
+
+        music_next: |
+          system "#{@client} --next"
+          refresh
+
+        music_previous: |
+          system "#{@client} --previous"
+          refresh
+
+      mouse_action:
+        left_click: music_play!
+        right_click: music_stop
+        wheel_up: music_previous
+        wheel_down: music_next
+        wheel_click: music_menu

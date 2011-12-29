@@ -11,7 +11,7 @@ status:
 
         def sample!
           reading = `free -m`
-          @used, @free = reading[/cache:(.+)/, 1].split
+          total, @used, @free = reading[/Mem:(.+)/, 1].split.map(&:to_f)
           @swap = reading[/Swap:(.+)/, 1].split[1]
         end
 
@@ -29,11 +29,12 @@ status:
     label: |
       sample!
       used_percent = ((@used.to_f / (@used.to_f + @free.to_f)) * 100).round
-      "mem \u25D3 #{used_percent}% \u25CC #{@free}M \u25C9 #{@swap}M"
+      ["mem #{used_percent}% \u25CC #{@free}M",
+       ("\u25C9 #{@swap}M" if @swap.to_f > 0)]
 
     control:
       action:
-        show_memory_stats: dialog `vmstat`
+        memory_details: dialog `vmstat`
 
       mouse_action:
-        left_click: show_memory_stats
+        left_click: memory_details

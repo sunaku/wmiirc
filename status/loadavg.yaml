@@ -7,40 +7,22 @@ status:
       critical: 1.5
       high: 0.75
 
-    script: |
-      case ::RbConfig::CONFIG['host_os']
-      when /linux/
-
-        def sample!
-          @load_averages = File.read('/proc/loadavg').split.first(3)
-          @current_load = @load_averages[0].to_f
-        end
-
-      when /bsd/
-
-        def sample!
-          @load_averages = `sysctl -h -n vm.loadavg`.split
-          @current_load = @load_averages[1].to_f
-        end
-
-      else
-        raise NotImplementedError, 'OS not supported'
-      end
-
     label: |
-      sample!
+      averages = `uptime`[/load average: (.+)$/, 1].split(', ')
+      level = averages.first
 
-      color = case
-              when @current_load > @critical then 'error'
-              when @current_load > @high     then 'notice'
-              end
+      color =
+        case [level.to_f, @high, @critical].min
+        when @critical then :error
+        when @high then :notice
+        end
 
-      [color, "\u2691", *@load_averages]
+      [color, "\u2691", *averages]
 
     control:
       action:
-        show_loadavg_stats: |
+        loadavg_details: |
           launch 'xterm', '-e', 'nice top', type: 'DIALOG'
 
       mouse_action:
-        left_click: show_loadavg_stats
+        left_click: loadavg_details

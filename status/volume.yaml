@@ -21,7 +21,7 @@ status:
         end
 
         def level= value
-          system "amixer set #{@mixer} #{value}"
+          system "amixer -q set #{@mixer} #{value}"
           refresh
         end
 

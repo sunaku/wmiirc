@@ -1,5 +1,5 @@
 status:
-  power:
+  battery:
     params:
       low: 15
       critical: 5
