@@ -1,3 +1,7 @@
+require:
+  - pathname
+  - set
+
 script:
   - after: |
       action 'launch_menu_rehash'
@@ -65,11 +69,15 @@ control:
   action:
 
     launch_menu_rehash: |
-      # scan for available programs and actions
-      @programs = find_programs(ENV['PATH'].squeeze(':').split(':'))
+      programs = SortedSet.new
+      ENV['PATH'].squeeze(':').split(':').each do |d|
+        Pathname.new(d).expand_path.children.
+        each {|f| programs << f.basename.to_s if f.file? and f.executable? }
+      end
+      $launch_menu = programs.to_a
 
     launch_menu: |
-      if choice = key_menu(@programs, 'launch:', :program)
+      if choice = key_menu($launch_menu, 'launch:', :program)
         launch choice
       end
 

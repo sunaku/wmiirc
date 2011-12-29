@@ -31,6 +31,7 @@ script:
             ]
           end
 
+          # merge the instance with the standard barlet definition
           definition_copy = {}
           CONFIG.merge definition_copy, definition, definition_key
           definition = definition_copy
@@ -86,7 +87,7 @@ script:
             end
           end
 
-          (class << self; self; end).class_eval do
+          singleton_class.class_eval do
             define_method :refresh do
               label_refresh_thread.wakeup if label_refresh_thread.alive?
             end

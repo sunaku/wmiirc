@@ -30,10 +30,9 @@ module Wmiirc
   KEYS    = Handler.new
 
   ##
-  # If a block is given, registers a handler
-  # for the given event and returns the handler.
-  #
-  # Otherwise, executes all handlers for the given event.
+  # If a block is given, registers a handler for the
+  # given event and returns the handler.  Otherwise,
+  # executes all handlers for the given event.
   #
   def event(*a, &b)
     EVENTS.handle(*a, &b)
@@ -54,10 +53,9 @@ module Wmiirc
   end
 
   ##
-  # If a block is given, registers a handler for
-  # the given action and returns the handler.
-  #
-  # Otherwise, executes all handlers for the given action.
+  # If a block is given, registers a handler for the
+  # given action and returns the handler.  Otherwise,
+  # executes all handlers for the given action.
   #
   def action(*a, &b)
     ACTIONS.handle(*a, &b)
@@ -78,10 +76,10 @@ module Wmiirc
   end
 
   ##
-  # If a block is given, registers a handler for
-  # the given keypress and returns the handler.
-  #
-  # Otherwise, executes all handlers for the given keypress.
+  # If a block is given, registers a handler
+  # for the given keypress name and returns
+  # the handler.  Otherwise, executes all
+  # handlers for the given keypress name.
   #
   def key(*a, &b)
     KEYS.handle(*a, &b)

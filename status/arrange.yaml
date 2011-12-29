@@ -41,7 +41,7 @@ status:
       # reapply peristent arrangement when wmii tells us to
       event('ArrangeView') { apply }
 
-      def apply choice = current
+      def apply choice=current
         if @choices.key? choice
           curr_view.instance_eval(@choices[choice].to_s)
         end
