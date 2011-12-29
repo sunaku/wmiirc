@@ -102,14 +102,14 @@ Running
 * Ensure that your `~/.xinitrc` allows you to restart wmii without having to
   lose your running applications if wmii crashes or is accidentally killed:
 
-        xterm -e tail -F ~/.wmii/wmiirc.log &
-
+        xterm -e tail -f ~/.wmii/wmiirc.log &
         while true; do wmii
-          xmessage 'Do you really want to quit wmii?' \
-                   -buttons 'Yes:0,No:1' -center \
-                   -default 'No' -timeout 30 \
-          && break
+          xmessage 'INSERT COIN TO CONTINUE' \
+          -buttons 'Insert Coin:0,Game Over' \
+          -default 'Insert Coin' -timeout 30 \
+          -center || break
         done
+
   For a working example, see [my personal configuration file](
   https://github.com/sunaku/home/blob/master/.xinitrc ).
 
