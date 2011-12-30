@@ -51,7 +51,7 @@ class Config < Hash
       'border'      => self['display']['border'],
       'bar on'      => self['display']['bar'],
       'colmode'     => self['display']['column']['mode'],
-      'grabmod'     => self['control']['keyboard']['grabmod'],
+      'grabmod'     => self['control']['mouse']['grab'],
     }
 
     begin

@@ -200,15 +200,15 @@ control:
   #
   mouse:
 
+    ##
+    # The wmii "grabmod" setting.
+    #
+    grab:
+
   ##
   # Keyboard settings.
   #
   keyboard:
-
-    ##
-    # The wmii "grabmod" setting.
-    #
-    grabmod:
 
   ##
   # Keyboard shortcuts.
