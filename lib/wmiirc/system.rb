@@ -1,6 +1,24 @@
 module Wmiirc
 
   ##
+  # Runs {#launch!} inside the present working directory of the
+  # currently focused client or, if undeterminable, that of wmii.
+  #
+  def launch *args
+    if label = curr_client.label.read rescue nil
+      label.split(/[\s\[\]\{\}\(\)<>"':]+/).each do |word|
+        if File.exist? path = File.expand_path(word)
+          path = File.dirname(path) unless File.directory? path
+          Dir.chdir(path){ launch! *args }
+          return
+        end
+      end
+    end
+
+    launch! *args
+  end
+
+  ##
   # Launches the given command in the background.
   #
   # @param [String] command
@@ -30,7 +48,7 @@ module Wmiirc
   #
   #   launch 'xmessage', 'hello world', Time.now.to_s, type: 'DIALOG'
   #
-  def launch command, *arguments_then_wihack_options
+  def launch! command, *arguments_then_wihack_options
     *arguments, wihack_options = arguments_then_wihack_options
 
     unless wihack_options.nil? or wihack_options.kind_of? Hash
@@ -70,7 +88,7 @@ module Wmiirc
   #
   def notify title, message, icon='dialog-information', *arguments
     Rumai.fs.event.write "Notice #{title}: #{message}\n"
-    launch 'notify-send', '-i', icon, title, message, *arguments
+    launch! 'notify-send', '-i', icon, title, message, *arguments
   end
 
   ##
@@ -86,7 +104,7 @@ module Wmiirc
   #   Additional command-line arguments for `xmessage`.
   #
   def dialog message, *arguments
-    launch 'xmessage', '-nearmouse', *arguments, message, type: 'DIALOG'
+    launch! 'xmessage', '-nearmouse', *arguments, message, type: 'DIALOG'
   end
 
 end
