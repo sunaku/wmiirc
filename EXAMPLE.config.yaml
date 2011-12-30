@@ -46,15 +46,6 @@ import:
 require:
 
 ##
-# Arbitrary preferences.
-#
-prefer:
-  terminal:
-  browser:
-  editor:
-  filer:
-
-##
 # Appearance settings.
 #
 display:

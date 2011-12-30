@@ -22,14 +22,3 @@ control:
         launch choice
       end
 
-    launch_terminal: |
-      launch_in_curr_client_pwd CONFIG['prefer']['terminal']
-
-    launch_browser: |
-      launch CONFIG['prefer']['browser']
-
-    launch_filer: |
-      launch_in_curr_client_pwd CONFIG['prefer']['filer']
-
-    launch_editor: |
-      launch_in_curr_client_pwd CONFIG['prefer']['editor']
