@@ -31,7 +31,9 @@ script:
             ]
           end
 
-          definition = definition.dup
+          definition_copy = {}
+          CONFIG.merge definition_copy, definition, definition_key
+          definition = definition_copy
           CONFIG.merge definition, instance, instance_key
 
           if params = definition['params']
