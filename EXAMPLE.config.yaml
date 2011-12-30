@@ -68,11 +68,6 @@ display:
   border:
 
   ##
-  # Number of seconds a notice should be displayed.
-  #
-  notice:
-
-  ##
   # Color schemes for everything drawn by wmii.
   #
   #   <scheme>: "<text> <background> <border>"
