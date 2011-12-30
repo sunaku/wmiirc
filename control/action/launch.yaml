@@ -3,8 +3,8 @@ require:
   - set
 
 script:
-  - after: |
-      action 'launch_menu_rehash'
+  after:
+    - action 'launch_menu_rehash'
 
 control:
   action:

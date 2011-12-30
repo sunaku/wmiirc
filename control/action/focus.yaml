@@ -1,5 +1,6 @@
 script:
-  - before: |
+  before:
+    - |
       # remember most recently focused view whenever view focus changes
       $recent_view = View.new(SESSION[:antecedent_tag])
       class Rumai::View

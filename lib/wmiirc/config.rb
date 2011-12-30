@@ -32,10 +32,8 @@ class Config < Hash
   private
 
   def script key
-    Array(self['script']).each do |hash|
-      if script = hash[key]
-        SANDBOX.eval script.to_s, origin(script, "script:#{key}")
-      end
+    Array(self['script'][key]).each do |code|
+      SANDBOX.eval code.to_s, origin(code, "script:#{key}")
     end
   end
 

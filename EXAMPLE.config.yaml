@@ -233,12 +233,16 @@ control:
   keyboard_action:
 
 ##
-# Arbitrary logic to execute while processing this file.  Any number of
-# "before" and "after" subsections may be defined within this section.
+# Arbitrary logic to execute while processing this file.
 #
 #   script:
-#     - before: <Ruby code to execute before processing this file>
-#     - after:  <Ruby code to execute after processing this file>
-#     # ...
+#     before:
+#       - <Ruby code to execute before processing this file>
+#       # ...
+#     after:
+#       - <Ruby code to execute after processing this file>
+#       # ...
 #
 script:
+  before:
+  after:

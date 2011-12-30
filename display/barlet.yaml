@@ -1,5 +1,6 @@
 script:
-  - before: |
+  before:
+    - |
       class Barlet < Rumai::Barlet
         def initialize *args
           super

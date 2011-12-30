@@ -2,8 +2,8 @@ require:
   - securerandom
 
 script:
-  - before: |
-      ZOOMED_SUFFIX = /!\d+\.[[:xdigit:]]+$/
+  before:
+    - ZOOMED_SUFFIX = /!\d+\.[[:xdigit:]]+$/
 
 control:
   action:

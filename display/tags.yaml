@@ -3,7 +3,8 @@ import:
   - display/barlet
 
 script:
-  - before: |
+  before:
+    - |
       class TagBarlet < Barlet
         def initialize tag
           super tag, :left
@@ -11,7 +12,8 @@ script:
         end
       end
 
-  - after: |
+  after:
+    - |
       # create buttons for tags in /lbar
       fs.lbar.clear
       tags.each {|t| event 'CreateTag', t }
