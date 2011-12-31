@@ -13,6 +13,83 @@ mapping:
     sequence:
       - type: any
         required: true
+  'control':
+    type: map
+    required: true
+    mapping:
+      'event': &optional_hash_with_string_values
+        type: map
+        required: false
+        mapping:
+          =:
+            type: str
+            required: true
+      'mouse':
+        type: map
+        required: true
+        mapping:
+          'grab': &required_string
+            type: str
+            required: true
+          =: *required_string
+      'keyboard': *optional_hash_with_string_values
+      'action': *optional_hash_with_string_values
+      'keyboard_action': *optional_hash_with_string_values
+  'script':
+    type: map
+    required: false
+    mapping:
+      'before': &script
+        type: seq
+        required: false
+        sequence:
+          - type: str
+            required: true
+      'after': *script
+  'status':
+    type: map
+    required: false
+    mapping:
+      =:
+        type: map
+        required: true
+        mapping: &status_barlet
+          'params': &optional_hash
+            type: map
+            required: false
+            mapping:
+              =:
+                type: any
+          'script':
+            type: str
+            required: false
+          'label':
+            type: str
+            required: false
+          'refresh':
+            type: int
+            required: false
+            range:
+              min: 0
+          'control':
+            type: map
+            required: false
+            mapping:
+              'event': *optional_hash_with_string_values
+              'action': *optional_hash_with_string_values
+              'mouse_action':
+                type: map
+                required: false
+                mapping:
+                  'left_click': &optional_string
+                    type: str
+                    required: false
+                  'wheel_click': *optional_string
+                  'right_click': *optional_string
+                  'wheel_up': *optional_string
+                  'wheel_down': *optional_string
+                  'wheel_left': *optional_string
+                  'wheel_right': *optional_string
   'display':
     type: map
     required: true
@@ -73,81 +150,7 @@ mapping:
           - type: map
             required: false
             mapping:
-              =: &optional_hash
+              =:
                 type: map
                 required: false
-                mapping:
-                  =:
-                    type: any
-  'control':
-    type: map
-    required: true
-    mapping:
-      'action': &optional_hash_with_string_values
-        type: map
-        required: false
-        mapping:
-          =:
-            type: str
-            required: true
-      'event': *optional_hash_with_string_values
-      'mouse':
-        type: map
-        required: true
-        mapping:
-          'grab': &required_string
-            type: str
-            required: true
-          =: *required_string
-      'keyboard': *optional_hash_with_string_values
-      'keyboard_action': *optional_hash_with_string_values
-  'script':
-    type: map
-    required: false
-    mapping:
-      'before': &script
-        type: seq
-        required: false
-        sequence:
-          - type: str
-            required: true
-      'after': *script
-  'status':
-    type: map
-    required: false
-    mapping:
-      =:
-        type: map
-        required: true
-        mapping:
-          'params': *optional_hash
-          'script':
-            type: str
-            required: false
-          'label':
-            type: str
-            required: false
-          'refresh':
-            type: int
-            required: false
-            range:
-              min: 0
-          'control':
-            type: map
-            required: false
-            mapping:
-              'action': *optional_hash_with_string_values
-              'mouse_action':
-                type: map
-                required: false
-                mapping:
-                  'left_click': &optional_string
-                    type: str
-                    required: false
-                  'wheel_click': *optional_string
-                  'right_click': *optional_string
-                  'wheel_up': *optional_string
-                  'wheel_down': *optional_string
-                  'wheel_left': *optional_string
-                  'wheel_right': *optional_string
-              'event': *optional_hash_with_string_values
+                mapping: *status_barlet
