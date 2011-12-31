@@ -1,6 +1,6 @@
 import:
-  - control/mouse
-  - display/barlet
+  - control/mouse.yaml
+  - display/barlet.yaml
 
 script:
   before:

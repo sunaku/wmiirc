@@ -1,5 +1,5 @@
 import:
-  - display/color/common
+  - display/color/common.yaml
 
 #
 # Colors from the Classic theme for Google Chrome.

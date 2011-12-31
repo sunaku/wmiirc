@@ -4,9 +4,10 @@ require 'yaml'
 module Wmiirc
 class Config < Hash
 
-  def initialize name
-    @origin_by_value = {}
-    import name, self
+  attr_reader :origins
+
+  def initialize file
+    Import.import self, file, @origins={}
   end
 
   def apply
@@ -22,7 +23,7 @@ class Config < Hash
   # not possible, the given section name is returned.
   #
   def origin value, section
-    if origin = @origin_by_value[value]
+    if origin = @origins[value]
       "#{origin}:#{section}"
     else
       section
@@ -103,88 +104,6 @@ class Config < Hash
       # continue
     end
     key
-  end
-
-  def import virtual_paths, merged_result={}, already_imported={}, importer=$0
-    Array(virtual_paths).each do |virtual_path|
-      Dir["#{DIR}/#{virtual_path}.yaml"].each do |physical_path|
-        next if already_imported[physical_path]
-        already_imported[physical_path] = true
-
-        begin
-          config_partial = YAML.load_file(physical_path).to_hash
-          mark_origin config_partial, physical_path
-
-          import Array(config_partial['import']), merged_result,
-            already_imported, physical_path
-
-          merge merged_result, config_partial, physical_path
-        rescue => error
-          error.message << ' when importing %s (really %s) into %s' %
-          [ virtual_path, physical_path, importer ].map(&:inspect)
-
-          raise error
-        end
-      end
-    end
-
-    merged_result
-  end
-
-  def mark_origin config_partial, origin
-    if config_partial.kind_of? String
-      @origin_by_value[config_partial] = origin
-
-    elsif config_partial.respond_to? :each
-      config_partial.each do |*values|
-        values.each do |v|
-          mark_origin v, origin
-        end
-      end
-    end
-  end
-
-  public
-
-  def merge dst_hash, src_hash, src_file, backtrace=[]
-    src_hash.each do |key, src_val|
-      backtrace.push key
-
-      catch :merged do
-        if dst_hash.key? key
-          dst_val = dst_hash[key]
-
-          dst_file = @origin_by_value[dst_val]
-          section = backtrace.join(':')
-
-          if src_val.nil?
-            LOG.warn 'empty section %s in %s removes value %s from %s' %
-            [section, src_file, dst_val, dst_file].map(&:inspect)
-
-            dst_hash.delete key
-            throw :merged
-
-          # merge the values
-          elsif dst_val.is_a? Hash and src_val.is_a? Hash
-            merge dst_val, src_val, src_file, backtrace
-            throw :merged
-
-          elsif dst_val.is_a? Array
-            dst_val.concat Array(src_val)
-            throw :merged
-
-          elsif dst_val != nil
-            LOG.warn 'value %s from %s overrides value %s from %s in section %s' %
-            [src_val, src_file, dst_val, dst_file, section].map(&:inspect)
-          end
-        end
-
-        # override destination
-        dst_hash[key] = src_val
-      end
-
-      backtrace.pop
-    end
   end
 
 end

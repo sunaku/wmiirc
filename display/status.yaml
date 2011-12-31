@@ -1,6 +1,6 @@
 import:
-  - control/mouse
-  - display/barlet
+  - control/mouse.yaml
+  - display/barlet.yaml
 
 script:
   before:
@@ -33,10 +33,8 @@ script:
           end
 
           # merge the instance with the standard barlet definition
-          definition_copy = {}
-          CONFIG.merge definition_copy, definition, definition_key
-          definition = definition_copy
-          CONFIG.merge definition, instance, instance_key
+          definition = Wmiirc::Import.merge({}, definition, definition_key)
+          Wmiirc::Import.merge definition, instance, instance_key, CONFIG.origins
 
           if params = definition['params']
             params.each do |key, value|

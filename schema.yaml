@@ -1,0 +1,153 @@
+type: map
+required: true
+mapping:
+  'import':
+    type: seq
+    required: false
+    sequence:
+      - type: str
+        required: true
+  'require':
+    type: seq
+    required: false
+    sequence:
+      - type: any
+        required: true
+  'display':
+    type: map
+    required: true
+    mapping:
+      'bar':
+        type: str
+        required: true
+        enum: [top, bottom]
+      'font':
+        type: str
+        required: true
+      'border':
+        type: int
+        required: true
+        range:
+          min: 0
+      'color':
+        type: map
+        required: true
+        mapping:
+          'desktop':
+            type: str
+            required: true
+            pattern: '/^#\h{6}$/'
+          'normal': &required_color_tuple
+            type: str
+            required: true
+            pattern: '/^#\h{6} #\h{6} #\h{6}$/'
+          'focus': *required_color_tuple
+          =: *required_color_tuple
+      'refresh':
+        type: int
+        required: false
+        range:
+          min: 0
+      'column':
+        type: map
+        required: true
+        mapping:
+          'mode':
+            type: str
+            required: true
+            enum: [default, stack, max]
+          'rule':
+            type: str
+            required: true
+      'client':
+        type: map
+        required: true
+        mapping:
+          'rule':
+            type: str
+            required: true
+      'status':
+        type: seq
+        required: false
+        sequence:
+          - type: map
+            required: false
+            mapping:
+              =: &optional_hash
+                type: map
+                required: false
+                mapping:
+                  =:
+                    type: any
+  'control':
+    type: map
+    required: true
+    mapping:
+      'action': &optional_hash_with_string_values
+        type: map
+        required: false
+        mapping:
+          =:
+            type: str
+            required: true
+      'event': *optional_hash_with_string_values
+      'mouse':
+        type: map
+        required: true
+        mapping:
+          'grab': &required_string
+            type: str
+            required: true
+          =: *required_string
+      'keyboard': *optional_hash_with_string_values
+      'keyboard_action': *optional_hash_with_string_values
+  'script':
+    type: map
+    required: false
+    mapping:
+      'before': &script
+        type: seq
+        required: false
+        sequence:
+          - type: str
+            required: true
+      'after': *script
+  'status':
+    type: map
+    required: false
+    mapping:
+      =:
+        type: map
+        required: true
+        mapping:
+          'params': *optional_hash
+          'script':
+            type: str
+            required: false
+          'label':
+            type: str
+            required: false
+          'refresh':
+            type: int
+            required: false
+            range:
+              min: 0
+          'control':
+            type: map
+            required: false
+            mapping:
+              'action': *optional_hash_with_string_values
+              'mouse_action':
+                type: map
+                required: false
+                mapping:
+                  'left_click': &optional_string
+                    type: str
+                    required: false
+                  'wheel_click': *optional_string
+                  'right_click': *optional_string
+                  'wheel_up': *optional_string
+                  'wheel_down': *optional_string
+                  'wheel_left': *optional_string
+                  'wheel_right': *optional_string
+              'event': *optional_hash_with_string_values

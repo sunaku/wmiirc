@@ -21,6 +21,7 @@ module Wmiirc
   SANDBOX = Sandbox.new
 end
 
+require 'wmiirc/import'
 require 'wmiirc/handler'
 require 'wmiirc/system'
 require 'wmiirc/menu'

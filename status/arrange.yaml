@@ -88,4 +88,4 @@ status:
       mouse_action:
         left_click: arrange_persist_menu
         right_click: arrange_persist_stop
-        middle_click: arrange_persist_redo
+        wheel_click: arrange_persist_redo

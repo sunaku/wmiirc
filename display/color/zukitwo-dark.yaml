@@ -1,7 +1,7 @@
 # http://lassekongo83.deviantart.com/art/Zukitwo-203936861
 
 import:
-  - display/color/common
+  - display/color/common.yaml
 
 display:
   color:

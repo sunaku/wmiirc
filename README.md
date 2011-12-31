@@ -34,6 +34,7 @@ All of this can be configured to suit your needs, of course.
 [wmii]: http://wmii.suckless.org
 [Rumai]: http://snk.tuxfamily.org/lib/rumai/
 [RumaiShell]: http://snk.tuxfamily.org/lib/rumai/#EXAMPLES
+[Kwalify]: http://www.kuwata-lab.com/kwalify/
 
 In the past, this configuration was described in the following articles:
 
@@ -61,6 +62,10 @@ Prerequisites
 * [Rumai] 4.1.3 or newer:
 
       gem install rumai -v '>= 4.1.3'
+
+* [Kwalify] 0.7.2 or newer:
+
+      gem install kwalify -v '>= 0.7.2'
 
 ------------------------------------------------------------------------------
 Installing
