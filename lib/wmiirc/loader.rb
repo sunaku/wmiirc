@@ -7,6 +7,9 @@ module Wmiirc
 module Loader
 class << self
 
+  CONFIG_FILE = File.join(DIR, 'config.yaml')
+  CONFIG_DUMP_FILE = File.join(DIR,'config.dump')
+
   CONFIG_SCHEMA_FILE = File.join(DIR, 'schema.yaml')
   CONFIG_SCHEMA = YAML.load_file(CONFIG_SCHEMA_FILE)
   CONFIG_VALIDATOR = Kwalify::Validator.new(CONFIG_SCHEMA)
@@ -100,11 +103,10 @@ class << self
     end
   end
 
-  CONFIG_DUMP_FILE = File.join(DIR,'config.dump')
-  CONFIG_FILE = File.join(DIR, 'config.yaml')
-
   def load_user_config
     config = Config.new(CONFIG_FILE)
+    File.write CONFIG_DUMP_FILE, config.to_yaml
+
     errors = CONFIG_VALIDATOR.validate(config)
     if errors and not errors.empty?
       raise ArgumentError, "invalid configuration:\n#{errors.join("\n")}"
@@ -113,7 +115,6 @@ class << self
     Wmiirc.const_set :CONFIG, config
     load_user_requires
     load_user_session
-    File.write CONFIG_DUMP_FILE, CONFIG.to_yaml
     config.apply
   end
 
