@@ -148,9 +148,6 @@ display:
   #           mouse_action:
   #             <mouse event>: <name of action>
   #
-  #           keyboard_action:
-  #             <key sequence>: <name of action>
-  #
   # The horizontal order in which these applets appear on the status
   # bar reflects the vertical order in which they are defined below.
   #

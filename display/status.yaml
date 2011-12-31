@@ -98,9 +98,8 @@ script:
 
             if actions = control['action']
               actions.each do |action_name, code|
-                handler = instance_eval "lambda {#{code}}", CONFIG.origin(
-                  code, "#{definition_key}:control:action:#{action_name}"
-                )
+                origin = CONFIG.origin(code, "#{definition_key}:control:action:#{action_name}")
+                handler = instance_eval("lambda {#{code}}", origin)
 
                 action_by_local_name[action_name] = handler
 
@@ -110,23 +109,10 @@ script:
                   Wmiirc.action action_name, &handler
                 end
 
-                # the button path suffix makes this action name unique
-                # to this particular instance of the status bar applet
+                # the offset suffix makes this action name unique to
+                # this particular instance of the status bar applet
                 # when we register the handler in the global namespace
-                Wmiirc.action action_name + button.path, &handler
-              end
-            end
-
-            if keyboard_actions = control['keyboard_action']
-              keyboard_actions.each do |key, action_name|
-                key = CONFIG.expand_keyboard_shortcut(key)
-
-                # other instances of this status bar applet may have already
-                # registered a handler for this keypress, so we skip this to
-                # avoid triggering the keypress handler multiple times!
-                unless Wmiirc.key? key
-                  Wmiirc.key(key) {|*argv| Wmiirc.action action_name }
-                end
+                Wmiirc.action "#{action_name}##{offset}", &handler
               end
             end
 

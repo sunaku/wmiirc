@@ -33,8 +33,10 @@ class Config < Hash
   private
 
   def script key
-    Array(self['script'][key]).each do |code|
-      SANDBOX.eval code.to_s, origin(code, "script:#{key}")
+    if scripts = self['script']
+      scripts[key].each do |code|
+        SANDBOX.eval code.to_s, origin(code, "script:#{key}")
+      end
     end
   end
 
@@ -74,7 +76,13 @@ class Config < Hash
       if settings = self['control'][section]
         settings.each do |key, code|
           if section == 'keyboard_action'
-            key = expand_keyboard_shortcut(key)
+
+            # expand symbolic references in the keyboard shortcut
+            if keyboard = self['control']['keyboard']
+              key = key.dup
+              nil while key.gsub!(/\$\{(\w+)\}/){ keyboard[$1] }
+            end
+
             meth = 'key'
             code = self['control']['action'][code] || "action #{code.inspect}"
           else
@@ -95,15 +103,6 @@ class Config < Hash
       fs.keys.write keys.join("\n")
       event('Key') {|*a| key(*a) }
     end
-  end
-
-  # Expands symbolic references in the given keyboard shortcut.
-  def expand_keyboard_shortcut key
-    key = key.dup
-    while key.gsub!(/\$\{(\w+)\}/){ self['control']['keyboard'][$1] }
-      # continue
-    end
-    key
   end
 
 end
