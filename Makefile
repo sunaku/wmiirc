@@ -6,11 +6,11 @@ rebase:
 	git fetch upstream
 	git rebase upstream/master
 
-branch:
+branch: rebase
 	git checkout -b personal
-	cp -vb EXAMPLE.config.yaml config.yaml
+	git checkout upstream/personal -- config.yaml
 	@echo '---------------------------------------------------------------'
-	@echo 'IMPORTANT: You must now edit config.yaml -- fill in the blanks!'
+	@echo 'IMPORTANT: You must now edit config.yaml to suit your needs ...'
 	@echo '---------------------------------------------------------------'
 
 rumai:
