@@ -28,7 +28,8 @@ module Import
 
   def expand result, src_file, origins={}, imported={}
     Array(result['import']).each do |virtual_path|
-      import result, Dir[virtual_path], origins, imported, src_file
+      physical_path = File.join(DIR, virtual_path)
+      import result, Dir[physical_path], origins, imported, src_file
     end
 
     result
