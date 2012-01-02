@@ -165,15 +165,15 @@ persisted across multiple instances of the wmiirc.
           This code is placed in a `label()` method in the `Wmiirc::Status`
           object.
 
-            * **control:**
+        * **control:**
 
-              * **event:** Hash of event name to Ruby code to evaluate in the
-                `Wmiirc::Status` object.
+          * **event:** Hash of event name to Ruby code to evaluate in the
+            `Wmiirc::Status` object.
 
-              * **action:** Hash of action name to Ruby code to evaluate in
-                the `Wmiirc::Status` object.
+          * **action:** Hash of action name to Ruby code to evaluate in
+            the `Wmiirc::Status` object.
 
-              * **mouse_action:** Hash of mouse event name to action name.
+          * **mouse_action:** Hash of mouse event name to action name.
 
   * **display:** Appearance settings.
 
@@ -300,6 +300,13 @@ Upgrading
 
     cd ~/.wmii
     make rebase
+
+If this fails because Git reports that you have unstaged changes, you can
+stash your changes away temporarily and restore them after the upgrade:
+
+    git stash
+    make rebase # now it works
+    git stash apply
 
 ------------------------------------------------------------------------------
 Hacking
