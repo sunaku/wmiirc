@@ -80,7 +80,12 @@ module Import
 private
 
   def mark_origin data, origin, result
-    result[data] = origin
+    result[data] =
+      if result.key? data
+        Array(result[data]).push(origin).uniq
+      else
+        origin
+      end
 
     if data.respond_to? :each
       data.each do |*values|
