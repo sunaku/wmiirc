@@ -5,7 +5,7 @@ status:
       critical: 5
 
     label: |
-      device, status = `acpi -b`.chomp.split(/: */, 2)
+      device, status = `acpi -b | fgrep ' #{@id}:'`.chomp.split(/: */, 2)
       status, level, time = status.split(/, */)
 
       time &&= time[/[0:]*(\S+)/, 1]
@@ -20,7 +20,7 @@ status:
 
     control:
       action:
-        show_battery_info: dialog `acpi -b -i`
+        battery_details: dialog `acpi -ib`
 
       mouse_action:
-        left_click: show_battery_info
+        left_click: battery_details

@@ -8,7 +8,7 @@ status:
       high: 70
 
     label: |
-      device, status = `acpi -t`.chomp.split(/: */, 2)
+      device, status = `acpi -t | fgrep ' #{@id}:'`.chomp.split(/: */, 2)
       status, level = status.split(/, */)
 
       color =
@@ -23,7 +23,7 @@ status:
 
     control:
       action:
-        show_thermal_info: dialog `acpi -itc`
+        thermal_details: dialog `acpi -itc`
 
       mouse_action:
-        left_click: show_thermal_info
+        left_click: thermal_details
