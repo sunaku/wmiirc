@@ -1,10 +1,5 @@
-import:
-  - display/color/common.yaml
-
-#
 # Kris Maglione's color scheme,
 # extracted from cmd/rc/wmii.sh
-#
 display:
   color:
     desktop:  "#333333"

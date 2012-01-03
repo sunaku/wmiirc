@@ -1,8 +1,5 @@
+# Colors from the Zukitwo-Dark GTK+ theme.
 # http://lassekongo83.deviantart.com/art/Zukitwo-203936861
-
-import:
-  - display/color/common.yaml
-
 display:
   color:
     desktop: "#3c3c3c"

@@ -1,10 +1,5 @@
-import:
-  - display/color/common.yaml
-
-#
 # Colors from the "Lucius" color scheme for Vim:
 # http://www.vim.org/scripts/script.php?script_id=2536
-#
 display:
   color:
     desktop:  "#363946" # LineNr

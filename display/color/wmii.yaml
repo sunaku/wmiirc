@@ -1,10 +1,5 @@
-import:
-  - display/color/common.yaml
-
-#
 # wmii's default color scheme,
 # extracted from cmd/wmii/dat.h
-#
 display:
   color:
     desktop:  "#333333"

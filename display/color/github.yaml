@@ -1,9 +1,4 @@
-import:
-  - display/color/common.yaml
-
-#
 # Colors from GitHub.com
-#
 display:
   color:
     desktop: "#EAF2F5"

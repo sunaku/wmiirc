@@ -1,9 +1,4 @@
-import:
-  - display/color/common.yaml
-
-#
 # Colors from the xfce-cadmium GTK+ theme.
-#
 display:
   color:
     desktop:  "#eeeeef"

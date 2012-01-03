@@ -1,11 +1,5 @@
-import:
-  - display/color/common.yaml
-
-#
 # Colors from the zenburn color scheme for Vim:
-#
 # http://slinky.imukuppi.org/zenburn/
-#
 display:
   color:
     desktop:  "#333333" # VisualNOS

@@ -1,7 +1,5 @@
-#
 # Common UI interaction cues from Blueprint CSS:
 # http://blueprintcss.org/tests/parts/forms.html
-#
 display:
   color:
     info:     "#205791 #D5EDF8 #92CAE4"

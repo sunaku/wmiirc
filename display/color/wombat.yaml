@@ -1,13 +1,8 @@
-import:
-  - display/color/common.yaml
-
-#
 # Colors taken from the Wombat color scheme for Vim:
 # http://dengmao.wordpress.com/2007/01/22/vim-color-scheme-wombat/
 #
 # And also from this Xresources adaptation thereof:
 # https://bitbucket.org/redrampage/dotfiles/src/38fb09ee9afb/.Xdefaults
-#
 display:
   color:
     desktop:  "#191919"
