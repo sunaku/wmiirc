@@ -42,6 +42,8 @@ script:
             end
           end
 
+          @id = offset
+
           if code = definition['script']
             instance_eval code.to_s,
               CONFIG.origin(code, "#{definition_key}:script")

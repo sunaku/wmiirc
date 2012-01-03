@@ -148,7 +148,9 @@ persisted across multiple instances of the wmiirc.
 
       All Ruby code snippets that are evaluated inside a `Wmiirc::Status`
       object have access to a `refresh` method that triggers redrawing of
-      the label of that status bar applet.
+      the label of that status bar applet.  They also have access to a `@id`
+      variable which is a sequence number counting the number of instances of
+      this particular status bar applet that have been created thus far.
 
       * **_name of the status bar applet that you want to define_:**
 
@@ -209,7 +211,9 @@ persisted across multiple instances of the wmiirc.
 
         All Ruby code snippets that are evaluated inside a `Wmiirc::Status`
         object have access to a `refresh` method that triggers redrawing of
-        the label of that status bar applet.
+        the label of that status bar applet.  They also have access to a `@id`
+        variable which is a sequence number counting the number of instances
+        of this particular status bar applet that have been created thus far.
 
         * **- _name of the status bar applet that you want to instantiate_:**
 
