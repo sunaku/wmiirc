@@ -87,7 +87,7 @@ status:
 
     label: |
       color = 'notice' if mute?
-      [color, "\u266A", level]
+      [color, "\u266B", level]
 
     control:
       action:
