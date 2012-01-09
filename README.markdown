@@ -136,7 +136,7 @@ persisted across multiple instances of the wmiirc.
             - yet_another_gem: ['>= 1.0.9', '< 2']
             - some_ruby_library
 
-  * **script:** Arbitrary logic to evaulate while processing this file.
+  * **script:** Arbitrary logic to evaluate while processing this file.
 
     * **before:** Array of Ruby code snippets to evaulate before processing
       the overall configuration.
