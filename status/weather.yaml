@@ -6,11 +6,9 @@ status:
     params:
       location:
 
-    script: |
-      @barometer = Barometer.new(@location)
-
     label: |
-      @weather = @barometer.measure
+      barometer = Barometer.new(@location)
+      @weather = barometer.measure
       status = @weather.current.icon
 
       icon =
