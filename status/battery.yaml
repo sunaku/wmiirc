@@ -7,16 +7,16 @@ status:
     label: |
       device, status = `acpi -b | fgrep ' #{@id}:'`.chomp.split(/: */, 2)
       status, level, time = status.split(/, */)
+      charging = `acpi -a` =~ /on-line/
 
       time &&= time[/[0:]*(\S+)/, 1]
-      icon = `acpi -a` =~ /on-line/ ? "\u279A" : "\u2798"
-      color =
+      color = charging ? :success :
         case [level.to_f, @low, @critical].max
         when @critical then :error
         when @low then :notice
         end
 
-      [color, "\u26A1", level, icon, time]
+      [color, "\u26A1", (level unless charging), time]
 
     control:
       action:
