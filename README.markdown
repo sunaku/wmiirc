@@ -67,6 +67,10 @@ Prerequisites
 
         gem install kwalify -v '>= 0.7.2'
 
+  * If you want to use the `status/weather.yaml` status bar applet:
+
+        gem install barometer -v '~> 0.7.3'
+
 ------------------------------------------------------------------------------
 Installing
 ------------------------------------------------------------------------------
