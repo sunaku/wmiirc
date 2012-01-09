@@ -144,39 +144,6 @@ persisted across multiple instances of the wmiirc.
     * **after:** Array of Ruby code snippets to evaulate after processing the
       overall configuration.
 
-  * **status:** Status bar applet definitions.
-
-      All Ruby code snippets that are evaluated inside a `Wmiirc::Status`
-      object have access to a `refresh` method that triggers redrawing of
-      the label of that status bar applet.  They also have access to a `@id`
-      variable which is a sequence number counting the number of instances of
-      this particular status bar applet that have been created thus far.
-
-      * **_name of the status bar applet that you want to define_:**
-
-        * **params:** Hash of parameters to pass to the constructor.  These
-          are later available as instance variables in the Ruby code
-          snippets that are evaluated inside this status bar applet.
-
-        * **refresh:** Number of seconds to wait before updating the label.
-          To disable automatic refreshing, set this parameter to 0 (zero).
-
-        * **script:** Ruby code to evaluate in the `Wmiirc::Status` object.
-
-        * **label:** Ruby code whose result is displayed as the content.
-          This code is placed in a `label()` method in the `Wmiirc::Status`
-          object.
-
-        * **control:**
-
-          * **event:** Hash of event name to Ruby code to evaluate in the
-            `Wmiirc::Status` object.
-
-          * **action:** Hash of action name to Ruby code to evaluate in
-            the `Wmiirc::Status` object.
-
-          * **mouse_action:** Hash of mouse event name to action name.
-
   * **display:** Appearance settings.
 
     * **bar:** Where to display the horizontal status bar?
