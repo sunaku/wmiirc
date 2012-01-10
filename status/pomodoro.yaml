@@ -76,7 +76,7 @@ status:
 
         if minutes_remaining > 0
           color = :normal
-        elsif minutes_remaining == 0
+        elsif minutes_remaining > -MINUTES_PER_BREAK
           color = :success
         end
 
