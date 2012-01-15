@@ -45,12 +45,13 @@ configuration was also described in the following articles in the past:
 Prerequisites
 ------------------------------------------------------------------------------
 
-  * [wmii] 3.9 or newer.
+  * [wmii] 3.9 or newer.  I recommend [my personal branch of wmii-hg](
+    https://github.com/sunaku/wmii/commits/personal ) for best results.
 
     Note that the `display/status/arrange` status bar applet requires a
     [patched version of wmii-hg revision 2758 or greater](
-    http://code.google.com/p/wmii/issues/detail?id=232 ) in order to *persist*
-    automated client arrangements.
+    https://github.com/sunaku/wmii/commit/33bf199436213788078581a8a94c2dcc98d6af16
+    ) in order to *persist* automated client arrangements.
 
   * [Ruby] 1.9.2 or newer.
 
