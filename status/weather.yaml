@@ -21,7 +21,7 @@ status:
         else "\u2600"
         end
 
-      temperature = @weather.temperature.to_s.tr('CF', "\u2103\u2109")
+      temperature = @weather.temperature.to_s(@metric).tr('CF', "\u2103\u2109")
 
       [icon, temperature, status]
 
