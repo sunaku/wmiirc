@@ -5,15 +5,15 @@ status:
       interface: lo
 
     script: |
-      def reading
+      def ifconfig
         `#{@ifconfig} #{@interface} 2>&1`
       end
 
     label: |
-      reading = self.reading
-      alive = reading !~ /\A\S+ error/
-      ip_addr = reading[/inet (?:addr:)?([\d.]+)/, 1]
-      rx_bytes, tx_bytes = reading.scan(/\((\d+(?:\.\d+)? \w+)\)/)
+      ifconfig = self.ifconfig
+      alive = ifconfig !~ /\A\S+ error/
+      ip_addr = ifconfig[/inet (?:addr:)?([\d.]+)/, 1]
+      rx_bytes, tx_bytes = ifconfig.scan(/\((\d+(?:\.\d+)? \w+)\)/)
 
       if alive and ip_addr
         color = 'normal'
@@ -27,7 +27,7 @@ status:
 
     control:
       action:
-        network_details: dialog reading
+        network_details: dialog ifconfig
 
       mouse_action:
         left_click: network_details
