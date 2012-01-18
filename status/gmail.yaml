@@ -1,0 +1,30 @@
+status:
+  gmail:
+    params:
+      user:
+      password:
+    refresh: 60
+    script: |
+      require 'gmail'
+      def read
+        msg = ''
+        Gmail.new(@user,@password) do |gmail|
+            # unread mails
+            u =  gmail.inbox.count :unread
+            mail = gmail.inbox.emails(:unread).first
+            if mail
+                mail.mark(:unread)
+                msg = mail.subject
+            else
+                msg = "no new mail"
+            end
+        end
+        msg
+      end
+
+    label: |
+      msg = self.read
+      color = (msg == 'no new mail') ? 'normal' : 'notice' 
+
+      [color,"\u2709", msg]
+
