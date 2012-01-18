@@ -6,6 +6,7 @@ import:
   - display/*.yaml
   - display/color/zukitwo-dark.yaml
   - display/desktop/feh.yaml
+  - password.yaml
 
 display:
   bar: top
@@ -52,9 +53,28 @@ display:
       /^chromium:Chromium:Task Manager/ floating=on
       /^chromium:/ group=0
 
-      /^firefox:/ group=0
-
       /^pcmanfm:/ group=0
+      /Buddy List/                   tags=zchat
+      /Mitter/                   tags=zchat
+      /Skype/ tags=zchat
+      /Vimperator/                   tags=web
+      /Mozilla/                   tags=web
+      /Chromium/                   tags=web
+      /Firefox/                   tags=web
+      /^Eclipse:/                   tags=dev
+      /Geany/                   tags=wdev
+      /Thunderbird/                   tags=zmail
+      /sancho/                   tags=zsancho
+      /marave/                   tags=marave
+      /ario/                   tags=ario
+      /vim/                     tags=cdev
+      /ImageMagick/             floating=on
+      /Gimp/    group=1 floating=on
+      /Redcar/    tags=red
+      /Jarnal/ tags=zjarnal
+      /KDevelop/ tags=cdev
+      /kdevelop/ tags=cdev
+      /Sublime/ tags=cdev
 
   refresh: 30
   status:
@@ -66,9 +86,10 @@ display:
             right_click: show_desktop
             wheel_up: focus_view_next
             wheel_down: focus_view_previous
+    - gmail:
     - arrange:
         params:
-          default: landscape
+          default: join
           choices:
             landscape: |
               # tile the first two managed client side-by-side
@@ -255,8 +276,8 @@ control:
     # view
     #-------------------------------------------------------------------------
 
-    ${root}comma:             focus_view_previous
-    ${root}period:            focus_view_next
+    ${root}b:             focus_view_previous
+    ${root}n:            focus_view_next
     ${root}o:                 focus_view_recent
     ${root}u:                 focus_view_menu
 
