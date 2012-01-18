@@ -2,6 +2,7 @@ status:
   network:
     params:
       ifconfig: /sbin/ifconfig
+      iwconfig: /sbin/iwconfig
       interface: lo
 
     script: |
@@ -9,8 +10,13 @@ status:
         `#{@ifconfig} #{@interface} 2>&1`
       end
 
+      def iwconfig
+        `#{@iwconfig} #{@interface} 2>&1`
+      end
+
     label: |
       ifconfig = self.ifconfig
+
       alive = ifconfig !~ /\A\S+ error/
       ip_addr = ifconfig[/inet (?:addr:)?([\d.]+)/, 1]
 
@@ -21,6 +27,16 @@ status:
       else
         color = 'error'
         stats = []
+      end
+
+      iwconfig = self.iwconfig
+      if iwconfig.match(/IEEE 802\.11/s)
+        if match = iwconfig.match(/ESSID:"([^"]+)"/)
+          stats.unshift match[1]
+          stats.unshift "\u223f"
+        else
+          color = 'error'
+        end
       end
 
       [color, @interface, stats]
