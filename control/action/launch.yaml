@@ -1,7 +1,3 @@
-require:
-  - pathname
-  - set
-
 script:
   after:
     - action 'launch_menu_rehash'
@@ -10,14 +6,12 @@ control:
   action:
 
     launch_menu_rehash: |
-      programs = SortedSet.new
-      ENV['PATH'].squeeze(':').split(':').each do |d|
-        if File.directory?(d) 
-            Pathname.new(d).expand_path.children.
-                each {|f| programs << f.basename.to_s if f.file? and f.executable? }
+      $launch_menu = ENV['PATH'].squeeze(':').split(':').map do |d|
+        Dir.exist? d and Dir.entries(d).select do |f|
+          entry = File.join(d, f)
+          File.file? entry and File.executable? entry
         end
-      end
-      $launch_menu = programs.to_a
+      end.compact.flatten.uniq
 
     launch_menu: |
       if choice = key_menu($launch_menu, 'launch:', :program)
