@@ -6,10 +6,10 @@ control:
   action:
 
     launch_menu_rehash: |
-      $launch_menu = ENV['PATH'].squeeze(':').split(':').map do |d|
+      $launch_menu = ENV['PATH'].to_s.split(/:+/).map do |d|
         Dir.exist? d and Dir.entries(d).select do |f|
-          entry = File.join(d, f)
-          File.file? entry and File.executable? entry
+          entry = File.stat(File.join(d, f))
+          entry.file? and entry.executable?
         end
       end.compact.flatten.uniq
 
