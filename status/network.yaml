@@ -12,7 +12,7 @@ status:
     label: |
       reading = self.reading
       alive = reading !~ /\A\S+ error/
-      ip_addr = reading[/inet ([\d.]+)/, 1]
+      ip_addr = reading[/inet (?:addr:)?([\d.]+)/, 1]
       rx_bytes, tx_bytes = reading.scan(/\((\d+(?:\.\d+)? \w+)\)/)
 
       if alive and ip_addr
