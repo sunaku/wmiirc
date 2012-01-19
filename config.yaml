@@ -365,7 +365,7 @@ control:
     ${size}2: zoom_group
     ${size}1: unzoom_group
 
-    ${size}0: detach_group
+    ${root}d: detach_group
     ${size}9: attach_client
 
     #-------------------------------------------------------------------------
