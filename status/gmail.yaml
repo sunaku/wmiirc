@@ -1,3 +1,5 @@
+require:
+  - gmail:
 status:
   gmail:
     params:
@@ -5,7 +7,6 @@ status:
       password:
     refresh: 60
     script: |
-      require 'gmail'
       def read
         msg = ''
         Gmail.new(@user,@password) do |gmail|
@@ -14,7 +15,7 @@ status:
             mail = gmail.inbox.emails(:unread).first
             if mail
                 mail.mark(:unread)
-                msg = mail.subject
+                msg = "#{u} mails: #{mail.subject}"
             else
                 msg = "no new mail"
             end
