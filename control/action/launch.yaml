@@ -8,8 +8,8 @@ control:
     launch_menu_rehash: |
       $launch_menu = ENV['PATH'].to_s.split(/:+/).map do |d|
         Dir.exist? d and Dir.entries(d).select do |f|
-          entry = File.stat(File.join(d, f))
-          entry.file? and entry.executable?
+          entry = File.stat(File.join(d, f)) rescue nil
+          entry and entry.file? and entry.executable?
         end
       end.compact.flatten.uniq
 
