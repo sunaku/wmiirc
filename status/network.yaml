@@ -1,17 +1,17 @@
 status:
   network:
     params:
-      ifconfig: /sbin/ifconfig
-      iwconfig: /sbin/iwconfig
+      ifconfig_bin: ifconfig
+      iwconfig_bin: iwconfig
       interface: lo
 
     script: |
       def ifconfig
-        `#{@ifconfig} #{@interface} 2>&1`
+        `#{@ifconfig_bin} #{@interface} 2>&1`
       end
 
       def iwconfig
-        `#{@iwconfig} #{@interface} 2>/dev/null`
+        `#{@iwconfig_bin} #{@interface} 2>/dev/null`
       end
 
     label: |
