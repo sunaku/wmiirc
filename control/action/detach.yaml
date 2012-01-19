@@ -1,6 +1,6 @@
 script:
   before:
-    - DETACHED_TAG = '?'
+    - DETACHED_TAG = '|'
 
 control:
   action:
