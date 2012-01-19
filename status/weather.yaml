@@ -5,6 +5,7 @@ status:
   weather:
     params:
       location:
+      metric: 
 
     label: |
       barometer = Barometer.new(@location)
