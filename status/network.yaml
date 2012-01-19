@@ -11,16 +11,11 @@ status:
       end
 
       def iwconfig
-        `#{@iwconfig} #{@interface} 2>&1`
-      end
-
-      def wireless?
-        iwconfig.match(/IEEE 802\.11/s)
+        `#{@iwconfig} #{@interface} 2>/dev/null`
       end
 
     label: |
       ifconfig = self.ifconfig
-
       alive = ifconfig !~ /\A\S+ error/
       ip_addr = ifconfig[/inet (?:addr:)?([\d.]+)/, 1]
 
@@ -33,21 +28,15 @@ status:
         stats = []
       end
 
-      iwconfig = self.iwconfig
-      if wireless?
-        if match = iwconfig.match(/ESSID:"([^"]+)"/)
-          stats.unshift match[1]
-          stats.unshift "\u223f"
-        else
-          color = 'error'
-        end
+      if self.iwconfig =~ /ESSID:"(.+?)"/
+        stats.unshift "\u223F", $1
       end
 
       [color, @interface, stats]
 
     control:
       action:
-        network_details: 'dialog wireless? ? [iwconfig, ifconfig].join("\n") : ifconfig'
+        network_details: dialog [iwconfig, ifconfig].join
 
       mouse_action:
         left_click: network_details
