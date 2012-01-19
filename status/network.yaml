@@ -22,7 +22,7 @@ status:
       if alive and ip_addr
         color = 'normal'
         rx_bytes, tx_bytes = ifconfig.scan(/\((\d+(?:\.\d+)? \w+)\)/)
-        stats = ['@', ip_addr, "\u2798", rx_bytes, "\u279A", tx_bytes]
+        stats = ['@', ip_addr, "\u25BE", rx_bytes, "\u25B4", tx_bytes]
       else
         color = 'error'
         stats = []

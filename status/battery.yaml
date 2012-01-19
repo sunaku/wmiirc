@@ -9,7 +9,7 @@ status:
       status, level, time = status.split(/, */)
 
       time &&= time[/[0:]*(\S+)/, 1]
-      icon = `acpi -a` =~ /on-line/ ? "\u279A" : "\u2798"
+      icon = `acpi -a` =~ /on-line/ ? "\u25B4" : "\u25BE"
       color =
         case [level.to_f, @low, @critical].max
         when @critical then :error
