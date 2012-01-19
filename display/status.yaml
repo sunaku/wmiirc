@@ -151,7 +151,8 @@ script:
       fs.rbar.clear
       count_by_name = Hash.new {|h,k| h[k] = 0 }
 
-      Array(CONFIG['display']['status']).each_with_index do |hash, position|
+      $status_barlets = Array(CONFIG['display']['status']).each_with_index.
+      map do |hash, position|
         raise ArgumentError unless hash.length == 1
         name, instance = hash.first
         instance ||= {}
