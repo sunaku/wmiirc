@@ -3,5 +3,5 @@ status:
     refresh: 0
     control:
       mouse_action:
-        wheel_up: focus_next_view
-        wheel_down: focus_previous_view
+        wheel_up: focus_view_next
+        wheel_down: focus_view_previous
