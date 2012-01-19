@@ -14,6 +14,10 @@ status:
         `#{@iwconfig} #{@interface} 2>&1`
       end
 
+      def wireless?
+        iwconfig.match(/IEEE 802\.11/s)
+      end
+
     label: |
       ifconfig = self.ifconfig
 
@@ -30,7 +34,7 @@ status:
       end
 
       iwconfig = self.iwconfig
-      if iwconfig.match(/IEEE 802\.11/s)
+      if wireless?
         if match = iwconfig.match(/ESSID:"([^"]+)"/)
           stats.unshift match[1]
           stats.unshift "\u223f"
@@ -43,7 +47,7 @@ status:
 
     control:
       action:
-        network_details: dialog ifconfig
+        network_details: 'dialog wireless? ? [iwconfig, ifconfig].join("\n") : ifconfig'
 
       mouse_action:
         left_click: network_details
