@@ -59,7 +59,9 @@ status:
           end
 
         notify 'Pomodoro Technique', message
-        Rumai.focus_view 'PomodoroBreakTime!'
+        unless system 'pgrep wimenu >/dev/null'
+          Rumai.focus_view 'PomodoroBreakTime!'
+        end
       end
 
     label: |
