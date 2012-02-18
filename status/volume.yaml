@@ -33,10 +33,6 @@ status:
           self.level = '5%-'
         end
 
-        def mute!
-          self.level = 'toggle'
-        end
-
       when /bsd/
 
         @mixer ||= 'mixer'
@@ -62,12 +58,20 @@ status:
           self.level = '-3'
         end
 
-        def mute!
-          self.level = 'toggle'
-        end
-
       else
         raise NotImplementedError, 'OS not supported'
+      end
+
+      def mute!
+        self.level = 'toggle'
+      end
+
+      def mute
+        self.level = 'mute'
+      end
+
+      def unmute
+        self.level = 'unmute'
       end
 
       def mute?
@@ -95,6 +99,8 @@ status:
         volume_more: self.increase
         volume_less: self.decrease
         volume_mute!: self.mute!
+        volume_mute: self.mute
+        volume_unmute: self.unmute
 
       mouse_action:
         left_click: volume_menu
