@@ -166,3 +166,7 @@ script:
 
         StatusBarletSandbox.new name, definition, instance, position, offset
       end
+
+control:
+  action:
+    status_refresh: $status_barlets.each(&:refresh)
