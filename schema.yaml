@@ -140,9 +140,12 @@ mapping:
         type: map
         required: true
         mapping:
-          'rule':
-            type: str
+          =:
+            type: seq
             required: true
+            sequence:
+              - type: str
+                required: true
       'status':
         type: seq
         required: false

@@ -206,9 +206,12 @@ persisted across multiple instances of the wmiirc.
 
         * **rule:** The wmii "colrules" setting.
 
-    * **client:** Settings for clients handled by wmii.
+    * **client:** Settings for clients handled by wmii.  See the documentation
+      for the underlying wmii "rules" setting for more information.
 
-        * **rule:** The wmii "rules" setting.
+        * **_rule to apply_:** Array of strings that represent regular
+          expressions to match against a string containing a newly created
+          client's WM_CLASS and WM_NAME attributes separated by a colon (:).
 
     * **refresh:** Refresh rate for status bar applets (measured in seconds).
 
