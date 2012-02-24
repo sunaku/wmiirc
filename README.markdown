@@ -1,14 +1,14 @@
 sunaku's wmii configuration in Ruby and YAML
 ==============================================================================
 
-[![January 2012](http://ompldr.org/tYzBqcQ)](http://ompldr.org/vYzBqcQ)
-[![September 2011](http://ompldr.org/tYWg1eQ)](http://ompldr.org/vYWg1eQ)
-[![August 2011](http://ompldr.org/tOXJjcg)](http://ompldr.org/vOXJjcg)
-[![July 2011](http://ompldr.org/tOWk0Zw)](http://ompldr.org/vOWk0Zw)
-[![June 2011](http://ompldr.org/tOHZzcw)](http://ompldr.org/vOHZzcw)
-[![May 2011](http://ompldr.org/tOGxyZQ)](http://ompldr.org/vOGxyZQ)
-[![April 2011](http://ompldr.org/tODNuag)](http://ompldr.org/vODNuag)
-[![March 2011](http://ompldr.org/tN3l2bQ)](http://ompldr.org/vN3l2bQ)
+[![January 2012](http://omploader.org/tYzBqcQ)](http://omploader.org/vYzBqcQ)
+[![September 2011](http://omploader.org/tYWg1eQ)](http://omploader.org/vYWg1eQ)
+[![August 2011](http://omploader.org/tOXJjcg)](http://omploader.org/vOXJjcg)
+[![July 2011](http://omploader.org/tOWk0Zw)](http://omploader.org/vOWk0Zw)
+[![June 2011](http://omploader.org/tOHZzcw)](http://omploader.org/vOHZzcw)
+[![May 2011](http://omploader.org/tOGxyZQ)](http://omploader.org/vOGxyZQ)
+[![April 2011](http://omploader.org/tODNuag)](http://omploader.org/vODNuag)
+[![March 2011](http://omploader.org/tN3l2bQ)](http://omploader.org/vN3l2bQ)
 
 This is a [Ruby] and [YAML] based configuration of the [wmii] window manager.
 It manipulates wmii through the [Rumai] library (which speaks directly to wmii
