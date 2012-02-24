@@ -1,3 +1,6 @@
-script:
-  after:
-    - system 'test -f ~/.fehbg && sh ~/.fehbg'
+import:
+  - display/desktop.yaml
+
+control:
+  action:
+    desktop: launch! 'test -f ~/.fehbg && sh ~/.fehbg'

@@ -68,8 +68,6 @@ class Config < Hash
       #
       LOG.warn "could not apply some wmii settings: #{error.inspect}"
     end
-
-    Wmiirc.launch! 'xsetroot', '-solid', CONFIG['display']['color']['desktop']
   end
 
   def control
