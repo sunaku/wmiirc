@@ -72,6 +72,10 @@ Prerequisites
 
         gem install barometer -v '~> 0.7.3'
 
+  * If you want to use the `status/music/mpd.yaml` status bar applet:
+
+        gem install librmpd -v '~> 0.1'
+
 ------------------------------------------------------------------------------
 Installing
 ------------------------------------------------------------------------------
