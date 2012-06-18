@@ -25,7 +25,7 @@ status:
           end
 
           # remove parenthetical subtext
-          title = title.sub(/\s*\(.*/, '')
+          title = title.sub(/(.+)\s*\(.*/, '\1')
         end
 
         icon = @mpd.paused? ? "\u25AE" * 2 : "\u25B6"
