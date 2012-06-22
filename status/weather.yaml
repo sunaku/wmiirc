@@ -5,7 +5,16 @@ status:
   weather:
     params:
       location:
-      metric: 
+      metric:
+      proxy:
+
+    script: |
+      if @proxy
+        proxy_uri = URI.parse(@proxy)
+        Barometer::WeatherService.class_eval do
+          http_proxy proxy_uri.host, proxy_uri.port
+        end
+      end
 
     label: |
       barometer = Barometer.new(@location)
