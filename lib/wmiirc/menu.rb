@@ -93,7 +93,7 @@ module Wmiirc
     clients = Rumai.clients
 
     choices = clients.map do |c|
-      "+#{c[:tags].read}: #{c[:label].read.downcase}"
+      "+#{c[:tags].read}: #{c[:label].read.force_encoding('UTF-8').downcase}"
     end
 
     if index = index_menu(choices, *key_menu_args)
