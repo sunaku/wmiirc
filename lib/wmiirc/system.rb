@@ -6,8 +6,9 @@ module Wmiirc
   #
   def launch *args
     if label = curr_client.label.read rescue nil
-      label.split(/[\s\[\]\{\}\(\)<>"':]+/).reverse_each do |word|
-        if File.exist? path = File.expand_path(word.force_encoding('UTF-8'))
+      label.encode(Encoding::UTF_8, undef: :replace, replace: '').
+      split(/[\s\[\]\{\}\(\)<>"':]+/).reverse_each do |word|
+        if File.exist? path = File.expand_path(word)
           path = File.dirname(path) unless File.directory? path
           Dir.chdir(path){ launch! *args }
           return
