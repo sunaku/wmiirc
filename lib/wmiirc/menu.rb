@@ -34,7 +34,7 @@ module Wmiirc
 
       # show history before actual choices
       if File.exist? history_file
-        history = File.read(history_file).split("\n")
+        history = File.readlines(history_file).map(&:chomp)
         choices = (history & choices).reverse.concat(choices).uniq
       end
     end
