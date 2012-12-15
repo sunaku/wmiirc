@@ -61,7 +61,7 @@ status:
           refresh
 
         music_menu: |
-          songs = `mpc playlist`.downcase.split("\n")
+          songs = `mpc playlist`.downcase.lines.map(&:chomp)
           if index = index_menu(songs, 'play song:', :song)
             # MPD uses natural 1..N numbering
             system "mpc play #{index + 1}"
