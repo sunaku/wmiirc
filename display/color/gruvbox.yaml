@@ -1,0 +1,37 @@
+# Colors from Gruvbox color scheme:
+# https://github.com/morhetz/gruvbox
+#
+# GruvboxFg0        xxx ctermfg=229 guifg=#fdf4c1
+# GruvboxFg1        xxx ctermfg=223 guifg=#ebdbb2
+# GruvboxFg2        xxx ctermfg=250 guifg=#d5c4a1
+# GruvboxFg3        xxx ctermfg=248 guifg=#bdae93
+# GruvboxFg4        xxx ctermfg=246 guifg=#a89984
+# GruvboxGray       xxx ctermfg=245 guifg=#928374
+# GruvboxBg0        xxx ctermfg=236 guifg=#32302f
+# GruvboxBg1        xxx ctermfg=237 guifg=#3c3836
+# GruvboxBg2        xxx ctermfg=239 guifg=#504945
+# GruvboxBg3        xxx ctermfg=241 guifg=#665c54
+# GruvboxBg4        xxx ctermfg=243 guifg=#7c6f64
+# GruvboxRed        xxx ctermfg=167 guifg=#fb4934
+# GruvboxGreen      xxx ctermfg=142 guifg=#b8bb26
+# GruvboxYellow     xxx ctermfg=214 guifg=#fabd2f
+# GruvboxBlue       xxx ctermfg=109 guifg=#83a598
+# GruvboxPurple     xxx ctermfg=175 guifg=#d3869b
+# GruvboxAqua       xxx ctermfg=108 guifg=#8ec07c
+# GruvboxOrange     xxx ctermfg=208 guifg=#fe8019
+# GruvboxRedSign    xxx ctermfg=167 ctermbg=243 guifg=#fb4934 guibg=#7c6f64
+# GruvboxGreenSign  xxx ctermfg=142 ctermbg=243 guifg=#b8bb26 guibg=#7c6f64
+# GruvboxYellowSign xxx ctermfg=214 ctermbg=243 guifg=#fabd2f guibg=#7c6f64
+# GruvboxBlueSign   xxx ctermfg=109 ctermbg=243 guifg=#83a598 guibg=#7c6f64
+# GruvboxPurpleSign xxx ctermfg=175 ctermbg=243 guifg=#d3869b guibg=#7c6f64
+# GruvboxAquaSign   xxx ctermfg=108 ctermbg=243 guifg=#8ec07c guibg=#7c6f64
+#
+display:
+  color:
+    desktop:  "#3c3836"
+    normal:   "#bdae93 #504945 #3c3836"
+    focus:    "#fabd2f #32302f #3c3836"
+    info:     "#3c3836 #ebdbb2 #7c6f64"
+    error:    "#fdf4c1 #fb4934 #7c6f64"
+    notice:   "#3c3836 #fabd2f #7c6f64"
+    success:  "#3c3836 #8ec07c #7c6f64"
