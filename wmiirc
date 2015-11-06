@@ -1,5 +1,12 @@
-#!/usr/bin/env ruby
+#!/bin/sh -ex
+# Launches this wmii configuration.
 
-$LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
-require 'wmiirc/loader'
-Wmiirc::Loader.run
+dir=$(dirname "$0")
+
+export GEM_HOME=$dir/.rubygems
+export PATH=$GEM_HOME/bin:$PATH
+export BUNDLE_GEMFILE=$dir/Gemfile
+
+which bundle || gem install bundler
+bundle install
+exec bundle exec env -u BUNDLE_GEMFILE $dir/wmiirc.rb "$@"

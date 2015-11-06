@@ -15,4 +15,4 @@ branch: rebase
 
 rumai:
 	git clone git://github.com/sunaku/rumai.git
-	sed '2a$$:.unshift File.expand_path("../rumai/lib", __FILE__)' -i wmiirc
+	sed '2a$$:.unshift File.expand_path("../rumai/lib", __FILE__)' -i wmiirc.rb
