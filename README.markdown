@@ -135,6 +135,8 @@ persisted across multiple instances of the wmiirc.
       * If the object being overwritten is a scalar value such as a string,
         integer, or boolean, then the old value is replaced by the new value.
 
+  * **ignore:** A list of files to remove from the **import** statement above.
+
   * **require:** A list of Ruby libraries to load before evaluating this
     configuration file.  If a library is a RubyGem, you can constrain its
     version number like this:

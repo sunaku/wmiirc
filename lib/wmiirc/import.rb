@@ -27,12 +27,16 @@ module Import
   end
 
   def expand result, src_data, src_file, origins={}, imported={}
-    Array(src_data['import']).each do |virtual_path|
-      physical_path = File.join(DIR, virtual_path)
-      import result, Dir[physical_path], origins, imported, src_file
-    end
-
+    to_import = expand_paths src_data['import']
+    to_ignore = expand_paths src_data['ignore']
+    import result, to_import - to_ignore, origins, imported, src_file
     result
+  end
+
+  def expand_paths virtual_paths
+    Array(virtual_paths).flat_map do |virtual_path|
+      Dir[File.join(DIR, virtual_path)]
+    end
   end
 
   def merge dst_hash, src_hash, src_file, origins={}, backtrace=[]

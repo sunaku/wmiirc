@@ -7,6 +7,12 @@ mapping:
     sequence:
       - type: str
         required: true
+  'ignore':
+    type: seq
+    required: false
+    sequence:
+      - type: str
+        required: true
   'require':
     type: seq
     required: false
