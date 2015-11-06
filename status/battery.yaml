@@ -1,26 +1,47 @@
 status:
   battery:
     params:
-      low: 15
+      device: BAT0
       critical: 5
+      low: 15
+
+    script: |
+      def device_uevent_file
+        "/sys/class/power_supply/#{@device}/uevent"
+      end
+
+      def device_uevent_blob
+        File.read device_uevent_file
+      end
+
+      def device_uevent_data
+        Hash[
+          device_uevent_blob.split(/[=\s]+/).each_slice(2).map do |key, value|
+            [key.sub(/^POWER_SUPPLY_/, '').downcase.to_sym, value]
+          end
+        ]
+      end
 
     label: |
-      device, status = `acpi -b | fgrep ' #{@id}:'`.chomp.split(/: */, 2)
-      status, level, time = status.split(/, */)
-
-      time &&= time[/[0:]*(\S+)/, 1]
-      icon = `acpi -a` =~ /on-line/ ? "\u25B4" : "\u25BE"
+      data = device_uevent_data
+      level = (data[:charge_now].to_f / data[:charge_full].to_f) * 100
+      icon =
+        case data[:status]
+        when 'Charging' then "\u25B4"
+        when 'Full' then "\u26A1"
+        else "\u25BE"
+        end
       color =
-        case [level.to_f, @low, @critical].max
+        case [level, @low, @critical].max
         when @critical then :error
         when @low then :notice
         end
 
-      [color, "\u26A1", level, icon, time]
+      [color, "\u26A1", level.round(1), icon]
 
     control:
       action:
-        battery_details: dialog `acpi -ib`
+        battery_details: dialog device_uevent_blob
 
       mouse_action:
         left_click: battery_details
