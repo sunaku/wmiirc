@@ -1,0 +1,67 @@
+status:
+  backlight:
+    params:
+      delta:
+
+    script: |
+      @delta ||= 5
+
+      def reading
+        `xbacklight`
+      end
+
+      def level
+        reading.to_f.round
+      end
+
+      def level= value
+        value = value.to_f
+        value = [value, 100].min
+        value = [value, 0].max
+        system "xbacklight -set #{value}"
+        refresh
+      end
+
+      def more
+        self.level = level + @delta
+      end
+
+      def less
+        self.level = level - @delta
+      end
+
+      def full
+        self.level = 100
+      end
+
+      def none
+        self.level = 0
+      end
+
+      def menu
+        current = self.level
+        levels = (0 .. 10).map {|i| i * 10 }.
+                 push(current.to_i).sort.uniq.
+                 map {|i| "#{i}%" }.reverse
+
+        if choice = click_menu(levels, current)
+          self.level = choice
+        end
+      end
+
+    label: |
+      ["\u2747", level]
+
+    control:
+      action:
+        backlight_menu: self.menu
+        backlight_more: self.more
+        backlight_less: self.less
+        backlight_full: self.full
+        backlight_none: self.none
+
+      mouse_action:
+        left_click: backlight_menu
+        right_click: backlight_full
+        wheel_up: backlight_more
+        wheel_down: backlight_less
