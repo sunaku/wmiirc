@@ -1,15 +1,12 @@
 script:
   before:
     - |
-      # Do not allow witray to be killed with Rumai::Client#kill.
-      class Rumai::Client
-        alias _e7ce5cfa_da6d_467f_837b_e9e738c0ee1b kill
-        def kill
-          props = self.props.read rescue nil
-          if props == 'witray:witray:witray'
-            LOG.info 'Rumai::Client#kill: skipping witray'
-          else
-            _e7ce5cfa_da6d_467f_837b_e9e738c0ee1b
+      # Do not allow witray to be selected by any grouping commands.
+      module Rumai::ClientContainer
+        alias _e7ce5cfa_da6d_467f_837b_e9e738c0ee1b clients
+        def clients
+          _e7ce5cfa_da6d_467f_837b_e9e738c0ee1b.reject do |client|
+            'witray:witray:witray' == client.props.read rescue nil
           end
         end
       end
