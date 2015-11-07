@@ -1,97 +1,149 @@
-script:
-  after:
-    - |
-      action 'display_hdmi'
-      for app in %w[ pidgin ario claws-mail liferea zim ]
-        launch app unless system 'pgrep', '-f', app
-      end
+# custom:
+  # startup:
+    # - xautolock -time 10 -locker laptop-locker # security
+    # - xwrits typetime=25 breaktime=1 +mouse +top # health
+    # - workrave # health
+    # - redshift-gtk                 # color
+    # - wpa_gui -t                   # WiFi
+    # - claws-mail                   # e-mail
+    # - system-config-printer-applet # printer
+    # - blueman-applet               # bluetooth
+    # - pasystray                    # PulseAudio
+    # - mpd                          # music
+
+# script:
+  # after:
+    # - action 'refresh'
+    # - action 'startup'
 
 import:
-  - status/*.yaml
-  - status/music/mpd.yaml
   - control/*.yaml
   - control/action/*.yaml
   - display/*.yaml
-  - display/color/zukitwo-dark.yaml
-  - display/desktop/feh.yaml
+  - display/color/gruvbox.yaml
+  - status/*.yaml
+  - status/music/mpd.yaml
+
+ignore:
+  - status/weather.yaml
 
 display:
   bar: top
-  font: 'xft:Sans-8'
+  font: 'xft:Sans-10'
+  # font: '-*-tamzen-medium-*-*-*-16-*-*-*-*-*-*-*'
   border: 1
+
+  #            _                                   _ _ _   _   _
+  #   ___ ___ | |_   _ _ __ ___  _ __    ___ _ __ | (_) |_| |_(_)_ __   __ _
+  #  / __/ _ \| | | | | '_ ` _ \| '_ \  / __| '_ \| | | __| __| | '_ \ / _` |
+  # | (_| (_) | | |_| | | | | | | | | | \__ \ |_) | | | |_| |_| | | | | (_| |
+  #  \___\___/|_|\__,_|_| |_| |_|_| |_| |___/ .__/|_|_|\__|\__|_|_| |_|\__, |
+  #                                         |_|                        |___/
   column:
     mode: default
     rule: |
-      /gimp/ -> 17+83+41
+      /gimp/ -> 85+15
       /chat/ -> 14+86
       /.*/ -> 50+50
+
+  #       _ _            _                                 _
+  #   ___| (_) ___ _ __ | |_   _ __ ___   __ _ _ __  _ __ (_)_ __   __ _
+  #  / __| | |/ _ \ '_ \| __| | '_ ` _ \ / _` | '_ \| '_ \| | '_ \ / _` |
+  # | (__| | |  __/ | | | |_  | | | | | | (_| | |_) | |_) | | | | | (_| |
+  #  \___|_|_|\___|_| |_|\__| |_| |_| |_|\__,_| .__/| .__/|_|_| |_|\__, |
+  #                                           |_|   |_|            |___/
   client:
+
     # make new windows of these clients open in the current view
     'group=0':
+      - '^Navigator:Firefox:'
       - '^chromium:'
-      - '^firefox:'
       - '^pcmanfm:'
+      - '^thunar:'
+      - '^spacefm:'
+
+    # make these clients open in the managed area
+    'floating=off':
+      - '^xterm:'
 
     # make these clients open in the floating area
     'floating=on':
+      - '^x[a-z]+:'                  # x11
       - '^<nil>:<nil>:Event Tester$' # xev
-      - '^x[a-z]+:' # x11
-      - '^pinentry'
-      - '^display:' # imagemagick
+      - '^display:'                  # imagemagick
       - ':MPlayer:'
-      - '^tkmidity:'
-      - '^vncviewer:'
       - 'Thunar:File Operation Progress'
+      - '^alsaplayer:'
       - '^chromium:Chromium:Chromium Preferences$'
       - '^chromium:Chromium:Task Manager'
+      - '^pinentry'
+      - '^spacefm:Spacefm:Find Files'
+      - '^tkmidity:'
+      - '^vncviewer:'
       - '^wicd-client.py:'
-      - '^alsaplayer:'
+      - '^system-config-printer.py:'
+      - '^blueman-manager:'          # Bluetooth
+      - '^pavucontrol:'              # PulseAudio
+      - '^Browser:Firefox:'
+      - '^claws-mail:Claws-mail:Network log'
+      - ':mpv:'
+      - '^transmission-gtk:'
+      - '^scp-dbus-service.py:' # system-config-printer-applet
 
-    # make these clients open in the floating area AND appear in all views
-    'tags=/./ floating=on':
+    # make these clients appear in all views and open in the floating area
+    'floating=on tags=/./':
       - '^wimenu:'
       - '^wmii9menu:'
+      - '^xfce4-notifyd:'
       - '^xmessage:'
       - '^xwrits:'
-      - '^xfce4-notifyd:'
 
-    'tags=1 allow=+activate':
-      - '^ario:'
-      - '^sonata:'
+    'tags=draw':
+      - '^inkscape:'
+      - '^<nil>:<nil>:Sozi'
 
-    'tags=chat allow=+activate':
-      - '^skype:'
-      - '^Pidgin:'
-
-    'tags=feed':
-      - '^liferea:'
-
-    'tags=gimp':
-      - '^gimp'
+    'tags=work2 fullscreen=on':
+      - '^rdesktop:'
 
     'tags=mail':
       - '^claws-mail:'
 
-    'tags=note':
-      - '^zim:'
+    'tags=gimp':
+      - '^gimp'
 
-    'tags=work floating=on':
-      - '^rdesktop:'
+    # 'tags=1 allow=+activate':
+      # - '^ario:'
+      # - '^sonata:'
 
-  refresh: 30
+    # 'tags=chat allow=+activate':
+      # - '^skype:'
+      # - '^Pidgin:'
+
+    # 'tags=feed':
+      # - '^liferea:'
+
+    # 'tags=note':
+      # - '^zim:'
+
+  #      _        _               _
+  #  ___| |_ __ _| |_ _   _ ___  | |__   __ _ _ __
+  # / __| __/ _` | __| | | / __| | '_ \ / _` | '__|
+  # \__ \ || (_| | |_| |_| \__ \ | |_) | (_| | |
+  # |___/\__\__,_|\__|\__,_|___/ |_.__/ \__,_|_|
+  #
+  refresh: 45
   status:
+
     - notice:
         control:
           action:
             show_desktop: focus_view '...'
           mouse_action:
             right_click: show_desktop
-            wheel_up: focus_view_next
-            wheel_down: focus_view_previous
+            wheel_up:    focus_view_previous
+            wheel_down:  focus_view_next
             wheel_click: status_refresh
-    #- network:
-        #params:
-          #interface: tun0
+
     - arrange:
         params:
           default: landscape
@@ -102,314 +154,360 @@ display:
               if a.exist? and a.length == 2 and a.next.floating?
                 a.length = 1
               end
-
             right_stack: |
+              # only two columns in the view; right one stacked
               tile_right
               columns.last.layout = :stack
-    #- weather:
-        #refresh: 300 # 5 minutes
-        #params:
-          #location: SJC
-    - music:
-    - volume:
-        params:
-          mixer: Master
-    #- disk:
-        #params:
-          #path: $HOME
-    #- thermal:
+
+    # - network:
+        # params:
+          # interface: wlp1s0
+
+    # - music:
+
+    # - volume:
+        # params:
+          # mixer: Master
+
+    # - disk:
+        # params:
+          # path: $HOME
+
+    - thermal:
+
     - memory:
+
     - loadavg:
-    #- battery:
-    - pomodoro:
+
+    - backlight:
+
+    - battery:
+        params:
+          # device: BAT1
+          sleep_level: 4
+          sleep_command: sudo zzz
+
+    # - pomodoro:
+
     - clock:
         params:
           format: '%l:%M%P %a %m/%d'
 
 control:
+
+  #             _   _
+  #   __ _  ___| |_(_) ___  _ __  ___
+  #  / _` |/ __| __| |/ _ \| '_ \/ __|
+  # | (_| | (__| |_| | (_) | | | \__ \
+  #  \__,_|\___|\__|_|\___/|_| |_|___/
+  #
   action:
-    launch_terminal: launch 'urxvt'
-    launch_browser:  launch 'chromium'
-    launch_filer:    launch 'pcmanfm'
-    launch_editor:   launch 'gvim'
 
-    keyboard: | # re-register keyboard shortcuts under new keyboard layout
-      Rumai.fs.keys.tap {|f| f.write f.read }
+    # startup: |
+      # Array(CONFIG['custom']['startup']).each do |app|
+        # # spawn app unless system 'pgrep', '-u', ENV['USER'], '-f', app
+        # spawn app unless system 'pgrep', '-f', app
+      # end
 
-    keyboard_qwerty: |
-      system 'setxkbmap us -option ""'
-      action 'keyboard'
-      system 'marble-mouse left'
+    refresh: |
+      system 'laptop-display' # refresh display
+      action 'keyboard' # re-register all shortcuts
+      action 'desktop'  # repaint desktop wallpaper
+      spawn 'witray'  # reposition systray on bar
+      action 'status_refresh' # refresh all barlets
 
-    keyboard_dvorak: |
-      system 'setxkbmap dvorak -option ""'
-      action 'keyboard'
-
-    display: |
-      action 'desktop' # repaint desktop wallpaper
-      launch! 'witray' # reposition systray on bar
-
-    display_negative: | # invert screen colors
-      launch! 'xcalib -invert -alter'
-
-    display_portrait: | # rotate screen vertically
-      system 'xrandr -o left && xrandr --dpi 96'
-
-    display_landscape: | # rotate screen horizontally
-      system 'xrandr -o normal && xrandr --dpi 96'
-
-    display_lvds: | # undock laptop from my desk
-      system 'xrandr --output LVDS --auto --output HDMI-0 --off --output VGA-0 --off --dpi 96'
-      action 'display'
-      action 'keyboard_dvorak'
-
-    display_hdmi: | # dock laptop to my desk (HDMI)
-      if system 'xrandr | fgrep -q "HDMI-0 connected"'
-        system 'xrandr --output HDMI-0 --auto --output LVDS --off --dpi 96'
-        system 'xset dpms force on' # wake up monitor from power saving mode
-        action 'display'
-        action 'keyboard_qwerty'
-      end
-
-    display_vga: | # display through a projector (VGA)
-      if system 'xrandr | fgrep -q "VGA-0 connected"'
-        system 'xrandr --output VGA-0 --auto --output LVDS --same-as VGA-0 --dpi 96'
-        system 'xset dpms force on' # wake up monitor from power saving mode
-        action 'display'
-        action 'keyboard_dvorak'
-      end
-
-    system_hibernate: | # put laptop to sleep
+    lock_screen: |
       action 'music_pause'
       action 'volume_mute'
-      action 'display_lvds'
-      system 'xscreensaver-command -lock' # password protection
-      system 'sudo pm-hibernate'
-      action 'display_hdmi'
+      system 'admit1 laptop-locker'
+      action 'volume_unmute'
+      action 'refresh'
 
+    invert_colors: | # invert all colors on screen
+      system 'xcalib -invert -alter'
+
+    # launch_terminal: launch 'xterm'
+    launch_terminal: launch 'st'
+    launch_browser:  launch 'firefox'
+    launch_filer:    launch 'pcmanfm'
+
+  #      _                _             _
+  #  ___| |__   ___  _ __| |_ ___ _   _| |_ ___
+  # / __| '_ \ / _ \| '__| __/ __| | | | __/ __|
+  # \__ \ | | | (_) | |  | || (__| |_| | |_\__ \
+  # |___/_| |_|\___/|_|   \__\___|\__,_|\__|___/
+  #
   mouse:
-    grab: Mod1
+    grab                     : Mod1
 
   keyboard:
-    up:      t
-    down:    n
-    left:    h
-    right:   s
-    root:    Mod1-
-    send:    ${root}Shift-
-    size:    ${root}Control-
-    swap:    ${root}w,
-    view:    ${root}v,
-    group:   ${root}g,
-    layout:  ${root}z,
+
+    prefix                   : Mod1-Control-
+    group                    : ${prefix}g,
+    layout                   : ${prefix}z,
+    send                     : ${prefix}Shift-
+    swap                     : ${prefix}w,
+    view                     : ${prefix}apostrophe,
+
+    up                       : t # I'm a Dvorak typist so it's H-T-N-S for me
+    down                     : n # instead of the usual H-J-K-L you'd expect!
+    left                     : h # On that note, the ordering of keys J and K
+    right                    : s # always felt backward to me, so there! >8^)
 
   keyboard_action:
-    XF86Display:              display_negative
-    XF86Sleep:                system_hibernate
 
-    ${root}x:                 launch_terminal
-    ${root}k:                 launch_browser
-    ${root}j:                 launch_filer
-    ${root}q:                 launch_editor
+    #                     _
+    #   ___  ___  ___ ___(_) ___  _ __
+    #  / __|/ _ \/ __/ __| |/ _ \| '_ \
+    #  \__ \  __/\__ \__ \ | (_) | | | |
+    #  |___/\___||___/___/_|\___/|_| |_|
+    #
 
-    #-------------------------------------------------------------------------
-    # basic
-    #-------------------------------------------------------------------------
+    ${prefix}Delete          : lock_screen
+    ${prefix}Escape          : refresh
+    ${prefix}Shift-Escape    : reload
+    ${prefix}q               : client_close
+    ${prefix}Shift-q         : client_kill
 
-    ${root}i:                 action_menu
-    ${root}e:                 launch_menu
+    #  _                        _
+    # | | __ _ _   _ _ __   ___| |__
+    # | |/ _` | | | | '_ \ / __| '_ \
+    # | | (_| | |_| | | | | (__| | | |
+    # |_|\__,_|\__,_|_| |_|\___|_| |_|
+    #
 
-    #-------------------------------------------------------------------------
-    # client
-    #-------------------------------------------------------------------------
+    ${prefix}x               : launch_terminal
+    ${prefix}k               : launch_browser
+    ${prefix}j               : launch_filer
 
-    ${root}a:                 focus_client_menu
-    ${root}Shift-a:           client_invite_menu
-    ${root}c:                 client_fullscreen!
+    #
+    #  _ __ ___   ___ _ __  _   _
+    # | '_ ` _ \ / _ \ '_ \| | | |
+    # | | | | | |  __/ | | | |_| |
+    # |_| |_| |_|\___|_| |_|\__,_|
+    #
 
-    ${root}${up}:             focus_client_up
-    ${root}${down}:           focus_client_down
-    ${root}${left}:           focus_client_left
-    ${root}${right}:          focus_client_right
-    ${size}comma:             focus_client_view_previous
-    ${size}period:            focus_client_view_next
+    ${prefix}i               : action_menu
+    ${prefix}e               : launch_menu
 
-    ${size}${up}:             resize_client_up
-    ${size}${down}:           resize_client_down
-    ${size}${left}:           resize_client_left
-    ${size}${right}:          resize_client_right
-    ${size}Shift-${up}:       shrink_client_up
-    ${size}Shift-${down}:     shrink_client_down
-    ${size}Shift-${left}:     shrink_client_left
-    ${size}Shift-${right}:    shrink_client_right
+    #        _
+    # __   _(_) _____      __
+    # \ \ / / |/ _ \ \ /\ / /
+    #  \ V /| |  __/\ V  V /
+    #   \_/ |_|\___| \_/\_/
+    #
 
-    ${send}${up}:             send_group_up
-    ${send}${down}:           send_group_down
-    ${send}${left}:           send_group_left
-    ${send}${right}:          send_group_right
+    ${prefix}space           : focus_floating!
+    ${prefix}comma           : focus_view_previous
+    ${prefix}period          : focus_view_next
+    ${prefix}o               : focus_view_recent
+    ${prefix}u               : focus_view_menu
 
-    ${send}v:                 send_group_view_menu
-    ${send}space:             send_group_overlay!
-    ${send}Delete:            group_kill
+    ${prefix}1               : focus_view_1
+    ${prefix}2               : focus_view_2
+    ${prefix}3               : focus_view_3
+    ${prefix}4               : focus_view_4
+    ${prefix}5               : focus_view_5
+    ${prefix}6               : focus_view_6
+    ${prefix}7               : focus_view_7
+    ${prefix}8               : focus_view_8
+    ${prefix}9               : focus_view_9
+    ${prefix}0               : focus_view_0
 
-    ${send}1:                 send_group_view_1
-    ${send}2:                 send_group_view_2
-    ${send}3:                 send_group_view_3
-    ${send}4:                 send_group_view_4
-    ${send}5:                 send_group_view_5
-    ${send}6:                 send_group_view_6
-    ${send}7:                 send_group_view_7
-    ${send}8:                 send_group_view_8
-    ${send}9:                 send_group_view_9
-    ${send}0:                 send_group_view_0
+    ${view}a                 : focus_view_a
+    ${view}b                 : focus_view_b
+    ${view}c                 : focus_view_c
+    ${view}d                 : focus_view_d
+    ${view}e                 : focus_view_e
+    ${view}f                 : focus_view_f
+    ${view}g                 : focus_view_g
+    ${view}h                 : focus_view_h
+    ${view}i                 : focus_view_i
+    ${view}j                 : focus_view_j
+    ${view}k                 : focus_view_k
+    ${view}l                 : focus_view_l
+    ${view}m                 : focus_view_m
+    ${view}n                 : focus_view_n
+    ${view}o                 : focus_view_o
+    ${view}p                 : focus_view_p
+    ${view}q                 : focus_view_q
+    ${view}r                 : focus_view_r
+    ${view}s                 : focus_view_s
+    ${view}t                 : focus_view_t
+    ${view}u                 : focus_view_u
+    ${view}v                 : focus_view_v
+    ${view}w                 : focus_view_w
+    ${view}x                 : focus_view_x
+    ${view}y                 : focus_view_y
+    ${view}z                 : focus_view_z
 
-    ${swap}${up}:             swap_client_up
-    ${swap}${down}:           swap_client_down
-    ${swap}${left}:           swap_client_left
-    ${swap}${right}:          swap_client_right
-    ${root}Return:            swap_client_master
+    #  _                         _
+    # | | __ _ _   _  ___  _   _| |_
+    # | |/ _` | | | |/ _ \| | | | __|
+    # | | (_| | |_| | (_) | |_| | |_
+    # |_|\__,_|\__, |\___/ \__,_|\__|
+    #          |___/
 
-    ${swap}1:                 swap_client_column_1
-    ${swap}2:                 swap_client_column_2
-    ${swap}3:                 swap_client_column_3
-    ${swap}4:                 swap_client_column_4
-    ${swap}5:                 swap_client_column_5
-    ${swap}6:                 swap_client_column_6
-    ${swap}7:                 swap_client_column_7
-    ${swap}8:                 swap_client_column_8
-    ${swap}9:                 swap_client_column_9
-    ${swap}0:                 swap_client_column_0
+    ${layout}w               : layout_column_equal
+    ${layout}v               : layout_column_stack
+    ${layout}m               : layout_column_max
 
-    #-------------------------------------------------------------------------
-    # area
-    #-------------------------------------------------------------------------
+    ${layout}Shift-w         : layout_view_equal
+    ${layout}Shift-v         : layout_view_stack
+    ${layout}Shift-m         : layout_view_max
 
-    ${root}space:             focus_overlay!
+    ${layout}r               : arrange_right
+    ${layout}Control-r       : arrange_right_persist
+    ${layout}Shift-r         : arrange_rightward
+    ${layout}Control-Shift-r : arrange_rightward_persist
+    ${layout}l               : arrange_left
+    ${layout}Control-l       : arrange_left_persist
+    ${layout}Shift-l         : arrange_leftward
+    ${layout}Control-Shift-l : arrange_leftward_persist
+    ${layout}i               : arrange_inward
+    ${layout}Control-i       : arrange_inward_persist
+    ${layout}o               : arrange_outward
+    ${layout}Control-o       : arrange_outward_persist
+    ${layout}g               : arrange_grid
+    ${layout}Control-g       : arrange_grid_persist
+    ${layout}s               : arrange_stack
+    ${layout}Control-s       : arrange_stack_persist
+    ${layout}j               : arrange_join
+    ${layout}Control-j       : arrange_join_persist
+    ${layout}Shift-j         : arrange_split
+    ${layout}Control-Shift-j : arrange_split_persist
+    ${layout}z               : arrange_persist_redo
+    ${layout}Control-z       : arrange_persist_stop
+    ${layout}Shift-z         : arrange_persist_menu
 
-    #-------------------------------------------------------------------------
-    # view
-    #-------------------------------------------------------------------------
+    #
+    #   __ _ _ __ ___  _   _ _ __
+    #  / _` | '__/ _ \| | | | '_ \
+    # | (_| | | | (_) | |_| | |_) |
+    #  \__, |_|  \___/ \__,_| .__/
+    #  |___/                |_|
 
-    ${root}comma:             focus_view_previous
-    ${root}period:            focus_view_next
-    ${root}o:                 focus_view_recent
-    ${root}u:                 focus_view_menu
+    ${group}g                : group_client!
+    ${group}c                : group_area!
+    ${group}m                : group_managed_areas!
+    ${group}space            : group_floating_area!
+    ${group}v                : group_view!
+    ${group}a                : group_all!
+    ${group}0                : ungroup_all
 
-    ${root}1:                 focus_view_1
-    ${root}2:                 focus_view_2
-    ${root}3:                 focus_view_3
-    ${root}4:                 focus_view_4
-    ${root}5:                 focus_view_5
-    ${root}6:                 focus_view_6
-    ${root}7:                 focus_view_7
-    ${root}8:                 focus_view_8
-    ${root}9:                 focus_view_9
-    ${root}0:                 focus_view_0
+    ${prefix}b               : zoom_group
+    ${prefix}Shift-b         : unzoom_group
 
-    ${view}a:                 focus_view_a
-    ${view}b:                 focus_view_b
-    ${view}c:                 focus_view_c
-    ${view}d:                 focus_view_d
-    ${view}e:                 focus_view_e
-    ${view}f:                 focus_view_f
-    ${view}g:                 focus_view_g
-    ${view}h:                 focus_view_h
-    ${view}i:                 focus_view_i
-    ${view}j:                 focus_view_j
-    ${view}k:                 focus_view_k
-    ${view}l:                 focus_view_l
-    ${view}m:                 focus_view_m
-    ${view}n:                 focus_view_n
-    ${view}o:                 focus_view_o
-    ${view}p:                 focus_view_p
-    ${view}q:                 focus_view_q
-    ${view}r:                 focus_view_r
-    ${view}s:                 focus_view_s
-    ${view}t:                 focus_view_t
-    ${view}u:                 focus_view_u
-    ${view}v:                 focus_view_v
-    ${view}w:                 focus_view_w
-    ${view}x:                 focus_view_x
-    ${view}y:                 focus_view_y
-    ${view}z:                 focus_view_z
+    ${prefix}y               : detach_group
+    ${prefix}p               : attach_client
 
-    #-------------------------------------------------------------------------
-    # layout
-    #-------------------------------------------------------------------------
+    #       _ _            _
+    #   ___| (_) ___ _ __ | |_
+    #  / __| | |/ _ \ '_ \| __|
+    # | (__| | |  __/ | | | |_
+    #  \___|_|_|\___|_| |_|\__|
+    #
 
-    ${layout}w:               layout_column_equal
-    ${layout}v:               layout_column_stack
-    ${layout}m:               layout_column_max
+    ${prefix}c               : focus_client_menu
+    ${prefix}Shift-c         : client_invite_menu
 
-    ${layout}Shift-w:         layout_view_equal
-    ${layout}Shift-v:         layout_view_stack
-    ${layout}Shift-m:         layout_view_max
+    ${prefix}m               : client_fullscreen!
 
-    ${layout}r:               arrange_right
-    ${layout}Control-r:       arrange_right_persist
-    ${layout}Shift-r:         arrange_rightward
-    ${layout}Control-Shift-r: arrange_rightward_persist
-    ${layout}l:               arrange_left
-    ${layout}Control-l:       arrange_left_persist
-    ${layout}Shift-l:         arrange_leftward
-    ${layout}Control-Shift-l: arrange_leftward_persist
-    ${layout}i:               arrange_inward
-    ${layout}Control-i:       arrange_inward_persist
-    ${layout}o:               arrange_outward
-    ${layout}Control-o:       arrange_outward_persist
-    ${layout}g:               arrange_grid
-    ${layout}Control-g:       arrange_grid_persist
-    ${layout}s:               arrange_stack
-    ${layout}Control-s:       arrange_stack_persist
-    ${layout}j:               arrange_join
-    ${layout}Control-j:       arrange_join_persist
-    ${layout}Shift-j:         arrange_split
-    ${layout}Control-Shift-j: arrange_split_persist
-    ${layout}z:               arrange_persist_redo
-    ${layout}Control-z:       arrange_persist_stop
-    ${layout}Shift-z:         arrange_persist_menu
+    ${prefix}${up}           : focus_client_up
+    ${prefix}${down}         : focus_client_down
+    ${prefix}${left}         : focus_client_left
+    ${prefix}${right}        : focus_client_right
+    ${prefix}Shift-comma     : focus_client_view_previous
+    ${prefix}Shift-period    : focus_client_view_next
+    ${prefix}d               : focus_client_recent
 
-    #-------------------------------------------------------------------------
-    # group
-    #-------------------------------------------------------------------------
+    ${prefix}Up              : grow_client_up
+    ${prefix}Down            : grow_client_down
+    ${prefix}Left            : grow_client_left
+    ${prefix}Right           : grow_client_right
+    ${prefix}Shift-Up        : shrink_client_up
+    ${prefix}Shift-Down      : shrink_client_down
+    ${prefix}Shift-Left      : shrink_client_left
+    ${prefix}Shift-Right     : shrink_client_right
 
-    ${group}g:                group_client!
-    ${group}a:                group_area!
-    ${group}c:                group_columns!
-    ${group}o:                group_overlay!
-    ${group}v:                group_view!
-    ${group}w:                group_all!
-    ${group}n:                ungroup_all
+    ${send}${up}             : send_group_up
+    ${send}${down}           : send_group_down
+    ${send}${left}           : send_group_left
+    ${send}${right}          : send_group_right
 
-    ${size}2:                 zoom_group
-    ${size}1:                 unzoom_group
+    ${send}e                 : send_group_away
+    ${send}u                 : send_group_view_menu
+    ${send}space             : send_group_floating!
+    ${send}Delete            : group_close
 
-    ${size}0:                 detach_group
-    ${size}9:                 attach_client
+    ${send}1                 : send_group_view_1
+    ${send}2                 : send_group_view_2
+    ${send}3                 : send_group_view_3
+    ${send}4                 : send_group_view_4
+    ${send}5                 : send_group_view_5
+    ${send}6                 : send_group_view_6
+    ${send}7                 : send_group_view_7
+    ${send}8                 : send_group_view_8
+    ${send}9                 : send_group_view_9
+    ${send}0                 : send_group_view_0
 
-    #-------------------------------------------------------------------------
-    # volume
-    #-------------------------------------------------------------------------
+    ${swap}${up}             : swap_client_up
+    ${swap}${down}           : swap_client_down
+    ${swap}${left}           : swap_client_left
+    ${swap}${right}          : swap_client_right
+    ${swap}Return            : swap_client_master
 
-    XF86AudioRaiseVolume:     volume_more
-    XF86AudioLowerVolume:     volume_less
-    XF86AudioMute:            volume_mute!
+    ${swap}1                 : swap_client_column_1
+    ${swap}2                 : swap_client_column_2
+    ${swap}3                 : swap_client_column_3
+    ${swap}4                 : swap_client_column_4
+    ${swap}5                 : swap_client_column_5
+    ${swap}6                 : swap_client_column_6
+    ${swap}7                 : swap_client_column_7
+    ${swap}8                 : swap_client_column_8
+    ${swap}9                 : swap_client_column_9
+    ${swap}0                 : swap_client_column_0
 
-    ${send}Prior:             volume_more
-    ${send}Next:              volume_less
-    ${send}Return:            volume_mute!
+    #      _ _           _
+    #   __| (_)___ _ __ | | __ _ _   _
+    #  / _` | / __| '_ \| |/ _` | | | |
+    # | (_| | \__ \ |_) | | (_| | |_| |
+    #  \__,_|_|___/ .__/|_|\__,_|\__, |
+    #             |_|            |___/
 
-    #-------------------------------------------------------------------------
-    # music
-    #-------------------------------------------------------------------------
+    XF86Display              : invert_colors
+    XF86MonBrightnessUp      : backlight_more
+    XF86MonBrightnessDown    : backlight_less
 
-    XF86AudioPlay:            music_play!
-    XF86AudioPrev:            music_previous
-    XF86AudioNext:            music_next
-    XF86AudioStop:            music_stop
+    #             _
+    # __   _____ | |_   _ _ __ ___   ___
+    # \ \ / / _ \| | | | | '_ ` _ \ / _ \
+    #  \ V / (_) | | |_| | | | | | |  __/
+    #   \_/ \___/|_|\__,_|_| |_| |_|\___|
+    #
 
-    ${size}Prior:             music_previous
-    ${size}Next:              music_next
-    ${size}Return:            music_play!
-    ${size}Home:              music_playlist_menu
-    ${size}End:               music_favorite_menu
+    XF86AudioRaiseVolume     : volume_more
+    XF86AudioLowerVolume     : volume_less
+    XF86AudioMute            : volume_mute!
+
+    ${prefix}Shift-Prior     : volume_more
+    ${prefix}Shift-Next      : volume_less
+    ${prefix}Shift-Return    : volume_mute!
+
+    #                      _
+    #  _ __ ___  _   _ ___(_) ___
+    # | '_ ` _ \| | | / __| |/ __|
+    # | | | | | | |_| \__ \ | (__
+    # |_| |_| |_|\__,_|___/_|\___|
+    #
+
+    XF86AudioPlay            : music_play!
+    XF86AudioPrev            : music_previous
+    XF86AudioNext            : music_next
+    XF86AudioStop            : music_stop
+
+    ${prefix}Prior           : music_previous
+    ${prefix}Next            : music_next
+    ${prefix}Return          : music_play!
+    ${prefix}Home            : music_playlist_menu
+    ${prefix}End             : music_favorite_menu

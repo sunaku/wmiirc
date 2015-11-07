@@ -13,4 +13,4 @@ gem 'kwalify', '>= 0.7.2'
 # gem 'barometer', '~> 0.9.7'
 
 # for status/music/mpd.yaml
-# gem 'librmpd', '~> 0.1'
+gem 'librmpd', '~> 0.1'
