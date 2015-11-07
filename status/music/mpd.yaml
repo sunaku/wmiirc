@@ -32,7 +32,7 @@ status:
         label = [title, artist].compact.join(' by ')
       end
 
-      [icon, label]
+      [icon, label.force_encoding(Encoding::UTF_8)] rescue label
 
     control:
       action:
