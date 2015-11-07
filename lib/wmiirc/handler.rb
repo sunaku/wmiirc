@@ -17,7 +17,12 @@ module Wmiirc
 
       elsif key? key
         self[key].each do |block|
-          block.call(*args)
+          begin
+            block.call(*args)
+          rescue LocalJumpError => error
+            # let handlers return early, just like methods
+            raise unless error.message == 'unexpected return'
+          end
         end
       end
 
