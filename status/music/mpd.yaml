@@ -8,7 +8,7 @@ status:
 
     script: |
       @mpd = MPD.new
-      @mpd.connect
+      @mpd.connect true
       @mpd.password @password if @password
       at_exit { @mpd.disconnect }
 
