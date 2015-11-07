@@ -7,10 +7,10 @@ control:
     group_area!: |
       curr_area.group!
 
-    group_overlay!: |
+    group_floating!: |
       Area.floating.group!
 
-    group_columns!: |
+    group_managed_areas!: |
       curr_view.managed_areas.each {|a| a.group! }
 
     group_view!: |
@@ -22,5 +22,8 @@ control:
     ungroup_all: |
       Rumai.ungroup
 
-    group_kill: |
+    group_close: |
       grouping.each {|c| c.kill }
+
+    group_kill: |
+      grouping.each {|c| c.slay }

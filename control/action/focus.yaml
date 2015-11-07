@@ -41,7 +41,7 @@ control:
       v.focus
       c.focus v
 
-    focus_overlay!: curr_view.select(:toggle)
+    focus_floating!: curr_view.select(:toggle)
 
     focus_view_menu: |
       if choice = key_menu(tags, 'show view:', :tag)

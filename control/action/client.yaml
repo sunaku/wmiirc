@@ -19,7 +19,9 @@ control:
 
     client_fullscreen!: curr_client.fullscreen!
 
-    client_kill: curr_client.kill
+    client_close: curr_client.kill
+
+    client_kill: curr_client.slay
 
     # Show a list of clients, and if user selects one,
     # tag it with the same tag as the current view.

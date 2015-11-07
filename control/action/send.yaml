@@ -13,7 +13,7 @@ control:
     send_group_right: |
       grouping.each {|c| c.send(:right) rescue nil }
 
-    send_group_overlay!: |
+    send_group_floating!: |
       grouping.each {|c| c.send(:toggle) rescue nil }
 
     send_group_view_menu: |

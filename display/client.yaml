@@ -10,12 +10,12 @@ control:
       if mouse_event == 'right_click'
         client = Client.new(client_id)
 
-        case click_menu %w[fullscreen stick group kill slay], 'client'
+        case click_menu %w[fullscreen sticky group close kill], 'client'
         when 'fullscreen' then client.fullscreen!
-        when 'stick'      then client.stick!
+        when 'sticky'     then client.stick!
         when 'group'      then client.group!
-        when 'kill'       then client.kill
-        when 'slay'       then client.slay
+        when 'close'      then client.kill
+        when 'kill'       then client.slay
         end
       end
 
