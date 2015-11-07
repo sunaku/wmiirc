@@ -18,6 +18,10 @@ control:
         orig_tag = curr_tag
         if orig_tag =~ ZOOMED_SUFFIX
           orig_tag = $`
+          if curr_view.clients.length == 1
+            action 'unzoom_group'
+            return
+          end
         end
 
         num = tags.grep(ZOOMED_SUFFIX).length
