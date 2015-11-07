@@ -1,14 +1,8 @@
 sunaku's wmii configuration in Ruby and YAML
 ==============================================================================
 
-[![January 2012](http://omploader.org/tYzBqcQ)](http://omploader.org/vYzBqcQ)
-[![September 2011](http://omploader.org/tYWg1eQ)](http://omploader.org/vYWg1eQ)
-[![August 2011](http://omploader.org/tOXJjcg)](http://omploader.org/vOXJjcg)
-[![July 2011](http://omploader.org/tOWk0Zw)](http://omploader.org/vOWk0Zw)
-[![June 2011](http://omploader.org/tOHZzcw)](http://omploader.org/vOHZzcw)
-[![May 2011](http://omploader.org/tOGxyZQ)](http://omploader.org/vOGxyZQ)
-[![April 2011](http://omploader.org/tODNuag)](http://omploader.org/vODNuag)
-[![March 2011](http://omploader.org/tN3l2bQ)](http://omploader.org/vN3l2bQ)
+![Floating](https://github.com/sunaku/wmiirc/raw/gh-pages/floating.png)
+![Tiling](https://github.com/sunaku/wmiirc/raw/gh-pages/tiling.png)
 
 This is a [Ruby] and [YAML] based configuration of the [wmii] window manager.
 It manipulates wmii through the [Rumai] library (which speaks directly to wmii
@@ -31,22 +25,22 @@ for live experimentation) and offers a near "Desktop Environment" experience:
 All of this can be configured to suit your needs, of course.  This wmii
 configuration was also described in the following articles in the past:
 
-  * <http://snk.tuxfamily.org/log/wmii-3.1-ruby-config.html>
+  * <https://sunaku.github.io/wmii-3.1-ruby-config.html>
   * <http://wmii.suckless.org/alternative_wmiirc_scripts>
 
 [Ruby]: http://ruby-lang.org
 [YAML]: http://yaml.org
 [wmii]: http://wmii.suckless.org
 [Rumai]: http://snk.tuxfamily.org/lib/rumai/
-[RumaiShell]: http://snk.tuxfamily.org/lib/rumai/#EXAMPLES
+[RumaiShell]: http://snk.tuxfamily.org/lib/rumai/#_usage
 [Kwalify]: http://www.kuwata-lab.com/kwalify/
 
 ------------------------------------------------------------------------------
-Prerequisites
+Requirements
 ------------------------------------------------------------------------------
 
-  * [wmii] 3.9 or newer.  I recommend [my personal branch of wmii-hg](
-    https://github.com/sunaku/wmii/commits/personal ) for best results.
+  * [wmii] 3.9 or newer.  I recommend that you use [my personal fork
+    of wmii-hg]( https://github.com/sunaku/wmii ) for best results.
 
     Note that the `display/status/arrange` status bar applet requires a
     [patched version of wmii-hg revision 2758 or greater](
@@ -55,26 +49,20 @@ Prerequisites
 
   * [Ruby] 1.9.2 or newer.
 
-    I recommend using Ruby 1.9.3-p0 because it is [significantly more
+    I recommend using at least Ruby 1.9.3-p0 because it is [significantly more
     power-efficient](
-    http://snk.tuxfamily.org/log/ruby-1.9.3-p0-power-efficiency.html ) than
+    https://sunaku.github.io/ruby-1.9.3-p0-power-efficiency.html ) than
     previous Ruby 1.9.x releases.
 
-  * [Rumai] 4.1.3 or newer:
+  * If you want to use the `status/weather.yaml` status bar applet,
+    uncomment the following line in the `Gemfile` and restart wmii:
 
-        gem install rumai -v '>= 4.1.3'
+        # gem 'barometer', '~> 0.7.3'
 
-  * [Kwalify] 0.7.2 or newer:
+  * If you want to use the `status/music/mpd.yaml` status bar applet,
+    uncomment the following line in the `Gemfile` and restart wmii:
 
-        gem install kwalify -v '>= 0.7.2'
-
-  * If you want to use the `status/weather.yaml` status bar applet:
-
-        gem install barometer -v '~> 0.7.3'
-
-  * If you want to use the `status/music/mpd.yaml` status bar applet:
-
-        gem install librmpd -v '~> 0.1'
+        # gem 'librmpd', '~> 0.1'
 
 ------------------------------------------------------------------------------
 Installing
@@ -87,7 +75,7 @@ Backup:
 
 Install:
 
-    git clone git://github.com/sunaku/wmiirc.git ~/.wmii
+    git clone https://github.com/sunaku/wmiirc.git ~/.wmii
     ln -s ~/.wmii ~/.wmii-hg
 
 Branch:
@@ -149,10 +137,10 @@ persisted across multiple instances of the wmiirc.
 
   * **script:** Arbitrary logic to evaluate while processing this file.
 
-    * **before:** Array of Ruby code snippets to evaulate before processing
+    * **before:** Array of Ruby code snippets to evaluate before processing
       the overall configuration.
 
-    * **after:** Array of Ruby code snippets to evaulate after processing the
+    * **after:** Array of Ruby code snippets to evaluate after processing the
       overall configuration.
 
   * **status:** Status bar applet definitions.

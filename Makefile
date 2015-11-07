@@ -2,7 +2,7 @@ all:
 
 rebase:
 	git rebase HEAD # ensure that there are no uncommitted changes
-	git remote show upstream || git remote add upstream git://github.com/sunaku/wmiirc.git
+	git remote show upstream || git remote add upstream https://github.com/sunaku/wmiirc.git
 	git fetch upstream
 	git rebase upstream/master
 
