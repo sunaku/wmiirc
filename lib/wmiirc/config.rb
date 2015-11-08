@@ -4,7 +4,7 @@ require 'yaml'
 module Wmiirc
 class Config < Hash
 
-  attr_reader :origins
+  attr_reader :origins, :shortcuts
 
   def initialize file
     Import.import self, file, @origins={}
@@ -71,6 +71,7 @@ class Config < Hash
   end
 
   def control
+    @shortcuts = {}
     %w[event action keyboard_action].each do |section|
       if settings = self['control'][section]
         settings.each do |key, code|
@@ -81,6 +82,9 @@ class Config < Hash
               key = key.dup
               nil while key.gsub!(/\$\{(\w+)\}/){ keyboard[$1] }
             end
+
+            # store expanded shortcut and mapping for help menu
+            @shortcuts[key] = code
 
             meth = 'key'
             code = self['control']['action'][code] || "action #{code.inspect}"

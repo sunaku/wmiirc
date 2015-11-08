@@ -1,0 +1,11 @@
+control:
+  action:
+    keyboard: | # re-register shortcuts under new keyboard layout
+      Rumai.fs.keys.tap {|f| f.write f.read }
+
+    keyboard_shortcuts_help: | # show a list of keyboard shortcuts
+      shortcuts, actions = Wmiirc::CONFIG.shortcuts.to_a.sort.transpose
+      shortcuts_width = shortcuts.map(&:length).max
+      mappings = shortcuts.map {|s| s.ljust(shortcuts_width) }.zip(actions)
+      listing = mappings.map {|*mapping| mapping.join(' : ') }.join("\n")
+      dialog listing
