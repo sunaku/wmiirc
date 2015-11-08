@@ -1,5 +1,16 @@
 module Wmiirc
 
+  # reap dead child processes to save them from becoming zombies
+  trap :SIGCHLD do
+    begin
+      while Process.wait(-1, Process::WNOHANG)
+        # reap!
+      end
+    rescue Errno::ECHILD
+      # there are no more dead child processes remaining to reap
+    end
+  end
+
   ##
   # Runs {#launch!} inside the present working directory of the
   # currently focused client or, if undeterminable, that of wmii.
