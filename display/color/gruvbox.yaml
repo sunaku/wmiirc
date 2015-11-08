@@ -29,8 +29,8 @@
 display:
   color:
     desktop:  "#3c3836"
-    normal:   "#bdae93 #504945 #3c3836"
-    focus:    "#fabd2f #32302f #3c3836"
+    normal:   "#d5c4a1 #504945 #3c3836"
+    focus:    "#fabd2f #3c3836 #32302f"
     info:     "#3c3836 #ebdbb2 #7c6f64"
     error:    "#fdf4c1 #fb4934 #7c6f64"
     notice:   "#3c3836 #fabd2f #7c6f64"
