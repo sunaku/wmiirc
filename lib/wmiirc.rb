@@ -23,6 +23,14 @@ module Wmiirc
     [color, fmt.call(severity, datetime, progname, "\e[0m#{msg}")].join
   end
 
+  # ensure that exception stack traces are logged
+  class << LOG
+    alias _950b6400_5a0b_4f38_8f1f_bdb9e8c095d3 error
+    def error e
+      _950b6400_5a0b_4f38_8f1f_bdb9e8c095d3 [e, e.backtrace].join("\n")
+    end
+  end
+
   # insulation for code in user's configuration
   class Sandbox
     include Rumai
