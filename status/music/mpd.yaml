@@ -7,16 +7,24 @@ status:
       playlist_directory: '~/.mpd/playlists'
 
     script: |
-      @mpd = MPD.new
-      @mpd.connect true
-      @mpd.password @password if @password
-      at_exit { @mpd.disconnect }
+      def mpd
+        @mpd or begin
+          @mpd = MPD.new
+          at_exit do
+            @mpd.disconnect
+            @mpd = nil # avoid storing MPD instance in Wmiirc::SESSION
+          end
+          @mpd.connect true
+          @mpd.password password if @password
+          @mpd
+        end
+      end
 
     label: |
-      if @mpd.stopped?
+      if mpd.stopped?
         icon = "\u25A0"
       else
-        song = @mpd.current_song
+        song = mpd.current_song
 
         if title = song.title || (f = song.file and File.basename(f))
           # infer artist from song title
@@ -28,7 +36,7 @@ status:
           title = title.sub(/(.+)\s*\(.*/, '\1')
         end
 
-        icon = @mpd.paused? ? "\u25AE" * 2 : "\u25B6"
+        icon = mpd.paused? ? "\u25AE" * 2 : "\u25B6"
         label = [title, artist].compact.join(' by ')
       end
 
@@ -37,27 +45,27 @@ status:
     control:
       action:
         music_play!: |
-          if @mpd.stopped?
-            @mpd.play
+          if mpd.stopped?
+            mpd.play
           else
-            @mpd.pause = !@mpd.paused?
+            mpd.pause = !mpd.paused?
           end
           refresh
 
         music_pause: |
-          @mpd.pause = true
+          mpd.pause = true
           refresh
 
         music_stop: |
-          @mpd.stop
+          mpd.stop
           refresh
 
         music_next: |
-          @mpd.next
+          mpd.next
           refresh
 
         music_previous: |
-          @mpd.previous
+          mpd.previous
           refresh
 
         music_menu: |
@@ -69,18 +77,18 @@ status:
           refresh
 
         music_playlist_menu: | # load chosen playlist
-          if choice = key_menu(@mpd.playlists, 'load playlist:', :playlist)
-            @mpd.clear
-            @mpd.load choice
-            @mpd.play
+          if choice = key_menu(mpd.playlists, 'load playlist:', :playlist)
+            mpd.clear
+            mpd.load choice
+            mpd.play
           end
 
         music_favorite_menu: | # add current song to chosen playlist
-          if choice = key_menu(@mpd.playlists, 'save favorite:', :playlist)
+          if choice = key_menu(mpd.playlists, 'save favorite:', :playlist)
             file = File.join(File.expand_path(@playlist_directory), choice + '.m3u')
 
             songs = File.readlines(file) rescue []
-            songs << @mpd.current_song.file
+            songs << mpd.current_song.file
             songs.uniq!
 
             File.open(file, 'w') {|f| f.puts songs }
