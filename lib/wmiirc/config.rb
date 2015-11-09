@@ -84,6 +84,10 @@ class Config < Hash
             end
 
             # store expanded shortcut and mapping for help menu
+            if @shortcuts.key? key
+              LOG.warn 'overriding shortcut %s to %s (was previously %s)' %
+              [key, code, @shortcuts[key]].map(&:inspect)
+            end
             @shortcuts[key] = code
 
             meth = 'key'
