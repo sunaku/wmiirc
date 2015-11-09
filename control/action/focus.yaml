@@ -2,16 +2,17 @@ script:
   before:
     - |
       # remember most recently focused view whenever view focus changes
-      $recent_view = View.new(SESSION[:antecedent_tag])
-      class Rumai::View
-        alias _0b6261b1_d37d_4024_bc89_4f1e1743bb94 focus
-        def focus
-          unless focus?
-            $recent_view = self.class.curr
-            SESSION[:antecedent_tag] = $recent_view.id
-          end
-          _0b6261b1_d37d_4024_bc89_4f1e1743bb94
-        end
+      recent_view_ids = [SESSION[:recent_view_id]]
+      event 'FocusTag' do |view_id|
+        SESSION[:recent_view_id] = recent_view_ids.shift
+        recent_view_ids << view_id
+      end
+
+      # remember most recently focused client whenever client focus changes
+      recent_client_ids = [SESSION[:recent_client_id]]
+      event 'ClientFocus' do |client_id|
+        SESSION[:recent_client_id] = recent_client_ids.shift
+        recent_client_ids << client_id
       end
 
 control:
@@ -26,6 +27,7 @@ control:
     focus_client_down: curr_view.select(:down) rescue nil
     focus_client_left: curr_view.select(:left) rescue nil
     focus_client_right: curr_view.select(:right) rescue nil
+    focus_client_recent: Client.focus(SESSION[:recent_client_id]) rescue nil
 
     focus_client_view_next: |
       c = curr_client
@@ -50,7 +52,7 @@ control:
 
     focus_view_previous: prev_view.focus
     focus_view_next: next_view.focus
-    focus_view_recent: $recent_view.focus
+    focus_view_recent: View.focus(SESSION[:recent_view_id]) rescue nil
 
     focus_view_1: focus_view tags[0] || 1
     focus_view_2: focus_view tags[1] || 2
