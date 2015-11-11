@@ -22,7 +22,7 @@ status:
     control:
       action:
         loadavg_details: |
-          launch 'xterm', '-e', 'nice top', type: 'DIALOG'
+          launch 'xterm', '-e', 'htop || top', type: 'DIALOG'
 
       mouse_action:
         left_click: loadavg_details
