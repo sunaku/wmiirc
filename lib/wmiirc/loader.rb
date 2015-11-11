@@ -42,7 +42,12 @@ class << self
 
   def reload
     LOG.info 'reload'
-    exec $0, *ARGV
+    #
+    # NOTE: we launch another process here instead of exec()ing in order to
+    # let this process terminate normally, thereby triggering at_exit hooks,
+    # which in turn properly save the SESSION and do other necessary cleanup
+    #
+    Wmiirc.launch! File.expand_path($0), *ARGV
   end
 
   private
