@@ -42,7 +42,7 @@ class << self
 
   def reload
     LOG.info 'reload'
-    Wmiirc.launch! File.expand_path($0)
+    exec $0, *ARGV
   end
 
   private
