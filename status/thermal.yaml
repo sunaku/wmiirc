@@ -1,25 +1,29 @@
-require:
-  - rbconfig
-
 status:
   thermal:
     params:
-      critical: 90
-      high: 70
+      zone: 0
 
     label: |
-      device, status = `acpi -t | fgrep ' #{@id}:'`.chomp.split(/: */, 2)
-      status, level = status.split(/, */)
+      device = "/sys/class/thermal/thermal_zone#{@zone}"
 
-      color =
-        case [level.to_f, @high, @critical].min
-        when @critical then :error
-        when @high then :notice
-        end
+      level = File.read("#{device}/temp").to_i
 
-      temperature = level.sub(' degrees', '').tr('CF', "\u2103\u2109")
+      limits = Hash[
+        Dir["#{device}/trip_point_*_{temp,type}"].sort.
+        map {|file| File.read(file) }.each_slice(2).
+        map {|temp, type| [temp.to_i, type.chomp] }.
+        select {|key, val| key > 0 }
+      ]
 
-      [color, "\u2622", temperature, status]
+      status = limits.keys.sort.reverse.find {|limit| level >= limit }
+
+      color = case limits[status]
+              when "critical" then :error
+              when "passive" then :notice
+              when "active" then :success
+              end
+
+      [color, "\u2622", "#{(level / 1000.0).round(1)}\u2103", status]
 
     control:
       action:
