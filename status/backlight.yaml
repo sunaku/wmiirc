@@ -1,41 +1,29 @@
 status:
   backlight:
     params:
-      delta:
+      device: '*'
+      change: 5
 
     script: |
-      @delta ||= 5
-
       def reading
-        `xbacklight`
+        File.read(Dir["/sys/class/backlight/#{@device}/brightness"].first)
       end
 
       def level
-        reading.to_f.round
+        reading.to_i / 10.0
+      end
+
+      def change direction
+        system "xbacklight #{direction} #{@change}"
+        refresh
       end
 
       def level= value
         value = value.to_f
         value = [value, 100].min
         value = [value, 0].max
-        system "xbacklight -set #{value}"
+        system "xbacklight = #{value}"
         refresh
-      end
-
-      def more
-        self.level = level + @delta
-      end
-
-      def less
-        self.level = level - @delta
-      end
-
-      def full
-        self.level = 100
-      end
-
-      def none
-        self.level = 0
       end
 
       def menu
@@ -45,23 +33,23 @@ status:
                  map {|i| "#{i}%" }.reverse
 
         if choice = click_menu(levels, current)
-          self.level = choice
+          self.level = choice.to_i
         end
       end
 
     label: |
-      ["\u2747", level]
+      ["\u2747", level.round(1)]
 
     control:
       action:
+        backlight_more: self.change '+'
+        backlight_less: self.change '-'
+        backlight_full: self.level = 100
+        backlight_none: self.level = 0
         backlight_menu: self.menu
-        backlight_more: self.more
-        backlight_less: self.less
-        backlight_full: self.full
-        backlight_none: self.none
 
       mouse_action:
-        left_click: backlight_menu
+        left_click:  backlight_menu
         right_click: backlight_full
-        wheel_up: backlight_more
-        wheel_down: backlight_less
+        wheel_up:    backlight_more
+        wheel_down:  backlight_less
