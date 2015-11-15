@@ -1,6 +1,10 @@
 type: map
 required: true
 mapping:
+  'custom':
+    type: any
+    required: false
+
   'import':
     type: seq
     required: false

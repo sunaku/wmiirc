@@ -101,6 +101,21 @@ constant which contains the data from the fully expanded configuration.  They
 also have access to a `SESSION` constant which is a hash that is automatically
 persisted across multiple instances of the wmiirc.
 
+  * **custom:** Any value of your own choosing to use in your configuration.
+    For example, you can define a list of applications to always launch
+    (unless they're already running) whenever your configuration starts:
+
+        custom:
+          startup:
+            - wpa_gui -t   # network manager
+            - claws-mail   # e-mail client
+            - redshift-gtk # color temperature
+
+        script:
+          after: |
+            Array(CONFIG['custom']['startup']). # <== NOTICE THE KEYS HERE !!!
+            each {|app| launch! app unless system 'pgrep', '-f', app }
+
   * **import:** A list of files to inject into this one before evaluating it.
     Imported files may themselves import other files, recursively.  The
     contents of each successive imported file are merged with the previous
