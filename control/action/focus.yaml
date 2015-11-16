@@ -27,7 +27,15 @@ control:
     focus_client_down: curr_view.select(:down) rescue nil
     focus_client_left: curr_view.select(:left) rescue nil
     focus_client_right: curr_view.select(:right) rescue nil
-    focus_client_recent: Client.focus(SESSION[:recent_client_id]) rescue nil
+    focus_client_recent: |
+      before = curr_client
+      target = SESSION[:recent_client_id]
+      begin
+        Client.focus(target, curr_view)        # focus target in current view
+        Client.focus(target) if before.focus?  # not found; search all views
+      rescue
+        # ignore
+      end
 
     focus_client_view_next: |
       c = curr_client
