@@ -33,6 +33,7 @@ control:
       begin
         Client.focus(target, curr_view)        # focus target in current view
         Client.focus(target) if before.focus?  # not found; search all views
+        next_client.focus(curr_view) if before.focus? # fallback to neighbor
       rescue
         # ignore
       end
