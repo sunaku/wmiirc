@@ -2,7 +2,6 @@ status:
   battery:
     params:
       device: BAT0
-      critical: 5
       low: 15
 
     script: |
@@ -32,9 +31,9 @@ status:
         else "\u25BE"
         end
       color =
-        case [level, @low, @critical].max
-        when @critical then :error
-        when @low then :notice
+        case data[:capacity_level]
+        when 'Critical' then :error
+        else :notice if level <= @low
         end
 
       [color, "\u26A1", level.round(1), icon]
