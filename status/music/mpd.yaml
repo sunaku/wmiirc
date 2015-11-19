@@ -1,5 +1,5 @@
 require:
-  - librmpd: '~> 0.1'
+  - librmpd
 
 status:
   music:

@@ -1,11 +1,11 @@
 require:
-  - barometer: '~> 0.7.3'
+  - barometer
 
 status:
   weather:
     params:
       location:
-      metric: 
+      metric:
 
     label: |
       barometer = Barometer.new(@location)
