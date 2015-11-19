@@ -9,4 +9,8 @@ export BUNDLE_GEMFILE=$dir/Gemfile
 
 which bundle || gem install bundler
 bundle install
-exec bundle exec env -u BUNDLE_GEMFILE $dir/wmiirc.rb "$@"
+exec bundle exec env \
+  -u BUNDLE_GEMFILE \
+  -u RUBYOPT \
+  -u RUBYLIB \
+  $dir/wmiirc.rb "$@"
