@@ -57,12 +57,12 @@ Requirements
   * If you want to use the `status/weather.yaml` status bar applet,
     uncomment the following line in the `Gemfile` and restart wmii:
 
-        # gem 'barometer', '~> 0.7.3'
+        gem 'barometer'
 
   * If you want to use the `status/music/mpd.yaml` status bar applet,
     uncomment the following line in the `Gemfile` and restart wmii:
 
-        # gem 'librmpd', '~> 0.1'
+        gem 'librmpd'
 
 ------------------------------------------------------------------------------
 Installing

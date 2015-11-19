@@ -5,26 +5,27 @@ status:
   weather:
     params:
       location:
-      metric:
+      units: metric
 
     label: |
-      barometer = Barometer.new(@location)
-      @weather = barometer.measure
-      status = @weather.current.icon
+      @weather = Barometer.new(@location).measure
 
-      icon =
-        case status
-        when /cloud|overcast/ then "\u2601"
-        when /rain|shower/ then "\u2602"
-        when /snow|hail/ then "\u2603"
-        when /lightning/ then "\u2607"
-        when /thunder/ then "\u2608"
-        else "\u2600"
-        end
+      temp = @weather.temperature.send(@units)
+      unit = case @units
+             when 'metric' then "\u2103"
+             when 'imperial' then "\u2109"
+             end
+      desc = @weather.current.icon
+      icon = case desc
+             when /cloud|overcast/ then "\u2601"
+             when /rain|shower/ then "\u2602"
+             when /snow|hail/ then "\u2603"
+             when /lightning/ then "\u2607"
+             when /thunder/ then "\u2608"
+             else "\u2600"
+             end
 
-      temperature = @weather.temperature.to_s(@metric).tr('CF', "\u2103\u2109")
-
-      [icon, temperature, status]
+      [icon, temp.to_s + unit, desc]
 
     control:
       action:
