@@ -28,6 +28,10 @@ configuration was also described in the following articles in the past:
   * <https://sunaku.github.io/wmii-3.1-ruby-config.html>
   * <http://wmii.suckless.org/alternative_wmiirc_scripts>
 
+API documentation for Ruby code that powers this configuration is here:
+
+  * <https://sunaku.github.io/wmiirc/api/>
+
 [Ruby]: http://ruby-lang.org
 [YAML]: http://yaml.org
 [wmii]: http://wmii.suckless.org
