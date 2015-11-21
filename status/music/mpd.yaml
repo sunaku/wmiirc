@@ -91,11 +91,11 @@ status:
             dir = FileUtils.mkdir_p(@playlist_directory).first
             m3u = File.join(dir, choice + '.m3u')
 
-            songs = File.readlines(m3u) rescue []
-            songs << mpd.current_song.file
+            songs = File.readlines(m3u).map(&:chomp) rescue []
+            songs.unshift mpd.current_song.file
             songs.uniq!
 
-            File.open(m3u, 'w') {|f| f.puts songs }
+            File.write m3u, songs.join(?\n)
           end
 
 

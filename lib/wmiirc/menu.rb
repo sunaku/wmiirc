@@ -34,7 +34,7 @@ module Wmiirc
       end
     end
 
-    IO.popen(command.shelljoin, 'r+') do |menu|
+    IO.popen(command, 'r+') do |menu|
       menu.puts choices
       menu.close_write
 

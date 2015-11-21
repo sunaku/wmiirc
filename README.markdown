@@ -47,12 +47,7 @@ Requirements
     https://github.com/sunaku/wmii/commit/33bf199436213788078581a8a94c2dcc98d6af16
     ) in order to *persist* automated client arrangements.
 
-  * [Ruby] 1.9.2 or newer.
-
-    I recommend using at least Ruby 1.9.3-p0 because it is [significantly more
-    power-efficient](
-    https://sunaku.github.io/ruby-1.9.3-p0-power-efficiency.html ) than
-    previous Ruby 1.9.x releases.
+  * [Ruby] 2 or newer.
 
   * If you want to use the `status/weather.yaml` status bar applet,
     uncomment the following line in the `Gemfile` and restart wmii:

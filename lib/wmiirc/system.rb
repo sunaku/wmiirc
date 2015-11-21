@@ -21,7 +21,7 @@ module Wmiirc
       split(/[\s\[\]\{\}\(\)<>"':]+/).reverse_each do |word|
         if File.exist? path = File.expand_path(word)
           path = File.dirname(path) unless File.directory? path
-          Dir.chdir(path){ launch! *args }
+          Dir.chdir(path) { launch! *args }
           return
         end
       end
