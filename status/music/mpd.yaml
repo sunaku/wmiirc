@@ -1,5 +1,6 @@
 require:
   - librmpd
+  - fileutils
 
 status:
   music:
@@ -7,6 +8,8 @@ status:
       playlist_directory: '~/.mpd/playlists'
 
     script: |
+      @playlist_directory = File.expand_path(@playlist_directory)
+
       def mpd
         @mpd or begin
           @mpd = MPD.new
@@ -84,14 +87,15 @@ status:
           end
 
         music_favorite_menu: | # add current song to chosen playlist
-          if choice = key_menu(mpd.playlists, 'save favorite:', :playlist)
-            file = File.join(File.expand_path(@playlist_directory), choice + '.m3u')
+          if choice = key_menu(mpd.playlists, 'save favorite:')
+            dir = FileUtils.mkdir_p(@playlist_directory).first
+            m3u = File.join(dir, choice + '.m3u')
 
-            songs = File.readlines(file) rescue []
+            songs = File.readlines(m3u) rescue []
             songs << mpd.current_song.file
             songs.uniq!
 
-            File.open(file, 'w') {|f| f.puts songs }
+            File.open(m3u, 'w') {|f| f.puts songs }
           end
 
 

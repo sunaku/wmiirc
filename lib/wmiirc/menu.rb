@@ -21,19 +21,14 @@ module Wmiirc
   #   Basename of the file in which the user's
   #   choices will be stored: the history file.
   #
-  # @param [Integer] history_size
-  #   Number of items to keep in the history file.
-  #
-  def key_menu choices, prompt, history_name, history_size=200
+  def key_menu choices, prompt, history_name=nil
     command = ['wimenu']
     command.push '-p', prompt.to_s if prompt
 
     if history_name
       history_file = File.join(HISTORY_DIR, history_name.to_s)
-      command.push '-h', history_file, '-n', history_size.to_s
-
-      # show history before actual choices
       if File.exist? history_file
+        # show history *before* actual choices in menu
         history = File.readlines(history_file).map(&:chomp)
         choices = (history & choices).reverse.concat(choices).uniq
       end
@@ -44,7 +39,13 @@ module Wmiirc
       menu.close_write
 
       choice = menu.read
-      choice unless choice.empty?
+      unless choice.empty?
+        if history_name
+          # record choice in history for use next time
+          File.open(history_file, 'a') {|f| f.puts choice }
+        end
+        choice
+      end
     end
   end
 
