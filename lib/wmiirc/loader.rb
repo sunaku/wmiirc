@@ -76,9 +76,9 @@ class << self
   def load_user_session
     session_file = File.join(DIR, 'session.dump')
 
-    require 'fileutils'
-    FileUtils.touch session_file
-    File.open(session_file).flock(File::LOCK_EX) # auto released on exit
+    # don't use "w" because it truncates the file on opening
+    # also, this lock will be automatically released on exit
+    File.open(session_file, File::RDWR|File::CREAT, 0644).flock(File::LOCK_EX)
 
     session =
       begin
