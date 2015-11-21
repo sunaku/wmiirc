@@ -48,17 +48,17 @@ module Wmiirc
   # Launch a self-contained shell command (while making sure that
   # the arguments within the shell command are properly quoted):
   #
-  #   launch "xmessage 'hello world' '#{Time.now}'"
+  #   launch! "xmessage 'hello world' '#{Time.now}'"
   #
   # Launch a command with explicit arguments (while not
   # having to worry about shell-quoting those arguments):
   #
-  #   launch 'xmessage', 'hello world', Time.now.to_s
+  #   launch! 'xmessage', 'hello world', Time.now.to_s
   #
   # Launch a command on the floating layer (treating
   # it as a dialog box) using the `wihack` program:
   #
-  #   launch 'xmessage', 'hello world', Time.now.to_s, type: 'DIALOG'
+  #   launch! 'xmessage', 'hello world', Time.now.to_s, type: 'DIALOG'
   #
   def launch! command, *arguments_then_wihack_options
     *arguments, wihack_options = arguments_then_wihack_options
