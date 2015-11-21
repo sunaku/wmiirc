@@ -1,0 +1,458 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: Wmiirc::Import
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!Wmiirc/Import.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (I)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../Wmiirc.html" title="Wmiirc (module)">Wmiirc</a></span></span>
+     &raquo; 
+    <span class="title">Import</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: Wmiirc::Import
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+      <dt class="r1">Extended by:</dt>
+      <dd class="r1"><span class='object_link'><a href="" title="Wmiirc::Import (module)">Import</a></span></dd>
+      
+    
+  
+    
+  
+  
+    <dt class="r2">Included in:</dt>
+    <dd class="r2"><span class='object_link'><a href="" title="Wmiirc::Import (module)">Import</a></span></dd>
+    
+  
+  
+    <dt class="r1 last">Defined in:</dt>
+    <dd class="r1 last">lib/wmiirc/import.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#expand-instance_method" title="#expand (instance method)">- (Object) <strong>expand</strong>(result, src_data, src_file, origins = {}, imported = {}) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#expand_paths-instance_method" title="#expand_paths (instance method)">- (Object) <strong>expand_paths</strong>(virtual_paths) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#import-instance_method" title="#import (instance method)">- (Object) <strong>import</strong>(result, paths, origins = {}, imported = {}, importer = $0) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#merge-instance_method" title="#merge (instance method)">- (Object) <strong>merge</strong>(dst_hash, src_hash, src_file, origins = {}, backtrace = []) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="expand-instance_method">
+  
+    - (<tt>Object</tt>) <strong>expand</strong>(result, src_data, src_file, origins = {}, imported = {}) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+29
+30
+31
+32
+33
+34</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/wmiirc/import.rb', line 29</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_expand'>expand</span> <span class='id identifier rubyid_result'>result</span><span class='comma'>,</span> <span class='id identifier rubyid_src_data'>src_data</span><span class='comma'>,</span> <span class='id identifier rubyid_src_file'>src_file</span><span class='comma'>,</span> <span class='id identifier rubyid_origins'>origins</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='id identifier rubyid_imported'>imported</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span>
+  <span class='id identifier rubyid_to_import'>to_import</span> <span class='op'>=</span> <span class='id identifier rubyid_expand_paths'>expand_paths</span> <span class='id identifier rubyid_src_data'>src_data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>import</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_to_ignore'>to_ignore</span> <span class='op'>=</span> <span class='id identifier rubyid_expand_paths'>expand_paths</span> <span class='id identifier rubyid_src_data'>src_data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ignore</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_import'>import</span> <span class='id identifier rubyid_result'>result</span><span class='comma'>,</span> <span class='id identifier rubyid_to_import'>to_import</span> <span class='op'>-</span> <span class='id identifier rubyid_to_ignore'>to_ignore</span><span class='comma'>,</span> <span class='id identifier rubyid_origins'>origins</span><span class='comma'>,</span> <span class='id identifier rubyid_imported'>imported</span><span class='comma'>,</span> <span class='id identifier rubyid_src_file'>src_file</span>
+  <span class='id identifier rubyid_result'>result</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="expand_paths-instance_method">
+  
+    - (<tt>Object</tt>) <strong>expand_paths</strong>(virtual_paths) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+36
+37
+38
+39
+40</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/wmiirc/import.rb', line 36</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_expand_paths'>expand_paths</span> <span class='id identifier rubyid_virtual_paths'>virtual_paths</span>
+  <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_virtual_paths'>virtual_paths</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_flat_map'>flat_map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_virtual_path'>virtual_path</span><span class='op'>|</span>
+    <span class='const'>Dir</span><span class='lbracket'>[</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='const'>DIR</span><span class='comma'>,</span> <span class='id identifier rubyid_virtual_path'>virtual_path</span><span class='rparen'>)</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="import-instance_method">
+  
+    - (<tt>Object</tt>) <strong>import</strong>(result, paths, origins = {}, imported = {}, importer = $0) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/wmiirc/import.rb', line 8</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_import'>import</span> <span class='id identifier rubyid_result'>result</span><span class='comma'>,</span> <span class='id identifier rubyid_paths'>paths</span><span class='comma'>,</span> <span class='id identifier rubyid_origins'>origins</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='id identifier rubyid_imported'>imported</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='id identifier rubyid_importer'>importer</span><span class='op'>=</span><span class='gvar'>$0</span>
+  <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_paths'>paths</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_path'>path</span><span class='op'>|</span>
+    <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_imported'>imported</span><span class='lbracket'>[</span><span class='id identifier rubyid_path'>path</span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_imported'>imported</span><span class='lbracket'>[</span><span class='id identifier rubyid_path'>path</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>true</span>
+
+    <span class='kw'>begin</span>
+      <span class='id identifier rubyid_data'>data</span> <span class='op'>=</span> <span class='const'>YAML</span><span class='period'>.</span><span class='id identifier rubyid_load_file'>load_file</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_error'>error</span>
+      <span class='id identifier rubyid_error'>error</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> when importing %s into %s</span><span class='tstring_end'>&#39;</span></span> <span class='op'>%</span>
+        <span class='lbracket'>[</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='id identifier rubyid_importer'>importer</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:inspect</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_raise'>raise</span> <span class='id identifier rubyid_error'>error</span>
+    <span class='kw'>end</span>
+
+    <span class='id identifier rubyid_mark_origin'>mark_origin</span> <span class='id identifier rubyid_data'>data</span><span class='comma'>,</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='id identifier rubyid_origins'>origins</span>
+    <span class='id identifier rubyid_expand'>expand</span> <span class='id identifier rubyid_result'>result</span><span class='comma'>,</span> <span class='id identifier rubyid_data'>data</span><span class='comma'>,</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='id identifier rubyid_origins'>origins</span><span class='comma'>,</span> <span class='id identifier rubyid_imported'>imported</span>
+    <span class='id identifier rubyid_merge'>merge</span> <span class='id identifier rubyid_result'>result</span><span class='comma'>,</span> <span class='id identifier rubyid_data'>data</span><span class='comma'>,</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='id identifier rubyid_origins'>origins</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_result'>result</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="merge-instance_method">
+  
+    - (<tt>Object</tt>) <strong>merge</strong>(dst_hash, src_hash, src_file, origins = {}, backtrace = []) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/wmiirc/import.rb', line 42</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_merge'>merge</span> <span class='id identifier rubyid_dst_hash'>dst_hash</span><span class='comma'>,</span> <span class='id identifier rubyid_src_hash'>src_hash</span><span class='comma'>,</span> <span class='id identifier rubyid_src_file'>src_file</span><span class='comma'>,</span> <span class='id identifier rubyid_origins'>origins</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='id identifier rubyid_backtrace'>backtrace</span><span class='op'>=</span><span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_src_hash'>src_hash</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_src_val'>src_val</span><span class='op'>|</span>
+    <span class='id identifier rubyid_backtrace'>backtrace</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span> <span class='id identifier rubyid_key'>key</span>
+
+    <span class='id identifier rubyid_catch'>catch</span> <span class='symbol'>:merged</span> <span class='kw'>do</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_dst_hash'>dst_hash</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span> <span class='id identifier rubyid_key'>key</span>
+        <span class='id identifier rubyid_dst_val'>dst_val</span> <span class='op'>=</span> <span class='id identifier rubyid_dst_hash'>dst_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_key'>key</span><span class='rbracket'>]</span>
+
+        <span class='id identifier rubyid_dst_file'>dst_file</span> <span class='op'>=</span> <span class='id identifier rubyid_origins'>origins</span><span class='lbracket'>[</span><span class='id identifier rubyid_dst_val'>dst_val</span><span class='rbracket'>]</span>
+        <span class='id identifier rubyid_section'>section</span> <span class='op'>=</span> <span class='id identifier rubyid_backtrace'>backtrace</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>:</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+
+        <span class='kw'>if</span> <span class='id identifier rubyid_src_val'>src_val</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+          <span class='const'>LOG</span><span class='period'>.</span><span class='id identifier rubyid_warn'>warn</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>empty section %s in %s removes value %s from %s</span><span class='tstring_end'>&#39;</span></span> <span class='op'>%</span>
+          <span class='lbracket'>[</span><span class='id identifier rubyid_section'>section</span><span class='comma'>,</span> <span class='id identifier rubyid_src_file'>src_file</span><span class='comma'>,</span> <span class='id identifier rubyid_dst_val'>dst_val</span><span class='comma'>,</span> <span class='id identifier rubyid_dst_file'>dst_file</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:inspect</span><span class='rparen'>)</span>
+
+          <span class='id identifier rubyid_dst_hash'>dst_hash</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span> <span class='id identifier rubyid_key'>key</span>
+          <span class='id identifier rubyid_throw'>throw</span> <span class='symbol'>:merged</span>
+
+        <span class='kw'>elsif</span> <span class='id identifier rubyid_dst_val'>dst_val</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span> <span class='const'>Hash</span> <span class='kw'>and</span> <span class='id identifier rubyid_src_val'>src_val</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span> <span class='const'>Hash</span>
+          <span class='id identifier rubyid_merge'>merge</span> <span class='id identifier rubyid_dst_val'>dst_val</span><span class='comma'>,</span> <span class='id identifier rubyid_src_val'>src_val</span><span class='comma'>,</span> <span class='id identifier rubyid_src_file'>src_file</span><span class='comma'>,</span> <span class='id identifier rubyid_origins'>origins</span><span class='comma'>,</span> <span class='id identifier rubyid_backtrace'>backtrace</span>
+          <span class='id identifier rubyid_throw'>throw</span> <span class='symbol'>:merged</span>
+
+        <span class='kw'>elsif</span> <span class='id identifier rubyid_dst_val'>dst_val</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span> <span class='const'>Array</span>
+          <span class='id identifier rubyid_dst_val'>dst_val</span><span class='period'>.</span><span class='id identifier rubyid_concat'>concat</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_src_val'>src_val</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_throw'>throw</span> <span class='symbol'>:merged</span>
+
+        <span class='kw'>else</span>
+          <span class='const'>LOG</span><span class='period'>.</span><span class='id identifier rubyid_warn'>warn</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>value %s from %s overrides %s from %s in section %s</span><span class='tstring_end'>&#39;</span></span> <span class='op'>%</span>
+          <span class='lbracket'>[</span><span class='id identifier rubyid_src_val'>src_val</span><span class='comma'>,</span> <span class='id identifier rubyid_src_file'>src_file</span><span class='comma'>,</span> <span class='id identifier rubyid_dst_val'>dst_val</span><span class='comma'>,</span> <span class='id identifier rubyid_dst_file'>dst_file</span><span class='comma'>,</span> <span class='id identifier rubyid_section'>section</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:inspect</span><span class='rparen'>)</span>
+          <span class='comment'># fall through
+</span>        <span class='kw'>end</span>
+      <span class='kw'>end</span>
+
+      <span class='id identifier rubyid_dst_hash'>dst_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_key'>key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_src_val'>src_val</span>
+    <span class='kw'>end</span>
+
+    <span class='id identifier rubyid_backtrace'>backtrace</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_dst_hash'>dst_hash</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Sat Nov 21 09:35:35 2015 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.2.3).
+</div>
+
+  </body>
+</html>
