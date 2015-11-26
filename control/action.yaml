@@ -10,12 +10,16 @@ control:
       # reload this wmii configuration
       Wmiirc::Loader.reload
 
+      # restart the system tray applet
+      spawn 'witray'
+
     clear: |
-      # these browsers' "restore session" feature does
-      # not work unless the whole process group is killed
-      system 'killall', 'opera',
-        'chromium', 'chromium-browser',
+      system 'killall', 'witray',
+        # the "restore session" feature in these browsers does
+        # not work unless their entire process group is killed
+        'opera',
         'firefox', 'firefox-bin',
+        'chromium', 'chromium-browser',
         'thunderbird', 'thunderbird-bin'
 
       clients.each {|c| c.kill rescue nil }
