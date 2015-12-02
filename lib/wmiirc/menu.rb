@@ -28,9 +28,9 @@ module Wmiirc
     if history_name
       history_file = File.join(HISTORY_DIR, history_name.to_s)
       if File.exist? history_file
-        # show history *before* actual choices in menu
+        # show previous choices before current choices in menu
         history = File.readlines(history_file).map(&:chomp)
-        choices = (history & choices).reverse.concat(choices).uniq
+        choices = (history & choices).concat(choices).uniq
       end
     end
 
@@ -41,8 +41,9 @@ module Wmiirc
       choice = menu.read
       unless choice.empty?
         if history_name
-          # record choice in history for use next time
-          File.open(history_file, 'a') {|f| f.puts choice }
+          # record new choice in history file for use next time
+          # also make sure history is unique to keep file small
+          File.write history_file, history.unshift(choice).uniq.join(?\n)
         end
         choice
       end
