@@ -59,7 +59,7 @@ class Config < Hash
       Rumai.fs.ctl.write settings.map {|pair| pair.join(' ') }.join("\n")
       Rumai.fs.colrules.write self['display']['column']['rule']
       Rumai.fs.rules.write self['display']['client'].
-        map {|rule, regexps| "/#{regexps.join('|')}/ #{rule}" }.join("\n")
+        flat_map {|rule, regs| regs.map {|e| "/#{e}/ #{rule}" } }.join("\n")
     rescue Rumai::IXP::Error => error
       #
       # settings that are not supported in a particular wmii version
