@@ -14,7 +14,57 @@ script:
 control:
   action:
 
-    client_fullscreen!: curr_client.fullscreen!
+    client_fullscreen!: |
+      # wmii doesn't properly restore a client to its pre-fullscreen position
+      # so we keep track of that information and perform correct restoration
+      # https://github.com/sunaku/wmii/issues/3
+      @client_fullscreen_restore_info ||= {}
+      client = curr_client
+      if client.fullscreen?
+        client.unfullscreen
+        if restore_info = @client_fullscreen_restore_info.delete(client.id)
+          is_top_left = restore_info[:is_top] and restore_info[:is_left]
+          neighbor_id = restore_info[is_top_left ? :next_id : :prev_id]
+          if (neighbor = Client.new(neighbor_id)).exist?
+            unless restore_info[:is_top] and restore_info[:is_right]
+              client.send :left rescue nil
+              neighbor.focus
+              neighbor.area.insert client
+            end
+            if is_top_left
+              client.send :left rescue nil
+              client.send :up rescue nil
+            end
+            if restore_info[:is_top] and not restore_info[:is_left]
+              if client.area.next.floating?
+                client.send :right rescue nil
+              else
+                client.area.next.unshift client
+              end
+            end
+            if restore_info[:is_alone]
+              lengths = curr_view.columns.flat_map do |column|
+                if column == client.area
+                  [1, column.length-1]
+                else
+                  column.length
+                end
+              end
+              curr_view.arrange_columns lengths
+            end
+          end
+        end
+      else
+        @client_fullscreen_restore_info[client.id] = {
+          prev_id: client.prev.id,
+          next_id: client.next.id,
+          is_left: client.area.id == 1,
+          is_right: client.area.next.floating?,
+          is_top: client.area.client_ids.first == client.id,
+          is_alone: client.area.client_ids.length == 1,
+        } unless client.float?
+        client.fullscreen
+      end
 
     client_close: curr_client.kill
 
