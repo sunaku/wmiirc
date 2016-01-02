@@ -23,7 +23,7 @@ status:
 
     label: |
       data = device_uevent_data
-      level = (data[:charge_now].to_f / data[:charge_full].to_f) * 100
+      level = data[:capacity].to_i
       icon =
         case data[:status]
         when 'Charging' then "\u25B4"
@@ -36,7 +36,7 @@ status:
         else :notice if level <= @low
         end
 
-      [color, "\u26A1", level.round(1), icon]
+      [color, "\u26A1", level, icon]
 
     control:
       action:
