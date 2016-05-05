@@ -2,15 +2,14 @@ status:
   backlight:
     params:
       device: '*'
-      change: 5
+      change: 7
 
     script: |
-      def reading
-        File.read(Dir["/sys/class/backlight/#{@device}/brightness"].first)
-      end
-
       def level
-        reading.to_i / 10.0
+        current, maximum =
+          Dir["/sys/class/backlight/#{@device}/{,max_}brightness"].
+          map { |file| File.read(file).to_f }
+        (current / maximum) * 100
       end
 
       def change direction
