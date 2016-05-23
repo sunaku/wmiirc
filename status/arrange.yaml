@@ -22,7 +22,7 @@ status:
         outward: tile_outward
         stack: stack
         grid: grid
-        join: stack 1
+        join: join
         split: grid 1
 
     script: |
