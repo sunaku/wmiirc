@@ -3,6 +3,8 @@ status:
     params:
       device: BAT0
       low: 15
+      sleep_level:
+      sleep_command:
 
     script: |
       def device_uevent_file
@@ -28,7 +30,9 @@ status:
         case data[:status]
         when 'Charging' then "\u25B4"
         when 'Full' then "\u26A1"
-        else "\u25BE"
+        else
+          system @sleep_command if level <= @sleep_level and @sleep_command
+          "\u25BE"
         end
       color =
         case data[:capacity_level]
