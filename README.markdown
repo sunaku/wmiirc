@@ -354,4 +354,10 @@ File a report on [the issue tracker](http://github.com/sunaku/wmiirc/issues/).
 License
 ------------------------------------------------------------------------------
 
+> Like my work? :+1: Please [spare a life] today as thanks!
+> :cow::pig::chicken::fish::speak_no_evil::v::revolving_hearts:
+[spare a life]: https://sunaku.github.io/vegan-for-life.html
+
+Copyright 2006 Suraj N. Kurapati <https://github.com/sunaku>
+
 Released under the ISC license.  See the LICENSE file for details.
