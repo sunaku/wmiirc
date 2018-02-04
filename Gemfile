@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # for generating docs
-gem 'yard', '~> 0.8.7'
+gem 'yard'
 
 # for controlling wmii
 gem 'rumai', '>= 4.1.3'
