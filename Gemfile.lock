@@ -3,7 +3,7 @@ GEM
   specs:
     kwalify (0.7.2)
     rumai (4.1.3)
-    yard (0.9.12)
+    yard (0.9.20)
 
 PLATFORMS
   ruby
